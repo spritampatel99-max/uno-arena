@@ -1,0 +1,80 @@
+/* =====================================================================
+   Card faces. Every size derives from --cw (card width) through --u.
+   ===================================================================== */
+.uno-card {
+  --cw: 92px;
+  --u: calc(var(--cw) / 100);
+  --cc: var(--red); --cd: #c21f2c; --c1: #ff6670; --c2: #e0303c; --glyph: #d7222f;
+  position: relative; width: var(--cw); height: calc(var(--cw) * 1.5); flex: none;
+  border-radius: calc(var(--u) * 11); user-select: none; -webkit-user-select: none;
+  background: #fff; padding: calc(var(--u) * 4.5);
+  box-shadow: 0 calc(var(--u) * 6) calc(var(--u) * 16) rgba(2, 5, 14, .55), 0 1px 0 rgba(255, 255, 255, .5) inset;
+  font-family: var(--font-display);
+}
+.uno-card.sz-hand { --cw: var(--hand-cw, 92px); }
+.uno-card.sz-pile { --cw: var(--pile-cw, 104px); }
+.uno-card.sz-mini { --cw: 46px; }
+.uno-card.sz-xs { --cw: 30px; }
+.uno-card.sz-hero { --cw: 150px; }
+.uno-card.sz-big { --cw: 120px; }
+.uno-card.c-blue { --cc: var(--blue); --cd: #1457c9; --c1: #4b92ff; --c2: #1d65e0; --glyph: #1a5fd8; }
+.uno-card.c-yellow { --cc: var(--yellow); --cd: #b98e00; --c1: #ffe56a; --c2: #f3c91f; --glyph: #a67c00; }
+.uno-card.c-green { --cc: var(--green); --cd: #129657; --c1: #41dd90; --c2: #1eb06a; --glyph: #0f8a4f; }
+.uno-card.c-wild { --c1: #232a3d; --c2: #0e1322; --glyph: #111; }
+
+.uno-card .face {
+  position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: calc(var(--u) * 7.5);
+  background: linear-gradient(150deg, var(--c1), var(--c2));
+  box-shadow: inset 0 0 0 calc(var(--u) * 1) rgba(255, 255, 255, .14), inset 0 calc(var(--u) * -10) calc(var(--u) * 22) rgba(0, 0, 0, .16);
+}
+.uno-card .face::before { content: ''; position: absolute; inset: 0; background: linear-gradient(115deg, rgba(255, 255, 255, .32) 0%, rgba(255, 255, 255, 0) 38%); pointer-events: none; }
+.uno-card .oval {
+  position: absolute; left: 50%; top: 50%; width: 76%; height: 62%; transform: translate(-50%, -50%) rotate(-24deg); border-radius: 50%;
+  background: #fff; display: grid; place-items: center; box-shadow: 0 calc(var(--u) * 2) calc(var(--u) * 6) rgba(0, 0, 0, .22);
+}
+.uno-card .glyph { transform: rotate(24deg); display: grid; place-items: center; color: var(--glyph); line-height: 1; }
+.uno-card .glyph svg { width: calc(var(--u) * 40); height: calc(var(--u) * 40); }
+.uno-card .num { font-size: calc(var(--u) * 54); font-weight: 700; letter-spacing: -.03em; text-shadow: calc(var(--u) * 1.5) calc(var(--u) * 2.5) 0 rgba(0, 0, 0, .16); }
+.uno-card .num.ul { text-decoration: underline; text-decoration-thickness: calc(var(--u) * 4); text-underline-offset: calc(var(--u) * 5); }
+.uno-card .plus { display: flex; align-items: center; gap: calc(var(--u) * 1); }
+.uno-card .plus i { display: block; }
+.uno-card .plus svg { width: calc(var(--u) * 26); height: calc(var(--u) * 26); }
+.uno-card .plus b { font-size: calc(var(--u) * 30); font-weight: 700; letter-spacing: -.04em; text-shadow: calc(var(--u) * 1) calc(var(--u) * 2) 0 rgba(0, 0, 0, .15); }
+.uno-card .plus.wild4 b { font-size: calc(var(--u) * 36); color: #fff; text-shadow: 0 calc(var(--u) * 2) calc(var(--u) * 5) rgba(0, 0, 0, .65); }
+
+.uno-card .idx { position: absolute; display: grid; place-items: center; color: #fff; font-weight: 700; font-size: calc(var(--u) * 17); line-height: 1; text-shadow: 0 calc(var(--u) * 1.5) calc(var(--u) * 3) rgba(0, 0, 0, .35); }
+.uno-card .idx svg { width: calc(var(--u) * 17); height: calc(var(--u) * 17); }
+.uno-card .idx.tl { left: calc(var(--u) * 7); top: calc(var(--u) * 6); }
+.uno-card .idx.br { right: calc(var(--u) * 7); bottom: calc(var(--u) * 6); transform: rotate(180deg); }
+.uno-card.k-skip .idx, .uno-card.k-reverse .idx { font-size: 0; }
+
+/* wild faces */
+.uno-card.c-wild .face { background: linear-gradient(150deg, #1d2438, #0b0f1d); }
+.uno-card.c-wild .oval { background: conic-gradient(from 0deg, var(--red) 0 25%, var(--yellow) 0 50%, var(--green) 0 75%, var(--blue) 0 100%); box-shadow: 0 0 0 calc(var(--u) * 3) #fff, 0 calc(var(--u) * 3) calc(var(--u) * 10) rgba(0, 0, 0, .4); }
+.uno-card.c-wild .oval::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: linear-gradient(130deg, rgba(255, 255, 255, .35), transparent 50%); }
+.uno-card .wild-mark { display: block; width: 0; height: 0; }
+.uno-card .mini-wild { display: block; width: calc(var(--u) * 15); height: calc(var(--u) * 15); border-radius: 50%; background: conic-gradient(var(--red) 0 25%, var(--yellow) 0 50%, var(--green) 0 75%, var(--blue) 0 100%); box-shadow: 0 0 0 calc(var(--u) * 1.5) #fff; }
+
+/* card back */
+.uno-card.back { background: #fff; }
+.uno-card.back .face { background: radial-gradient(circle at 50% 40%, #1d2540, #0a0e1c 70%); }
+.uno-card.back .face::before { background: repeating-linear-gradient(45deg, rgba(255, 255, 255, .035) 0 calc(var(--u) * 5), transparent calc(var(--u) * 5) calc(var(--u) * 10)); }
+.uno-card.back .oval { background: linear-gradient(150deg, #ff5a64, #d11f2d); width: 80%; height: 66%; box-shadow: 0 0 0 calc(var(--u) * 2.5) rgba(255, 255, 255, .85), 0 calc(var(--u) * 4) calc(var(--u) * 10) rgba(0, 0, 0, .45); }
+.uno-card .logo-word { transform: rotate(24deg); font-size: calc(var(--u) * 30); font-weight: 700; letter-spacing: .02em; color: var(--yellow); text-shadow: calc(var(--u) * 2) calc(var(--u) * 2.5) 0 #0b0f1d, 0 0 calc(var(--u) * 10) rgba(0, 0, 0, .5); font-style: italic; }
+.uno-card.sz-xs .logo-word { font-size: calc(var(--u) * 26); }
+.uno-card.sz-xs, .uno-card.sz-mini { padding: calc(var(--u) * 4); }
+.uno-card.sz-xs .idx, .uno-card.sz-xs .glyph > *:not(.num) { }
+
+/* ----- colour chips / pickers ----- */
+.color-dot { display: inline-block; width: 14px; height: 14px; border-radius: 50%; background: var(--dot, #888); box-shadow: 0 0 0 2px rgba(255, 255, 255, .85), 0 0 14px var(--dot, #888); }
+.color-dot.red { --dot: var(--red); } .color-dot.blue { --dot: var(--blue); } .color-dot.yellow { --dot: var(--yellow); } .color-dot.green { --dot: var(--green); }
+
+.color-pick { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 22px; }
+.color-pick button { position: relative; aspect-ratio: 1.35; border-radius: 50%/60%; border-radius: 24px; display: grid; place-items: center; font-family: var(--font-head); font-weight: 700; letter-spacing: .08em; font-size: 14px; color: #fff; text-transform: uppercase;
+  background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, .4), transparent 45%), var(--cc); box-shadow: 0 14px 30px -8px var(--cc), inset 0 0 0 3px rgba(255, 255, 255, .25); transition: transform .2s var(--ease-spring), box-shadow .2s; }
+.color-pick button:hover, .color-pick button:focus-visible { transform: scale(1.06); box-shadow: 0 18px 40px -6px var(--cc), inset 0 0 0 4px #fff; }
+.color-pick .kb { position: absolute; top: 8px; right: 12px; font-size: 11px; opacity: .8; }
+.color-pick .r { --cc: var(--red); } .color-pick .b { --cc: var(--blue); } .color-pick .y { --cc: var(--yellow); color: #2a2200; } .color-pick .g { --cc: var(--green); color: #052414; }
+.color-pick.round { grid-template-columns: repeat(4, 1fr); }
+.color-pick.round button { aspect-ratio: 1; border-radius: 50%; font-size: 12px; }
+@media (max-width: 420px) { .color-pick.round { gap: 10px; } .color-pick.round button { font-size: 10px; } }

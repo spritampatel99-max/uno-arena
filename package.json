@@ -1,0 +1,17 @@
+{
+  "name": "uno-arena",
+  "version": "1.0.0",
+  "description": "UNO ARENA — a premium real-time multiplayer UNO card game. Zero-dependency Node server + vanilla ES-module client.",
+  "private": true,
+  "license": "UNLICENSED",
+  "main": "server/index.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "node --test tests/*.test.js",
+    "simulate": "node tests/simulate.js",
+    "check": "node tests/check-syntax.js"
+  }
+}

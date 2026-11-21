@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Sora:wght@600;700&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "primary-fixed": "#d9e2ff", "on-secondary-fixed": "#410006", "tertiary-fixed-dim": "#e5c529", "surface-container-lowest": "#070e1f", "secondary": "#ffb3b0", "primary-container": "#528dff", "tertiary-fixed": "#ffe262", "surface-container-high": "#23293c", "on-background": "#dbe2fb", "surface-container-low": "#141b2d", "inverse-on-surface": "#293043", "on-primary": "#002d6d", "background": "#0c1325", "surface-bright": "#32394c", "on-secondary-fixed-variant": "#930019", "error": "#ffb4ab", "on-surface-variant": "#c2c6d7", "tertiary": "#e5c529", "surface-container": "#181f31", "inverse-primary": "#0059c7", "on-primary-container": "#00275f", "on-error-container": "#ffdad6", "surface-tint": "#afc6ff", "inverse-surface": "#dbe2fb", "on-tertiary-container": "#4b3f00", "surface-container-highest": "#2e3448", "on-tertiary": "#3a3000", "error-container": "#93000a", "on-primary-fixed": "#001944", "surface": "#0c1325", "primary-fixed-dim": "#afc6ff", "secondary-container": "#bb0023", "surface-dim": "#0c1325", "on-error": "#690005", "on-primary-fixed-variant": "#004299", "outline-variant": "#424754", "on-tertiary-fixed-variant": "#534600", "secondary-fixed-dim": "#ffb3b0", "on-secondary": "#68000f", "on-surface": "#dbe2fb", "on-tertiary-fixed": "#221b00", "tertiary-container": "#c7a900", "outline": "#8c90a0", "secondary-fixed": "#ffdad8", "surface-variant": "#2e3448", "primary": "#afc6ff", "on-secondary-container": "#ffc7c4" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "gutter-desktop": "1.5rem", "margin-desktop": "2rem", "space-md": "1rem", "margin": "1rem", "gutter": "1rem", "space-xs": "0.25rem", "space-lg": "1.5rem", "space-sm": "0.5rem", "space-xl": "2.5rem" }, "fontFamily": { "headline-md": [ "Space Grotesk" ], "label-lg": [ "Sora" ], "headline-sm": [ "Space Grotesk" ], "body-lg": [ "Inter" ], "display-mobile": [ "Space Grotesk" ], "headline-lg-mobile": [ "Space Grotesk" ], "label-md": [ "Sora" ], "body-md": [ "Inter" ], "display": [ "Space Grotesk" ], "body-sm": [ "Inter" ], "stat-counter": [ "Space Grotesk" ], "title-md": [ "Sora" ], "headline-lg": [ "Space Grotesk" ], "title-lg": [ "Sora" ] }, "fontSize": { "headline-md": [ "28px", { "lineHeight": "36px", "fontWeight": "600" } ], "label-lg": [ "14px", { "lineHeight": "18px", "fontWeight": "600" } ], "headline-sm": [ "22px", { "lineHeight": "28px", "fontWeight": "600" } ], "body-lg": [ "16px", { "lineHeight": "24px", "fontWeight": "400" } ], "display-mobile": [ "36px", { "lineHeight": "44px", "fontWeight": "700" } ], "headline-lg-mobile": [ "28px", { "lineHeight": "36px", "fontWeight": "700" } ], "label-md": [ "12px", { "lineHeight": "16px", "fontWeight": "600" } ], "body-md": [ "14px", { "lineHeight": "20px", "fontWeight": "400" } ], "display": [ "56px", { "lineHeight": "64px", "fontWeight": "700" } ], "body-sm": [ "12px", { "lineHeight": "16px", "fontWeight": "400" } ], "stat-counter": [ "32px", { "lineHeight": "36px", "fontWeight": "700" } ], "title-md": [ "16px", { "lineHeight": "22px", "fontWeight": "600" } ], "headline-lg": [ "40px", { "lineHeight": "48px", "fontWeight": "700" } ], "title-lg": [ "18px", { "lineHeight": "24px", "fontWeight": "600" } ] } } } };</script></head><body class="bg-surface text-on-surface font-body-md text-body-md min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary-container"><header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_4px_24px_rgba(7,14,31,0.6)]"><div class="h-16 w-full px-margin-desktop flex items-center justify-between"><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-sm"><img alt="UNO ARENA Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYHvg7D1DR0i1jVOwbnZ1LELyiszstUMtddqLv7cQklmp6bj11p7XVpNDegfTn9o4zXSVlOac5Qf98rZJ8E7IroPIEazdKvOFGn06qOWBRzdPMSMWGXj-YGdNUHSe9_HBJSIRLpC-nPke-nJkNf7UGTqJux2TRGBdu4eRwpgHYAc1QcrN80SxuEps9iuLXoXOt1Qw0t8LlwDsLmLFwOf8cb4BtIuewUrPd28DO-QJ3"/><span class="font-title-lg text-title-lg tracking-wider text-primary font-bold">UNO ARENA</span></div><div class="hidden md:flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-surface-container-high"><span class="inline-block w-2 h-2 rounded-full bg-tertiary animate-pulse"></span><span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Room #8492</span><span class="font-label-md text-label-md text-primary font-bold ml-space-xs">ONLINE</span></div></div><nav class="hidden lg:flex items-center gap-space-md bg-surface-container-low/70 px-space-md py-space-xs rounded-full" data-active-classes="bg-surface-container-high text-on-surface font-title-md"><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-full transition-all" data-path="welcome" href="#">Lobby</a><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-full transition-all" data-path="room-setup" href="#">Custom Room</a><a aria-current="page" class="px-space-md py-space-xs rounded-full transition-all bg-surface-container-high text-on-surface font-title-md" data-path="main-game-arena" href="#">Arena</a><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-full transition-all" data-path="victory-results" href="#">Podium</a></nav><div class="flex items-center gap-space-md"><button aria-label="Toggle Audio" class="p-space-xs rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors flex items-center justify-center" type="button"><span class="material-symbols-outlined text-[20px]">volume_up</span></button><button aria-label="Game Rules &amp; Settings" class="p-space-xs rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors flex items-center justify-center" type="button"><span class="material-symbols-outlined text-[20px]">settings</span></button><div class="flex items-center gap-space-sm pl-space-xs"><div class="hidden sm:flex flex-col text-right"><span class="font-label-md text-label-md text-on-surface leading-none">Commander_7</span><span class="font-label-md text-label-md text-tertiary-fixed-dim leading-none mt-space-xs">Rank Diamond</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-[0_0_12px_rgba(175,198,255,0.3)]"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></div></header><main class="w-full pt-16 flex-1 bg-surface-container-lowest relative overflow-x-hidden"><div class="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_50%_40%,rgba(82,141,255,0.08)_0%,rgba(7,14,31,0)_70%)]"></div><div class="flex flex-col w-full relative select-none">
+<!-- ARENA ATMOSPHERIC LIGHTING FX -->
+<div class="absolute inset-0 pointer-events-none overflow-hidden">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[720px] h-[520px] rounded-full bg-secondary-container/15 blur-[120px] transition-all duration-700"></div>
+<div class="absolute -top-32 left-1/4 w-[400px] h-[400px] rounded-full bg-primary-container/10 blur-[90px]"></div>
+<div class="absolute -bottom-32 right-1/4 w-[480px] h-[480px] rounded-full bg-tertiary/10 blur-[100px]"></div>
+</div>
+<!-- HUD STATUS / TOURNAMENT CONTROL BAR -->
+<div class="w-full px-margin-desktop py-space-sm flex items-center justify-between z-20">
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-high/90 backdrop-blur-md shadow-md">
+<span class="material-symbols-outlined text-primary text-[18px]">timer</span>
+<span class="font-headline-sm text-headline-sm text-on-surface tracking-wider">14:32</span>
+<span class="font-label-md text-label-md text-on-surface-variant ml-space-xs">MATCH TIME</span>
+</div>
+<div class="px-space-md py-space-xs rounded-full bg-surface-container-high/80 backdrop-blur-md flex items-center gap-space-xs">
+<span class="font-label-md text-label-md text-primary font-bold">ROUND</span>
+<span class="font-title-md text-title-md text-on-surface">1<span class="text-on-surface-variant text-body-sm font-normal"> / 3</span></span>
+</div>
+<div class="flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-low/90 backdrop-blur-md">
+<span class="font-label-md text-label-md text-on-surface-variant">ROOM:</span>
+<span class="font-headline-sm text-headline-sm text-tertiary font-bold tracking-widest" id="room-code-display">K7M2PX</span>
+<button class="p-space-xs rounded-full hover:bg-surface-container-highest transition-colors flex items-center justify-center text-on-surface-variant hover:text-on-surface" id="copy-btn" onclick="navigator.clipboard.writeText('K7M2PX'); this.classList.add('text-tertiary'); setTimeout(()=&gt;this.classList.remove('text-tertiary'), 1000);" title="Copy Room ID">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+</div>
+<!-- Direction / Current Active Suit Banner -->
+<div class="hidden md:flex items-center gap-space-md px-space-lg py-space-xs rounded-full bg-surface-container-high/90 backdrop-blur-md shadow-lg">
+<div class="flex items-center gap-space-xs">
+<span class="w-3.5 h-3.5 rounded-full bg-secondary-container shadow-[0_0_10px_#bb0023]"></span>
+<span class="font-label-lg text-label-lg text-on-surface font-bold uppercase tracking-wider">Active Color: Crimson Red</span>
+</div>
+<span class="text-outline-variant font-label-md">|</span>
+<div class="flex items-center gap-space-xs text-primary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px] animate-spin" style="animation-duration: 9s;">sync</span>
+<span>Clockwise Flow</span>
+</div>
+</div>
+<!-- Quick Utilities -->
+<div class="flex items-center gap-space-sm">
+<button class="p-space-sm rounded-xl bg-surface-container-high/80 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all flex items-center justify-center" title="Spectator View">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-space-sm rounded-xl bg-surface-container-high/80 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all flex items-center justify-center" title="Log History">
+<span class="material-symbols-outlined text-[20px]">receipt_long</span>
+</button>
+<button class="px-space-md py-space-xs rounded-xl bg-surface-container-high/90 hover:bg-error-container text-error hover:text-on-error-container transition-all flex items-center gap-space-xs font-label-md text-label-md" onclick="confirm('Leave current ranked arena match? 50 MMR penalty will be incurred.')">
+<span class="material-symbols-outlined text-[18px]">logout</span>
+<span class="hidden sm:inline">Surrender</span>
+</button>
+</div>
+</div>
+<!-- CENTRAL GAMING STAGE -->
+<div class="relative w-full max-w-7xl mx-auto px-margin md:px-margin-desktop py-space-xs flex flex-col items-center justify-between min-h-[calc(100vh-140px)] z-10">
+<!-- UPPER OPPONENTS ROW -->
+<div class="w-full flex items-start justify-between gap-space-md pt-space-xs px-space-md z-20">
+<!-- OPPONENT 1: NeonRider (Top Left) -->
+<div class="flex items-center gap-space-md bg-surface-container/85 backdrop-blur-md p-space-sm pr-space-lg rounded-2xl shadow-xl transition-all duration-300 hover:bg-surface-container-high">
+<div class="relative">
+<div class="w-14 h-14 rounded-2xl bg-surface-container-highest overflow-hidden p-0.5 shadow-md">
+<img class="w-full h-full object-cover rounded-xl" data-alt="Cyberpunk esports avatar with neon visor, holographic helmet, futuristic purple and electric cyan lighting, competitive gamer portrait digital render" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXbRD_77ChAgZCrq_5UIEvDZC25w6HFAgCUah1W7bWZ22uvhgfZ0dCoiHpUaBsiNwko1d6nW7gVkNBqZwJWt-fV7xFe1_aNGg9kOLffGhRfPOq3WyONweN93LNxOGDz3SM-SplIED0veBbnuKYoETGntPoXsimo_K0q7NHwhBIp1KSlSWYNeyxpgpOkSzYOxSHu3Bf4CGV1VUaJ6j-Tq0q2HdieSAuL-rQzlQeudVG"/>
+</div>
+<span class="absolute -bottom-1 -right-1 px-1.5 py-0.5 rounded-full bg-surface-container-lowest text-primary font-label-md text-[10px] leading-tight">24ms</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-title-md text-title-md text-on-surface font-bold">NeonRider</span>
+<span class="px-1.5 py-0.5 rounded bg-primary-container/20 text-primary text-[10px] font-bold">Lvl 48</span>
+</div>
+<div class="flex items-center gap-space-xs mt-1">
+<span class="font-label-md text-label-md text-on-surface-variant">Hand:</span>
+<!-- Opponent Mini Card Backs Fan -->
+<div class="flex items-center -space-x-2">
+<div class="w-4 h-6 rounded bg-surface-bright shadow-sm rotate-[-8deg]"></div>
+<div class="w-4 h-6 rounded bg-primary-container shadow-sm rotate-[-3deg]"></div>
+<div class="w-4 h-6 rounded bg-surface-bright shadow-sm rotate-[2deg]"></div>
+<div class="w-4 h-6 rounded bg-primary shadow-sm rotate-[7deg] flex items-center justify-center">
+<span class="text-[8px] font-bold text-on-primary">4</span>
+</div>
+</div>
+<span class="font-label-md text-label-md text-primary font-bold ml-1">4 Cards</span>
+</div>
+</div>
+</div>
+<!-- ROTATION STADIUM INDICATOR (Orbit Compass) -->
+<div class="hidden lg:flex flex-col items-center">
+<div class="relative w-20 h-20 rounded-full bg-surface-container/60 backdrop-blur-md flex items-center justify-center shadow-inner">
+<svg class="absolute inset-0 w-full h-full animate-spin" style="animation-duration: 20s;" viewbox="0 0 100 100">
+<circle class="text-outline-variant/30" cx="50" cy="50" fill="none" r="44" stroke="currentColor" stroke-dasharray="6 8" stroke-width="2"></circle>
+<path class="text-primary" d="M 50 6 A 44 44 0 0 1 94 50" fill="none" stroke="currentColor" stroke-width="3"></path>
+<polygon class="text-primary" fill="currentColor" points="94,46 99,53 90,53"></polygon>
+</svg>
+<span class="font-headline-sm text-headline-sm text-tertiary">#1</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant mt-1 uppercase tracking-wider">Play Cycle</span>
+</div>
+<!-- OPPONENT 2: PixelQueen (Top Right) -->
+<div class="flex items-center gap-space-md bg-surface-container/85 backdrop-blur-md p-space-sm pl-space-lg rounded-2xl shadow-xl flex-row-reverse transition-all duration-300 hover:bg-surface-container-high">
+<div class="relative">
+<div class="w-14 h-14 rounded-2xl bg-surface-container-highest overflow-hidden p-0.5 shadow-md">
+<img class="w-full h-full object-cover rounded-xl" data-alt="Female anime style esports gamer portrait, pink hair, luminous VR headset, subtle gold and magenta rim highlights, dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDE7_TryGsVaUMl-WlYmfoMMRHviiN5vkbdkhD7tbe6FTH7t3lWvqFJGNUILoJvMXlOGtJS0A5BiIN8pwE8Qnb-Fw7CJHaVtzqKqGCIdwMKoroKKaOcCAgg7cmRDe6Sz6EiXPmHB7Qac_AdWwLdCWHcHkNhkxwcBAqMLsANL7ZOgNWesCNeDKZ5YCO-BXEpfGxnx68VB2THcZBMgx0SC-R1idLVjlu1OIcFajZe7MRJ"/>
+</div>
+<span class="absolute -bottom-1 -left-1 px-1.5 py-0.5 rounded-full bg-surface-container-lowest text-tertiary font-label-md text-[10px] leading-tight">32ms</span>
+</div>
+<div class="flex flex-col text-right">
+<div class="flex items-center justify-end gap-space-xs">
+<span class="px-1.5 py-0.5 rounded bg-tertiary/20 text-tertiary text-[10px] font-bold">PRO</span>
+<span class="font-title-md text-title-md text-on-surface font-bold">PixelQueen</span>
+</div>
+<div class="flex items-center justify-end gap-space-xs mt-1">
+<span class="font-label-md text-label-md text-primary font-bold mr-1">2 Cards</span>
+<div class="flex items-center -space-x-2">
+<div class="w-4 h-6 rounded bg-primary-container shadow-sm rotate-[-6deg]"></div>
+<div class="w-4 h-6 rounded bg-surface-bright shadow-sm rotate-[4deg] flex items-center justify-center">
+<span class="text-[8px] font-bold text-on-surface">2</span>
+</div>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant">Hand:</span>
+</div>
+</div>
+</div>
+</div>
+<!-- MIDDLE ROW: LEFT OPPONENT (UNO THREAT) & CENTRAL FELT PLAY TABLE & ACTION FEED -->
+<div class="w-full grid grid-cols-12 items-center my-space-sm gap-space-md z-10">
+<!-- OPPONENT 3: ShadowBlade (Left - CRITICAL 1 CARD / UNO WARNING) -->
+<div class="col-span-12 md:col-span-3 lg:col-span-3 flex flex-col items-start gap-space-sm">
+<div class="relative group w-full max-w-[280px]">
+<!-- Flashing UNO Alert Banner -->
+<div class="w-full py-1 px-space-md rounded-t-xl bg-secondary-container shadow-[0_0_24px_#bb0023] animate-pulse flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-on-secondary-container text-[18px]">warning</span>
+<span class="font-headline-sm text-headline-sm text-on-secondary-container tracking-wider font-extrabold">UNO! ALERT</span>
+</div>
+<span class="font-label-md text-label-md bg-surface-container-lowest px-2 py-0.5 rounded-full text-secondary font-bold">1 LEFT</span>
+</div>
+<div class="w-full bg-surface-container/90 backdrop-blur-md p-space-md rounded-b-2xl shadow-2xl flex items-center gap-space-md">
+<div class="relative">
+<div class="w-16 h-16 rounded-2xl bg-surface-container-highest overflow-hidden shadow-lg p-0.5">
+<img class="w-full h-full object-cover rounded-xl" data-alt="Tactical ninja esports avatar, shadowed glowing eyes, cybernetic face mask, dark titanium armor with crimson warning highlights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASeJOmQKieurZ_tv8tuec397efI5LKVHfkuYxMTkwAnzYKmUkn-sQeZIPVCkIlEsoXph8U922SUqGJnREoc5lYlDdYyshbGvZ_AjxHPg_waK4U6a22_mWs6l4XSsyC3X7WN4ZobOjvSrrGZZLEqCWO79t2sYtHbutuulOCgtkV-gK3sLny4yrJ-9SmpNwm7zJlTvymSbqU8OojYIjAeI8GpQ0eUHx8u266HB1vu1zQ"/>
+</div>
+<span class="absolute -bottom-1 -right-1 px-1.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-[10px] font-bold">CRITICAL</span>
+</div>
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-on-surface font-bold leading-tight">ShadowBlade</span>
+<span class="font-label-md text-label-md text-secondary mt-1 font-semibold flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-secondary animate-ping"></span>
+                1 Card Remaining
+              </span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1">Played: Skip ↷</span>
+</div>
+</div>
+</div>
+<!-- Chat / Emote Bubble Floating Nearby -->
+<div class="bg-surface-container-high/90 backdrop-blur-md px-space-md py-space-xs rounded-2xl rounded-tl-none shadow-md flex items-center gap-space-sm text-body-sm text-on-surface">
+<span class="text-tertiary font-bold">💬 "GG is not ready yet!"</span>
+</div>
+</div>
+<!-- CENTER: DIGITAL FELT ARENA, DRAW PILE, ACTIVE DISCARD PILE -->
+<div class="col-span-12 md:col-span-6 lg:col-span-6 flex flex-col items-center justify-center relative py-space-sm">
+<!-- Live Action Banner Pill -->
+<div class="mb-space-md px-space-lg py-space-xs rounded-full bg-surface-container-high/90 backdrop-blur-md shadow-md flex items-center gap-space-sm text-center">
+<span class="material-symbols-outlined text-secondary text-[18px]">bolt</span>
+<p class="font-label-md text-label-md text-on-surface">
+<strong class="text-secondary">ShadowBlade</strong> played <span class="text-secondary font-bold">Red Skip</span> → Turn passed to <strong class="text-tertiary">CyberViper (You)</strong>
+</p>
+</div>
+<!-- CENTRAL TABLE SURFACE -->
+<div class="relative w-full max-w-[500px] h-[320px] rounded-[48px] bg-gradient-to-b from-surface-container to-surface-container-lowest p-6 shadow-2xl flex items-center justify-center">
+<!-- Cyber Table Felt Rings & Grid -->
+<div class="absolute inset-4 rounded-[40px] bg-surface-container-low/80 overflow-hidden flex items-center justify-center">
+<div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(187,0,35,0.22)_0%,rgba(7,14,31,0.85)_75%)]"></div>
+<!-- Orbit Arrows for clockwise sequence -->
+<div class="absolute w-[360px] h-[220px] rounded-full border-dashed border-2 border-primary/20 pointer-events-none flex items-center justify-between px-6">
+<span class="material-symbols-outlined text-primary/50 text-[24px]">arrow_forward</span>
+<span class="material-symbols-outlined text-primary/50 text-[24px]">arrow_back</span>
+</div>
+</div>
+<div class="relative z-10 flex items-center justify-center gap-space-xl">
+<!-- DRAW DECK (3D STACKED PILE) -->
+<div class="relative group cursor-pointer" onclick="alert('Drawing 1 card from deck...')">
+<!-- Shadow Depth Layers -->
+<div class="absolute inset-0 translate-y-3 translate-x-2 w-28 h-40 rounded-2xl bg-surface-container-lowest opacity-70 blur-sm"></div>
+<div class="absolute inset-0 translate-y-2 translate-x-1.5 w-28 h-40 rounded-2xl bg-surface-bright"></div>
+<div class="absolute inset-0 translate-y-1 translate-x-0.5 w-28 h-40 rounded-2xl bg-surface-container-high"></div>
+<!-- Top Draw Card -->
+<div class="relative w-28 h-40 rounded-2xl bg-gradient-to-br from-surface-container-high via-surface to-surface-container-lowest p-2 shadow-2xl transition-all duration-300 group-hover:-translate-y-2 group-hover:shadow-[0_12px_28px_rgba(82,141,255,0.4)] flex flex-col items-center justify-between">
+<div class="w-full flex justify-between text-outline-variant font-headline-sm text-[11px]">
+<span>UNO</span>
+<span class="material-symbols-outlined text-[14px]">layers</span>
+</div>
+<!-- Card Back Emblem -->
+<div class="w-16 h-24 rounded-xl bg-gradient-to-tr from-secondary-container via-primary-container to-tertiary-container p-1 shadow-inner flex items-center justify-center -rotate-6 group-hover:rotate-0 transition-transform">
+<div class="w-full h-full rounded-lg bg-surface-container-lowest flex items-center justify-center">
+<span class="font-headline-sm text-headline-sm text-tertiary italic font-black tracking-tighter">UNO</span>
+</div>
+</div>
+<div class="px-2 py-0.5 rounded-full bg-primary-container/20 group-hover:bg-primary text-primary group-hover:text-on-primary font-label-md text-[10px] font-bold tracking-wider transition-colors">
+                  DRAW PILE
+                </div>
+</div>
+<!-- Deck count tooltip -->
+<div class="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap bg-surface-container-highest/90 px-space-sm py-0.5 rounded-full font-label-md text-[11px] text-on-surface-variant group-hover:text-on-surface shadow-sm">
+                42 Cards Left
+              </div>
+</div>
+<!-- DISCARD PILE (ACTIVE TOP CARD: RED 7) -->
+<div class="relative">
+<!-- Underneath Card Ghost (Depth) -->
+<div class="absolute inset-0 -rotate-12 translate-x-1 translate-y-1 w-28 h-40 rounded-2xl bg-surface-container-highest shadow-md opacity-40"></div>
+<div class="absolute inset-0 rotate-6 -translate-x-1 translate-y-0.5 w-28 h-40 rounded-2xl bg-secondary-container/40 shadow-md"></div>
+<!-- Main Active Card: Red 7 -->
+<div class="relative w-28 h-40 rounded-2xl bg-gradient-to-br from-secondary-container to-secondary-container/80 p-2 shadow-[0_16px_36px_rgba(187,0,35,0.45)] -rotate-2 flex flex-col justify-between overflow-hidden">
+<!-- Top Left Number -->
+<div class="flex items-center justify-between text-on-secondary-container font-headline-sm text-headline-sm leading-none font-bold">
+<span>7</span>
+<span class="material-symbols-outlined text-[16px]">stars</span>
+</div>
+<!-- Center Big Symbol / Oval -->
+<div class="self-center w-20 h-28 rounded-[50%] bg-surface-container-lowest shadow-inner flex items-center justify-center -rotate-12">
+<span class="font-display text-display text-secondary-container font-black tracking-tight scale-110 drop-shadow-md">7</span>
+</div>
+<!-- Bottom Right Inverted Number -->
+<div class="flex items-center justify-between text-on-secondary-container font-headline-sm text-headline-sm leading-none font-bold rotate-180">
+<span>7</span>
+<span class="material-symbols-outlined text-[16px]">stars</span>
+</div>
+<!-- Ambient active aura hairline -->
+<div class="absolute inset-0 rounded-2xl pointer-events-none shadow-[inset_0_0_12px_rgba(255,255,255,0.4)]"></div>
+</div>
+<!-- Top Card Indicator Label -->
+<div class="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap bg-secondary-container text-on-secondary-container px-space-sm py-0.5 rounded-full font-label-md text-[11px] font-bold shadow-md">
+                ACTIVE CARD
+              </div>
+</div>
+</div>
+</div>
+</div>
+<!-- MATCH FEED & SIDE HUD / WILD SELECTOR TRIGGER -->
+<div class="col-span-12 md:col-span-3 lg:col-span-3 flex flex-col gap-space-sm items-end">
+<!-- Tactical Feed Dock -->
+<div class="w-full max-w-[280px] bg-surface-container/80 backdrop-blur-md p-space-md rounded-2xl shadow-xl flex flex-col gap-space-xs">
+<div class="flex items-center justify-between pb-space-xs">
+<span class="font-title-md text-title-md text-on-surface font-bold">Arena Event Log</span>
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+</div>
+<div class="flex flex-col gap-space-xs text-body-sm text-on-surface-variant overflow-y-auto max-h-36 pr-1">
+<div class="py-1 flex items-start gap-1.5">
+<span class="text-outline-variant font-mono text-[11px]">14:28</span>
+<span><strong class="text-on-surface">NeonRider</strong> drew 1 card</span>
+</div>
+<div class="py-1 flex items-start gap-1.5">
+<span class="text-outline-variant font-mono text-[11px]">14:15</span>
+<span><strong class="text-tertiary">PixelQueen</strong> played <span class="text-primary-container font-medium">Blue 7</span></span>
+</div>
+<div class="py-1 flex items-start gap-1.5 bg-surface-container-high/60 px-1.5 rounded">
+<span class="text-outline-variant font-mono text-[11px]">14:02</span>
+<span><strong class="text-secondary">ShadowBlade</strong> played <span class="text-secondary font-medium">Red Skip</span></span>
+</div>
+</div>
+</div>
+<!-- Taunt / Reaction Dock -->
+<div class="flex items-center gap-space-xs bg-surface-container-high/80 p-1.5 rounded-2xl backdrop-blur-md shadow-md">
+<button class="w-10 h-10 rounded-xl bg-surface-container hover:bg-surface-container-highest text-lg flex items-center justify-center transition-all hover:scale-110 active:scale-95" title="GG Emote">🔥</button>
+<button class="w-10 h-10 rounded-xl bg-surface-container hover:bg-surface-container-highest text-lg flex items-center justify-center transition-all hover:scale-110 active:scale-95" title="Sweat Emote">😅</button>
+<button class="w-10 h-10 rounded-xl bg-surface-container hover:bg-surface-container-highest text-lg flex items-center justify-center transition-all hover:scale-110 active:scale-95" title="Shock Emote">😱</button>
+<button class="w-10 h-10 rounded-xl bg-surface-container hover:bg-surface-container-highest text-lg flex items-center justify-center transition-all hover:scale-110 active:scale-95" title="Trophy Emote">👑</button>
+<button class="w-10 h-10 rounded-xl bg-primary hover:bg-primary-fixed text-on-primary flex items-center justify-center transition-all shadow-md" onclick="document.getElementById('wild-modal').classList.toggle('hidden')" title="Toggle Wild Picker Preview">
+<span class="material-symbols-outlined text-[20px]">palette</span>
+</button>
+</div>
+</div>
+</div>
+<!-- LOWER AREA: LOCAL PLAYER (YOU) COCKPIT & INTERACTIVE CARD HAND -->
+<div class="w-full flex flex-col items-center mt-space-sm z-30">
+<!-- PLAYER TURN NOTIFICATION & TURN TIMER RING -->
+<div class="flex items-center justify-between w-full max-w-4xl px-space-md mb-2">
+<!-- Player Identity & Turn Countdown -->
+<div class="flex items-center gap-space-md">
+<!-- Circular Turn Timer Ring -->
+<div class="relative w-14 h-14 flex items-center justify-center">
+<svg class="w-full h-full -rotate-90" viewbox="0 0 48 48">
+<circle class="text-surface-container-highest" cx="24" cy="24" fill="none" r="20" stroke="currentColor" stroke-width="4"></circle>
+<circle class="text-tertiary transition-all duration-1000 shadow-lg" cx="24" cy="24" fill="none" r="20" stroke="currentColor" stroke-dasharray="125.6" stroke-dashoffset="35" stroke-width="4"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-headline-sm text-headline-sm text-tertiary font-black leading-none">18</span>
+<span class="text-[9px] font-label-md text-on-surface-variant uppercase">SEC</span>
+</div>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="px-2 py-0.5 rounded-full bg-tertiary text-on-tertiary font-label-md text-label-md font-extrabold uppercase animate-pulse">
+                YOUR TURN!
+              </span>
+<span class="font-title-lg text-title-lg text-on-surface font-bold">CyberViper</span>
+<span class="font-label-md text-tertiary-fixed-dim bg-surface-container-high px-2 py-0.5 rounded-md font-semibold">Rank #14</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Match red suits, numbers, or throw Wild Card!</span>
+</div>
+</div>
+<!-- Hand Sorters & Hand Count -->
+<div class="flex items-center gap-space-sm">
+<div class="hidden sm:flex items-center gap-space-xs bg-surface-container/90 backdrop-blur-md p-1 rounded-xl">
+<button class="px-space-md py-1 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high text-label-md font-label-md transition-all flex items-center gap-1" onclick="sortCards('color')">
+<span class="material-symbols-outlined text-[16px]">palette</span> Color
+            </button>
+<button class="px-space-md py-1 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high text-label-md font-label-md transition-all flex items-center gap-1" onclick="sortCards('number')">
+<span class="material-symbols-outlined text-[16px]">tag</span> Number
+            </button>
+</div>
+<span class="px-space-md py-1.5 rounded-xl bg-surface-container-high text-primary font-title-md text-title-md font-bold shadow-sm">
+            6 Cards In Hand
+          </span>
+</div>
+</div>
+<!-- FAN-SHAPED INTERACTIVE HAND TRAY -->
+<div class="w-full relative flex items-end justify-center pb-2 pt-6">
+<div class="flex items-center justify-center -space-x-8 sm:-space-x-10 md:-space-x-12 px-space-md py-2 overflow-visible" id="player-hand">
+<!-- CARD 1: RED 3 (PLAYABLE - ELEVATED) -->
+<div class="card-item group relative cursor-pointer transition-all duration-300 transform -rotate-[14deg] -translate-y-4 hover:-translate-y-12 hover:rotate-0 hover:z-50 hover:scale-110" onclick="playCard(this, 'Red 3')">
+<div class="w-28 sm:w-32 md:w-36 h-44 sm:h-48 md:h-52 rounded-2xl bg-gradient-to-br from-secondary-container via-secondary-container to-surface-container-lowest p-2.5 shadow-[0_12px_28px_rgba(187,0,35,0.6)] ring-2 ring-tertiary flex flex-col justify-between overflow-hidden">
+<div class="flex justify-between items-center text-on-secondary-container font-headline-sm font-extrabold text-headline-sm">
+<span>3</span>
+<span class="material-symbols-outlined text-[14px]">bolt</span>
+</div>
+<div class="self-center w-20 h-28 rounded-[50%] bg-surface-container-lowest shadow-inner flex items-center justify-center -rotate-12">
+<span class="font-display text-display text-secondary-container font-black">3</span>
+</div>
+<div class="flex justify-between items-center text-on-secondary-container font-headline-sm font-extrabold text-headline-sm rotate-180">
+<span>3</span>
+<span class="material-symbols-outlined text-[14px]">bolt</span>
+</div>
+</div>
+<!-- Playable Badge -->
+<div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-tertiary text-on-tertiary px-2 py-0.5 rounded-full text-[10px] font-label-md font-black shadow-md uppercase tracking-wider">
+              Playable
+            </div>
+</div>
+<!-- CARD 2: RED SKIP (PLAYABLE - ELEVATED) -->
+<div class="card-item group relative cursor-pointer transition-all duration-300 transform -rotate-[7deg] -translate-y-5 hover:-translate-y-12 hover:rotate-0 hover:z-50 hover:scale-110" onclick="playCard(this, 'Red Skip')">
+<div class="w-28 sm:w-32 md:w-36 h-44 sm:h-48 md:h-52 rounded-2xl bg-gradient-to-br from-secondary-container via-secondary-container to-surface-container-lowest p-2.5 shadow-[0_12px_28px_rgba(187,0,35,0.6)] ring-2 ring-tertiary flex flex-col justify-between overflow-hidden">
+<div class="flex justify-between items-center text-on-secondary-container font-headline-sm font-extrabold">
+<span class="material-symbols-outlined text-[20px]">block</span>
+<span class="text-[11px] font-label-md uppercase">SKIP</span>
+</div>
+<div class="self-center w-20 h-28 rounded-[50%] bg-surface-container-lowest shadow-inner flex items-center justify-center -rotate-12">
+<span class="material-symbols-outlined text-secondary-container text-5xl font-black">block</span>
+</div>
+<div class="flex justify-between items-center text-on-secondary-container font-headline-sm font-extrabold rotate-180">
+<span class="material-symbols-outlined text-[20px]">block</span>
+<span class="text-[11px] font-label-md uppercase">SKIP</span>
+</div>
+</div>
+<!-- Playable Badge -->
+<div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-tertiary text-on-tertiary px-2 py-0.5 rounded-full text-[10px] font-label-md font-black shadow-md uppercase tracking-wider">
+              Playable
+            </div>
+</div>
+<!-- CARD 3: BLUE 5 (UNPLAYABLE - DIMMED) -->
+<div class="card-item relative opacity-40 grayscale-[40%] transition-all duration-300 transform rotate-[0deg] hover:opacity-75 hover:-translate-y-2">
+<div class="w-28 sm:w-32 md:w-36 h-44 sm:h-48 md:h-52 rounded-2xl bg-gradient-to-br from-primary-container via-primary-container to-surface-container-lowest p-2.5 shadow-md flex flex-col justify-between overflow-hidden">
+<div class="flex justify-between items-center text-on-primary-container font-headline-sm font-extrabold text-headline-sm">
+<span>5</span>
+</div>
+<div class="self-center w-20 h-28 rounded-[50%] bg-surface-container-lowest shadow-inner flex items-center justify-center -rotate-12">
+<span class="font-display text-display text-primary-container font-black">5</span>
+</div>
+<div class="flex justify-between items-center text-on-primary-container font-headline-sm font-extrabold text-headline-sm rotate-180">
+<span>5</span>
+</div>
+</div>
+</div>
+<!-- CARD 4: YELLOW REVERSE (UNPLAYABLE - DIMMED) -->
+<div class="card-item relative opacity-40 grayscale-[40%] transition-all duration-300 transform rotate-[7deg] hover:opacity-75 hover:-translate-y-2">
+<div class="w-28 sm:w-32 md:w-36 h-44 sm:h-48 md:h-52 rounded-2xl bg-gradient-to-br from-tertiary via-tertiary to-surface-container-lowest p-2.5 shadow-md flex flex-col justify-between overflow-hidden">
+<div class="flex justify-between items-center text-on-tertiary font-headline-sm font-extrabold">
+<span class="material-symbols-outlined text-[20px]">swap_calls</span>
+</div>
+<div class="self-center w-20 h-28 rounded-[50%] bg-surface-container-lowest shadow-inner flex items-center justify-center -rotate-12">
+<span class="material-symbols-outlined text-tertiary text-5xl font-black">swap_calls</span>
+</div>
+<div class="flex justify-between items-center text-on-tertiary font-headline-sm font-extrabold rotate-180">
+<span class="material-symbols-outlined text-[20px]">swap_calls</span>
+</div>
+</div>
+</div>
+<!-- CARD 5: GREEN DRAW TWO (UNPLAYABLE - DIMMED) -->
+<div class="card-item relative opacity-40 grayscale-[40%] transition-all duration-300 transform rotate-[14deg] hover:opacity-75 hover:-translate-y-2">
+<div class="w-28 sm:w-32 md:w-36 h-44 sm:h-48 md:h-52 rounded-2xl bg-gradient-to-br from-[#107c41] via-[#107c41] to-surface-container-lowest p-2.5 shadow-md flex flex-col justify-between overflow-hidden">
+<div class="flex justify-between items-center text-on-primary font-headline-sm font-extrabold text-headline-sm">
+<span>+2</span>
+</div>
+<div class="self-center w-20 h-28 rounded-[50%] bg-surface-container-lowest shadow-inner flex items-center justify-center -rotate-12">
+<span class="font-headline-lg text-headline-lg text-[#107c41] font-black">+2</span>
+</div>
+<div class="flex justify-between items-center text-on-primary font-headline-sm font-extrabold text-headline-sm rotate-180">
+<span>+2</span>
+</div>
+</div>
+</div>
+<!-- CARD 6: WILD DRAW FOUR (+4) (PLAYABLE - MULTI-COLOR AURA) -->
+<div class="card-item group relative cursor-pointer transition-all duration-300 transform rotate-[21deg] -translate-y-4 hover:-translate-y-12 hover:rotate-0 hover:z-50 hover:scale-110" onclick="document.getElementById('wild-modal').classList.remove('hidden')">
+<div class="w-28 sm:w-32 md:w-36 h-44 sm:h-48 md:h-52 rounded-2xl bg-gradient-to-br from-surface-container-highest via-surface-container to-surface-container-lowest p-2.5 shadow-[0_0_30px_rgba(82,141,255,0.7)] ring-2 ring-primary flex flex-col justify-between overflow-hidden">
+<div class="flex justify-between items-center text-tertiary font-headline-sm font-extrabold text-headline-sm">
+<span>+4</span>
+<span class="material-symbols-outlined text-[16px] text-primary">auto_awesome</span>
+</div>
+<!-- 4 Quad Color Quadrant Visual -->
+<div class="self-center w-20 h-28 rounded-[50%] bg-surface-container-lowest shadow-inner flex flex-col items-center justify-center p-2 relative -rotate-6">
+<div class="grid grid-cols-2 gap-1 w-14 h-14 rounded-lg overflow-hidden shadow-sm">
+<div class="bg-secondary-container"></div>
+<div class="bg-primary-container"></div>
+<div class="bg-tertiary"></div>
+<div class="bg-[#107c41]"></div>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface font-black mt-1">+4</span>
+</div>
+<div class="flex justify-between items-center text-secondary font-headline-sm font-extrabold text-headline-sm rotate-180">
+<span>+4</span>
+<span class="material-symbols-outlined text-[16px] text-tertiary">auto_awesome</span>
+</div>
+</div>
+<!-- Multi-Color Aura Badge -->
+<div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-secondary-container via-tertiary to-primary-container text-surface-container-lowest px-2.5 py-0.5 rounded-full text-[10px] font-label-md font-black shadow-lg uppercase tracking-wider">
+              Wild +4
+            </div>
+</div>
+</div>
+</div>
+</div>
+<!-- HIGH-VOLTAGE CALL 'UNO!' TRIGGER BUTTON (BOTTOM RIGHT FIXED ARENA DOCK) -->
+<div class="fixed bottom-6 right-6 z-40 flex flex-col items-center gap-space-xs">
+<div class="relative">
+<!-- Radial ping waves -->
+<div class="absolute -inset-3 rounded-full bg-secondary-container opacity-40 animate-ping"></div>
+<div class="absolute -inset-1 rounded-full bg-secondary-container opacity-70 blur-sm"></div>
+<button class="relative w-24 h-24 rounded-full bg-gradient-to-tr from-secondary-container via-[#d31034] to-secondary text-on-secondary shadow-[0_0_36px_#bb0023] flex flex-col items-center justify-center transition-all duration-300 hover:scale-105 active:scale-90 group" id="uno-call-btn" onclick="triggerUnoDeclaration()">
+<span class="material-symbols-outlined text-[20px] text-tertiary group-hover:animate-bounce">campaign</span>
+<span class="font-display text-[26px] font-black tracking-tight leading-none text-white drop-shadow-md">UNO!</span>
+<span class="font-label-md text-[9px] uppercase tracking-widest text-on-secondary-container font-bold mt-0.5">DECLARE</span>
+</button>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant font-semibold tracking-wide">Shield Penalties</span>
+</div>
+</div>
+<!-- INTERACTIVE WILD COLOR SELECTOR MODAL (OVERLAY) -->
+<div class="fixed inset-0 z-50 bg-surface-container-lowest/80 backdrop-blur-xl flex items-center justify-center p-space-md hidden transition-opacity" id="wild-modal">
+<div class="relative w-full max-w-md bg-surface-container p-space-xl rounded-3xl shadow-2xl flex flex-col items-center text-center">
+<!-- Close modal button -->
+<button class="absolute top-4 right-4 p-space-xs text-on-surface-variant hover:text-on-surface rounded-full hover:bg-surface-container-high transition-colors" onclick="document.getElementById('wild-modal').classList.add('hidden')">
+<span class="material-symbols-outlined text-[24px]">close</span>
+</button>
+<span class="px-space-md py-space-xs rounded-full bg-primary-container/20 text-primary font-label-md text-label-md font-bold uppercase tracking-wider mb-space-sm">
+        Wild Card Command
+      </span>
+<h3 class="font-headline-md text-headline-md text-on-surface font-extrabold">Choose Active Arena Color</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1 mb-space-lg">
+        Next opponent will be required to match this chosen frequency:
+      </p>
+<!-- 4 QUADRANT SELECTOR -->
+<div class="grid grid-cols-2 gap-space-md w-full max-w-xs">
+<!-- RED -->
+<button class="group p-space-md rounded-2xl bg-surface-container-high hover:bg-secondary-container hover:shadow-[0_0_30px_#bb0023] transition-all duration-300 flex flex-col items-center gap-space-xs" onclick="selectColor('Crimson Red', 'bg-secondary-container')">
+<div class="w-14 h-14 rounded-full bg-secondary-container group-hover:scale-110 shadow-lg transition-transform flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined text-[28px]">local_fire_department</span>
+</div>
+<span class="font-title-md text-title-md text-on-surface group-hover:text-on-secondary-container font-bold">RED</span>
+</button>
+<!-- BLUE -->
+<button class="group p-space-md rounded-2xl bg-surface-container-high hover:bg-primary-container hover:shadow-[0_0_30px_#528dff] transition-all duration-300 flex flex-col items-center gap-space-xs" onclick="selectColor('Cobalt Blue', 'bg-primary-container')">
+<div class="w-14 h-14 rounded-full bg-primary-container group-hover:scale-110 shadow-lg transition-transform flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined text-[28px]">water_drop</span>
+</div>
+<span class="font-title-md text-title-md text-on-surface group-hover:text-on-primary-container font-bold">BLUE</span>
+</button>
+<!-- YELLOW -->
+<button class="group p-space-md rounded-2xl bg-surface-container-high hover:bg-tertiary hover:shadow-[0_0_30px_#e5c529] transition-all duration-300 flex flex-col items-center gap-space-xs" onclick="selectColor('Luminous Yellow', 'bg-tertiary')">
+<div class="w-14 h-14 rounded-full bg-tertiary group-hover:scale-110 shadow-lg transition-transform flex items-center justify-center text-on-tertiary">
+<span class="material-symbols-outlined text-[28px]">bolt</span>
+</div>
+<span class="font-title-md text-title-md text-on-surface group-hover:text-on-tertiary font-bold">YELLOW</span>
+</button>
+<!-- GREEN -->
+<button class="group p-space-md rounded-2xl bg-surface-container-high hover:bg-[#107c41] hover:shadow-[0_0_30px_#107c41] transition-all duration-300 flex flex-col items-center gap-space-xs" onclick="selectColor('Emerald Green', 'bg-[#107c41]')">
+<div class="w-14 h-14 rounded-full bg-[#107c41] group-hover:scale-110 shadow-lg transition-transform flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-[28px]">eco</span>
+</div>
+<span class="font-title-md text-title-md text-on-surface group-hover:text-white font-bold">GREEN</span>
+</button>
+</div>
+<div class="mt-space-lg text-body-sm text-on-surface-variant flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px]">info</span>
+<span>Selection triggers instantaneous turn hand-off.</span>
+</div>
+</div>
+</div>
+<script>
+    function playCard(el, cardName) {
+      el.classList.add('scale-125', 'opacity-0', '-translate-y-24');
+      setTimeout(() => {
+        el.remove();
+        alert('Played ' + cardName + '! Opponent turn initiated.');
+      }, 300);
+    }
+
+    function triggerUnoDeclaration() {
+      const btn = document.getElementById('uno-call-btn');
+      btn.classList.add('scale-125');
+      setTimeout(() => btn.classList.remove('scale-125'), 200);
+      alert('⚡ UNO DECLARED! You are safe from draw penalties.');
+    }
+
+    function selectColor(colorName, colorClass) {
+      document.getElementById('wild-modal').classList.add('hidden');
+      alert('Wild Color activated: ' + colorName + '! +4 added to next opponent.');
+    }
+
+    function sortCards(type) {
+      const hand = document.getElementById('player-hand');
+      const cards = Array.from(hand.children);
+      cards.reverse().forEach(card => hand.appendChild(card));
+    }
+  </script>
+</div></main><footer class="w-full bg-surface-container-lowest/90 backdrop-blur-md shadow-[0_-4px_20px_rgba(7,14,31,0.4)] py-space-md z-40"><div class="w-full px-margin-desktop flex flex-col sm:flex-row items-center justify-between gap-space-md"><div class="flex items-center gap-space-md text-on-surface-variant font-label-md text-label-md"><span class="flex items-center gap-space-xs"><span class="inline-block w-2 h-2 rounded-full bg-tertiary"></span>Server: Global 01 (32ms)</span><span>Ver 2.4.0-E</span></div><div class="flex items-center gap-space-lg text-on-surface-variant font-label-md text-label-md"><span class="hover:text-on-surface transition-colors cursor-pointer">Official Match Rules</span><span class="hover:text-on-surface transition-colors cursor-pointer">Fair Play Policy</span><span class="hover:text-on-surface transition-colors cursor-pointer">Bug Report</span></div></div></footer></body></html>

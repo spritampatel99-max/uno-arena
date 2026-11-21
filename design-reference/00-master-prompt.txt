@@ -1,0 +1,1626 @@
+# PROJECT: UNO ARENA
+# PREMIUM MULTIPLAYER UNO CARD GAME WEBSITE
+# DESIGN PLATFORM: GOOGLE STITCH
+# PRIMARY SCREENS: EXACTLY 4
+
+========================================================
+1. PROJECT VISION & CONCEPT
+========================================================
+
+Create a premium, cinematic, highly interactive multiplayer
+UNO card game website named:
+
+                    UNO ARENA
+
+TAGLINE:
+"PLAY TOGETHER. OUTSMART EVERYONE."
+
+The goal is to create a world-class multiplayer gaming
+experience that feels like a professionally developed
+gaming product rather than an ordinary website.
+
+The overall experience should combine:
+- Premium modern gaming aesthetics.
+- Smooth 3D motion graphics.
+- Realistic card animations.
+- Beautiful multiplayer lobby.
+- Immersive card-playing arena.
+- Real-time opponent interactions.
+- Cinematic victory celebrations.
+- Extremely polished micro-interactions.
+
+Design inspiration:
+- Clash Royale.
+- Modern Apple interfaces.
+- Premium online multiplayer games.
+- High-quality futuristic gaming dashboards.
+- Modern casino-style card game interfaces.
+
+IMPORTANT:
+Create EXACTLY FOUR PRIMARY SCREENS.
+
+1. Welcome / Entry
+2. Room Setup (Create Room + Join Room)
+3. Main Game Arena
+4. Victory / Results
+
+Do not create additional pages.
+
+Use modals, popovers, drawers and overlays for
+secondary interactions.
+
+========================================================
+2. BRAND IDENTITY & DESIGN SYSTEM
+========================================================
+
+PRODUCT NAME:
+UNO ARENA
+
+TAGLINE:
+PLAY TOGETHER. OUTSMART EVERYONE.
+
+VISUAL DIRECTION:
+Premium dark gaming interface with colourful UNO-inspired
+elements, cinematic lighting, 3D card effects and subtle
+neon accents.
+
+COLOUR PALETTE:
+
+Primary background: #090D19
+Secondary background: #101729
+Surface: #171E31
+Elevated surface: #202B43
+Border: #293650
+
+UNO RED: #FF414B
+UNO BLUE: #287BFF
+UNO YELLOW: #F9D83D
+UNO GREEN: #27C978
+
+Primary text: #FFFFFF
+Secondary text: #A7B1C5
+Muted text: #6F7B91
+
+TYPOGRAPHY:
+
+Headings:
+- Space Grotesk
+- Sora
+
+Body:
+- Inter
+
+Numbers:
+- Bold, highly readable typography.
+
+UI DESIGN:
+
+- Rounded corners between 12px and 24px.
+- Premium glassmorphism.
+- Subtle transparent panels.
+- Soft shadows.
+- Neon edge highlights.
+- Rich background gradients.
+- Layered depth.
+- Beautiful card surfaces.
+- Carefully balanced spacing.
+- Strong visual hierarchy.
+- Consistent iconography.
+
+Avoid:
+- Excessive glassmorphism.
+- Excessive glow.
+- Generic dashboard layouts.
+- Unnecessary decorative elements.
+- Tiny text.
+- Cluttered interfaces.
+
+The game must feel premium, colourful, exciting and
+comfortable for extended gameplay.
+
+========================================================
+3. GLOBAL EXPERIENCE & NAVIGATION
+========================================================
+
+The entire website must contain ONLY FOUR PRIMARY SCREENS.
+
+SCREEN 01:
+WELCOME / ENTRY
+
+SCREEN 02:
+ROOM SETUP
+
+SCREEN 03:
+GAME ARENA
+
+SCREEN 04:
+VICTORY / RESULTS
+
+USER FLOW:
+
+WELCOME
+   |
+   |----------------------|
+   |                      |
+CREATE ROOM           JOIN ROOM
+   |                      |
+   |                      |
+   |------ SCREEN 02 -----|
+              |
+         GAME LOBBY
+              |
+         START GAME
+              |
+         SCREEN 03
+              |
+         MATCH ENDS
+              |
+         SCREEN 04
+
+Use animated transitions between these screens.
+
+All secondary features must appear as modals or overlays,
+not separate pages.
+
+========================================================
+4. SCREEN 01 — WELCOME / ENTRY
+========================================================
+
+OBJECTIVE:
+
+Create a visually stunning first impression.
+
+The player should immediately understand that this is
+a multiplayer UNO game where they can create a private
+room or join their friends.
+
+BACKGROUND DESIGN:
+
+- Full-screen dark midnight navy gradient.
+- Large floating 3D UNO cards.
+- Red, blue, green and yellow lighting.
+- Subtle glowing particles.
+- Slow background animations.
+- Cards rotating independently.
+- Depth-based parallax.
+- Soft atmospheric lighting.
+- Subtle moving gradient.
+
+LOGO:
+
+Display a large custom UNO ARENA logo.
+
+Logo animation:
+- Smooth entrance.
+- Slight 3D rotation.
+- Subtle neon glow.
+- Gentle floating movement.
+- Animated colour highlights.
+
+MAIN CONTENT:
+
+Headline:
+"READY TO CHALLENGE YOUR FRIENDS?"
+
+Subtitle:
+"The ultimate multiplayer card battle starts here."
+
+PLAYER PROFILE SETUP:
+
+Before creating or joining a room, the user should
+enter a nickname.
+
+Display:
+- Username input.
+- Avatar selection.
+- Small avatar preview.
+- Edit avatar button.
+
+AVATAR SELECTION MODAL:
+
+Create a beautiful avatar-selection modal.
+
+Include:
+- Multiple cartoon gaming avatars.
+- Different colours and styles.
+- Selected avatar glow.
+- Smooth selection animation.
+- SAVE button.
+
+PRIMARY ACTION BUTTONS:
+
+BUTTON 1:
+CREATE ROOM
+
+BUTTON 2:
+JOIN ROOM
+
+Both buttons should be large and visually dominant.
+
+CREATE ROOM interaction:
+- Validate that the nickname is entered.
+- Navigate to SCREEN 02 in CREATE mode.
+
+JOIN ROOM interaction:
+- Validate that the nickname is entered.
+- Navigate to SCREEN 02 in JOIN mode.
+
+ADDITIONAL ELEMENTS:
+
+- Sound toggle.
+- Privacy-friendly player information.
+- Optional online-player count, only when live data exists.
+- Small footer with game branding.
+- Responsive layout.
+
+BUTTON ANIMATIONS:
+
+- Smooth hover glow.
+- Slight scale-up.
+- Spring-based movement.
+- Press feedback.
+- Animated background highlight.
+
+ENTRY ANIMATION:
+
+1. Background fades in.
+2. Floating cards appear.
+3. Logo animates into position.
+4. Headline fades and slides upward.
+5. Nickname input appears.
+6. Create and Join buttons appear with staggered timing.
+
+========================================================
+5. SCREEN 02 — ROOM SETUP
+========================================================
+
+IMPORTANT:
+
+CREATE ROOM and JOIN ROOM must be two modes of
+the SAME SCREEN.
+
+Do not create separate pages for them.
+
+This screen must look like a premium multiplayer
+gaming lobby.
+
+--------------------------------------------------------
+A. CREATE ROOM MODE
+--------------------------------------------------------
+
+OBJECTIVE:
+
+Allow a player to create a private multiplayer room,
+configure game settings and invite friends.
+
+ROOM CREATION:
+
+When the player clicks CREATE ROOM:
+
+- Generate a unique six-character room code.
+- Create a private room.
+- Assign the creator as HOST.
+- Show the room code prominently.
+
+ROOM CODE EXAMPLE:
+
+        K7M2PX
+
+ROOM CODE DESIGN:
+
+- Large typography.
+- Letter spacing.
+- Individual character containers.
+- Subtle glow.
+- Copy button.
+- Copy-success animation.
+
+ROOM INVITATION:
+
+Display two controls:
+
+1. COPY ROOM CODE
+2. SHARE INVITATION
+
+Invitation text example:
+
+"Join my UNO ARENA game!
+
+Room Code: K7M2PX
+
+Open UNO ARENA and enter the code to play!"
+
+PLAYER LOBBY:
+
+Display four player slots.
+
+Example:
+
+PLAYER 1:
+Host / Current player
+
+PLAYER 2:
+Waiting for player
+
+PLAYER 3:
+Waiting for player
+
+PLAYER 4:
+Waiting for player
+
+Each player slot must show:
+
+- Avatar.
+- Username.
+- Connection indicator.
+- Player status.
+- Host badge where applicable.
+
+PLAYER JOINING ANIMATION:
+
+When a player joins:
+- Avatar slides into the player slot.
+- Slot border briefly glows.
+- Small particles appear.
+- Player status changes to CONNECTED.
+
+PLAYER DISCONNECTING:
+
+When a player disconnects:
+- Status changes to DISCONNECTED.
+- Show reconnection state.
+- Preserve the room for the configured reconnection period.
+
+--------------------------------------------------------
+B. GAME SETTINGS
+--------------------------------------------------------
+
+Create a collapsible settings panel.
+
+DEFAULT SETTINGS:
+
+Maximum players: 4
+Starting cards: 7
+Winning score: 500
+Turn timer: 30 seconds
+Stacking: OFF
+Jump-in: OFF
+Draw until playable: OFF
+
+Allow the host to configure supported settings.
+
+SETTING CONTROLS:
+
+- Attractive toggle switches.
+- Dropdowns for numerical options.
+- Clear descriptions.
+- Smooth animations.
+
+IMPORTANT:
+
+All settings must have matching backend game-rule
+implementations.
+
+Do not display settings that are not actually supported.
+
+--------------------------------------------------------
+C. ROOM HOST CONTROLS
+--------------------------------------------------------
+
+Only the host should see:
+
+- START GAME.
+- Edit settings.
+- Copy room code.
+- Share invitation.
+- Remove player (with confirmation).
+
+START GAME BUTTON:
+
+Disabled until the minimum player requirement is met.
+
+When enabled:
+- Button receives a subtle glow.
+- Hover causes a smooth lift.
+- Click starts a 3-second countdown.
+
+COUNTDOWN:
+
+3
+2
+1
+LET'S PLAY!
+
+Use large animated numbers with scale and opacity effects.
+
+After countdown, navigate to SCREEN 03.
+
+--------------------------------------------------------
+D. JOIN ROOM MODE
+--------------------------------------------------------
+
+When the user selects JOIN ROOM on SCREEN 01,
+open SCREEN 02 in JOIN mode.
+
+MAIN CONTENT:
+
+Heading:
+"JOIN YOUR FRIENDS"
+
+Subtitle:
+"Enter the private room code to enter the arena."
+
+ROOM CODE INPUT:
+
+- Six-character input.
+- Uppercase automatically.
+- Accept only valid code characters.
+- Paste support.
+- Clear button.
+- Individual character styling.
+
+Example:
+
+[ K ] [ 7 ] [ M ] [ 2 ] [ P ] [ X ]
+
+JOIN ROOM BUTTON:
+
+Large primary button.
+
+Validation:
+
+1. Empty room code:
+   Show "PLEASE ENTER A ROOM CODE."
+
+2. Invalid room code:
+   Show "INVALID ROOM CODE."
+
+3. Room does not exist:
+   Show "ROOM NOT FOUND."
+
+4. Room is full:
+   Show "THIS ROOM IS FULL."
+
+5. Room is already playing:
+   Show appropriate late-join restriction.
+
+6. Successful joining:
+   Show smooth joining transition.
+
+AFTER SUCCESSFUL JOIN:
+
+Display the same multiplayer lobby interface.
+
+Show:
+- Host profile.
+- Other players.
+- Room code.
+- Player connection status.
+- Waiting for host message.
+
+JOIN MODE MUST NOT SHOW HOST CONTROLS.
+
+--------------------------------------------------------
+E. LOBBY STATES
+--------------------------------------------------------
+
+Create polished states for:
+
+- Waiting for players.
+- Player connected.
+- Player disconnected.
+- Reconnecting.
+- Room full.
+- Invalid code.
+- Host left.
+- Host starting game.
+- Match countdown.
+- Network connection lost.
+
+Use animated status indicators.
+
+========================================================
+6. SCREEN 03 — MAIN GAME ARENA
+========================================================
+
+THIS IS THE MOST IMPORTANT SCREEN.
+
+Allocate the highest design and interaction priority
+to this screen.
+
+The experience must feel like an actual premium
+multiplayer card game.
+
+The table, cards, player positions and game status
+must be visually balanced.
+
+--------------------------------------------------------
+A. GAME ARENA BACKGROUND
+--------------------------------------------------------
+
+Use:
+
+- Deep midnight background.
+- Large central gaming table.
+- Subtle atmospheric lighting.
+- Dark blue gradients.
+- Soft edge lighting.
+- Very subtle particles.
+- Controlled colour reflections.
+
+CENTRAL TABLE:
+
+Create an attractive oval or circular gaming table.
+
+The table should have:
+
+- Premium surface texture.
+- Soft shadows.
+- Thin glowing border.
+- Subtle depth.
+- Reflected card colours.
+- Smooth visual transitions.
+
+Avoid making the table too bright.
+
+Cards must remain the main focus.
+
+--------------------------------------------------------
+B. TOP NAVIGATION BAR
+--------------------------------------------------------
+
+Display:
+
+- Small UNO ARENA logo.
+- Room code.
+- Copy room code control.
+- Current round number.
+- Game settings.
+- Sound toggle.
+- Connection indicator.
+- Exit game button.
+
+EXIT GAME:
+
+Opening exit should display a confirmation modal.
+
+Options:
+- Stay in game.
+- Leave game.
+
+--------------------------------------------------------
+C. PLAYER POSITIONS
+--------------------------------------------------------
+
+Maximum players: 4.
+
+POSITION 1:
+Opponent 1 — Top left.
+
+POSITION 2:
+Opponent 2 — Top right.
+
+POSITION 3:
+Opponent 3 — Left side.
+
+POSITION 4:
+Local player — Bottom centre.
+
+For fewer players, dynamically distribute player
+positions around the table.
+
+EACH PLAYER PROFILE SHOULD DISPLAY:
+
+- Avatar.
+- Username.
+- Remaining cards.
+- Current-turn indicator.
+- Connection status.
+- Optional host badge.
+
+CARD COUNTER EXAMPLE:
+
+        5 CARDS
+
+CURRENT PLAYER INDICATOR:
+
+When a player has their turn:
+
+- Highlight their profile.
+- Add a subtle glowing border.
+- Show YOUR TURN or PLAYER'S TURN.
+- Animate a small turn indicator.
+
+DO NOT reveal opponents' actual card identities.
+
+Only show their remaining-card counts.
+
+--------------------------------------------------------
+D. CENTRAL GAME AREA
+--------------------------------------------------------
+
+Display two primary piles:
+
+1. DRAW PILE.
+2. DISCARD PILE.
+
+DRAW PILE:
+
+- Card stack with realistic depth.
+- UNO-inspired card backs.
+- Subtle floating animation.
+- Hover glow.
+- Click interaction.
+
+DISCARD PILE:
+
+- Current top card visible.
+- Realistic 3D depth.
+- Smooth landing animation.
+- Previous cards may appear underneath subtly.
+
+Also display:
+
+- Current active colour.
+- Current turn direction.
+- Turn timer.
+- Game status.
+
+TURN DIRECTION:
+
+Display a rotating arrow showing clockwise
+or counter-clockwise play.
+
+ACTIVE COLOUR INDICATOR:
+
+Show a subtle colour-coded indicator.
+
+--------------------------------------------------------
+E. CARD DESIGN SYSTEM
+--------------------------------------------------------
+
+Create beautiful, realistic UNO-inspired digital cards.
+
+Every card should have:
+
+- Rounded rectangular shape.
+- White or dark outline depending on card type.
+- Large centred number or symbol.
+- Correct colour identity.
+- Small corner markings.
+- Subtle 3D shadow.
+- Slight card texture.
+- Readable symbols.
+
+CARD TYPES:
+
+RED CARDS:
+- Red 0–9.
+- Red Skip.
+- Red Reverse.
+- Red Draw Two.
+
+BLUE CARDS:
+- Blue 0–9.
+- Blue Skip.
+- Blue Reverse.
+- Blue Draw Two.
+
+YELLOW CARDS:
+- Yellow 0–9.
+- Yellow Skip.
+- Yellow Reverse.
+- Yellow Draw Two.
+
+GREEN CARDS:
+- Green 0–9.
+- Green Skip.
+- Green Reverse.
+- Green Draw Two.
+
+WILD CARDS:
+- Wild.
+- Wild Draw Four.
+
+CARD SYMBOLS:
+
+Number cards:
+Large central number.
+
+Skip:
+Clear skip symbol.
+
+Reverse:
+Two-arrow reverse symbol.
+
+Draw Two:
++2 symbol.
+
+Wild:
+Four-colour symbol.
+
+Wild Draw Four:
+Four-colour symbol +4.
+
+IMPORTANT:
+
+Use consistent proportions across all card types.
+
+Do not make card numbers difficult to read.
+
+--------------------------------------------------------
+F. LOCAL PLAYER HAND
+--------------------------------------------------------
+
+Place the user's cards at the bottom centre.
+
+This is the most important interactive area.
+
+CARD ARRANGEMENT:
+
+- Fan-shaped arrangement.
+- Slight card overlap.
+- Responsive spacing.
+- Proper readability.
+- Smooth movement.
+
+HOVER ANIMATION:
+
+When a player hovers over a card:
+
+- Card lifts upward.
+- Card scales slightly.
+- Card shadow increases.
+- Subtle glow appears.
+
+SELECT ANIMATION:
+
+When a player selects a card:
+
+- Card lifts higher.
+- Card scales slightly.
+- Card becomes visually active.
+
+PLAYABLE CARD:
+
+- Soft glow.
+- Clear active state.
+
+UNPLAYABLE CARD:
+
+- Slightly reduced brightness.
+- Still readable.
+- No misleading interaction.
+
+CARD PLAY:
+
+When a card is played:
+
+1. Card lifts from the hand.
+2. Card moves toward the discard pile.
+3. Card rotates slightly in 3D.
+4. Card lands on the discard pile.
+5. Subtle impact effect appears.
+6. Other cards rearrange smoothly.
+
+CARD DRAW:
+
+When a player draws:
+
+1. Top card rises from the draw pile.
+2. Card travels toward the player's hand.
+3. Card flips to reveal its face.
+4. Hand rearranges with a spring effect.
+
+HAND CONTROLS:
+
+- Sort by colour.
+- Sort by number.
+- Smooth rearrangement.
+- Click-to-play.
+- Drag-and-drop support on desktop.
+- Touch-friendly selection on mobile.
+
+--------------------------------------------------------
+G. GAMEPLAY RULES
+--------------------------------------------------------
+
+Implement standard UNO-inspired turn-based gameplay.
+
+CARD MATCHING:
+
+A card can be played when:
+
+- Its colour matches the active colour.
+- Its number matches the top discard card.
+- Its symbol matches the top discard card.
+- It is a Wild card.
+- It is a Wild Draw Four card when legal.
+
+NUMBER CARDS:
+
+Numbers 0–9.
+
+Effect:
+No special action.
+
+SKIP:
+
+The next player loses their turn.
+
+REVERSE:
+
+Changes the direction of play.
+
+DRAW TWO:
+
+The next player draws two cards and loses their turn
+under the standard rules.
+
+WILD:
+
+The player selects the next active colour.
+
+WILD DRAW FOUR:
+
+The player selects the next active colour.
+The next player draws four cards and loses their turn.
+
+Apply the standard legality restriction for Wild Draw Four.
+
+DRAWING:
+
+When a player cannot play:
+
+- Allow drawing according to the selected rules.
+- Apply the appropriate turn rules.
+- Do not allow invalid plays.
+
+IMPORTANT:
+
+Keep the rule implementation consistent.
+
+Do not mix house rules with official rules without
+clearly identifying them.
+
+--------------------------------------------------------
+H. UNO DECLARATION SYSTEM
+--------------------------------------------------------
+
+When the player reaches one remaining card:
+
+Display a large UNO button.
+
+UNO BUTTON DESIGN:
+
+- Attractive red button.
+- Strong visual contrast.
+- Slight animated pulse.
+- Responsive click effect.
+
+UNO DECLARATION:
+
+When clicked:
+- Trigger UNO sound if enabled.
+- Display dramatic UNO notification.
+- Animate the player's avatar.
+- Show a red and yellow particle effect.
+
+MISSED UNO:
+
+When a player fails to declare UNO within the allowed
+rule window and another player catches them:
+
+- Apply the configured penalty.
+- Show a caught notification.
+- Animate penalty cards being drawn.
+
+The system must track declaration timing accurately.
+
+--------------------------------------------------------
+I. WILD COLOUR SELECTOR
+--------------------------------------------------------
+
+When a Wild card is played, display an animated
+four-colour selection overlay.
+
+FOUR OPTIONS:
+
+RED
+BLUE
+YELLOW
+GREEN
+
+DESIGN:
+
+- Four large colourful circular buttons.
+- Circular arrangement.
+- Soft neon glow.
+- Animated entrance.
+- Smooth hover movement.
+- Selected colour expands briefly.
+
+After colour selection:
+- Update active colour.
+- Continue gameplay.
+- Display a colour-change notification.
+
+--------------------------------------------------------
+J. TURN TIMER
+--------------------------------------------------------
+
+Each turn has a configurable countdown.
+
+Default: 30 seconds.
+
+Display:
+
+- Circular progress timer.
+- Remaining seconds.
+- Colour warning near timeout.
+
+At low time:
+- Timer changes appearance.
+- Subtle warning animation.
+
+When time expires:
+- Apply the configured automatic turn action.
+- Never allow the client to manipulate turn timing.
+
+--------------------------------------------------------
+K. GAME NOTIFICATIONS
+--------------------------------------------------------
+
+Display attractive animated notifications.
+
+Examples:
+
+"YOUR TURN!"
+
+"PLAYER PLAYED DRAW TWO!"
+
+"UNO! ONE CARD LEFT!"
+
+"REVERSE ACTIVATED!"
+
+"PLAYER SKIPPED!"
+
+"NEW COLOUR: BLUE!"
+
+"PLAYER DREW FOUR CARDS!"
+
+"YOUR TURN IS OVER!"
+
+Notifications should:
+
+- Appear near the top or centre.
+- Stay readable.
+- Animate smoothly.
+- Disappear automatically.
+- Never obscure important cards.
+
+--------------------------------------------------------
+L. SPECIAL CARD ANIMATIONS
+--------------------------------------------------------
+
+SKIP:
+
+- Animated skip symbol.
+- Quick colour flash.
+- Next player gets skipped.
+
+REVERSE:
+
+- Large arrow rotation.
+- Direction indicator changes.
+- Subtle table effect.
+
+DRAW TWO:
+
+- +2 effect appears.
+- Two cards fly toward the affected player.
+- Notification appears.
+
+WILD:
+
+- Four-colour background flash.
+- Colour selector appears.
+
+WILD DRAW FOUR:
+
+- Enhanced four-colour burst.
+- +4 animation.
+- Four drawn cards animation.
+
+UNO:
+
+- Large animated UNO text.
+- Red and yellow particles.
+
+ALL EFFECTS MUST BE SMOOTH.
+Avoid excessive full-screen effects that interfere
+with gameplay.
+
+--------------------------------------------------------
+M. GAME STATE MANAGEMENT
+--------------------------------------------------------
+
+The game must support:
+
+- Waiting for players.
+- Active match.
+- Current player.
+- Current card.
+- Active colour.
+- Turn direction.
+- Draw pile.
+- Discard pile.
+- Each player's private hand.
+- Remaining-card counters.
+- Turn timer.
+- Special-card effects.
+- UNO declaration state.
+- Player disconnects.
+- Player reconnection.
+- Match completion.
+
+All authoritative game actions must be validated
+by the server.
+
+Never trust frontend-only card validation.
+
+Each player may only see their own card identities
+and publicly visible game information.
+
+========================================================
+7. SCREEN 04 — VICTORY / RESULTS
+========================================================
+
+OBJECTIVE:
+
+Create a cinematic and satisfying conclusion to
+every multiplayer match.
+
+BACKGROUND:
+
+- Deep dark gradient.
+- Floating UNO cards.
+- Golden particles.
+- Confetti explosion.
+- Cinematic spotlight.
+- Subtle coloured lighting.
+
+WINNER ANNOUNCEMENT:
+
+Display:
+
+"VICTORY!"
+
+"CHAMPION OF THE ARENA"
+
+Show:
+
+- Winner avatar.
+- Username.
+- Golden crown.
+- Final score.
+
+WINNER ANIMATION:
+
+1. Background dims slightly.
+2. Golden spotlight appears.
+3. Crown enters with a smooth 3D animation.
+4. Confetti bursts around the winner.
+5. Winner name appears.
+6. Scoreboard fades in.
+
+--------------------------------------------------------
+A. FINAL SCOREBOARD
+--------------------------------------------------------
+
+Display all players.
+
+For each player show:
+
+- Rank.
+- Avatar.
+- Username.
+- Final score.
+- Cards played.
+- Cards drawn.
+- Special cards used.
+
+Use clean, readable scoreboard cards.
+
+Clearly distinguish the winner.
+
+--------------------------------------------------------
+B. FINAL ACTION BUTTONS
+--------------------------------------------------------
+
+BUTTON 1:
+PLAY AGAIN
+
+Allows the host to start another match.
+
+Preserve the existing room where appropriate.
+
+BUTTON 2:
+RETURN TO LOBBY
+
+Returns players to SCREEN 02.
+
+BUTTON 3:
+EXIT ROOM
+
+Leaves the room after confirmation.
+
+Only the host should control actions reserved for
+the host.
+
+If the host leaves, handle room ownership safely.
+
+========================================================
+8. MOTION GRAPHICS & ANIMATION SYSTEM
+========================================================
+
+The animation system is one of the most important
+parts of UNO ARENA.
+
+The website should feel alive.
+
+Use Framer Motion or an equivalent motion system.
+
+GENERAL ANIMATIONS:
+
+- Spring-based movement.
+- Smooth scale transitions.
+- Opacity transitions.
+- Staggered entrances.
+- 3D rotations.
+- Floating backgrounds.
+- Hover interactions.
+- Card flips.
+- Card throws.
+- Particle effects.
+- Animated gradients.
+
+ANIMATION TIMING:
+
+Micro-interactions:
+150–250ms.
+
+Normal transitions:
+250–450ms.
+
+Major screen transitions:
+500–900ms.
+
+Victory effects:
+1000–2000ms.
+
+CARD ANIMATIONS:
+
+1. Card floating.
+2. Card hover lift.
+3. Card selection.
+4. Card rotation.
+5. Card throw.
+6. Card landing.
+7. Card draw.
+8. Card flip.
+9. Card rearrangement.
+10. Card stacking.
+
+BACKGROUND ANIMATIONS:
+
+- Floating cards.
+- Slow particle movement.
+- Animated ambient gradients.
+- Subtle light movement.
+- Mouse parallax on desktop.
+
+PLAYER ANIMATIONS:
+
+- Avatar entrance.
+- Current-turn glow.
+- UNO reaction.
+- Connection/disconnection indicators.
+
+BUTTON ANIMATIONS:
+
+- Hover lift.
+- Scale effect.
+- Glow effect.
+- Press feedback.
+- Loading state.
+
+Always support reduced-motion preferences.
+
+Animations must not block user interactions.
+
+========================================================
+9. SOUND DESIGN
+========================================================
+
+Create an optional sound system.
+
+SOUND EFFECTS:
+
+- Button click.
+- Card draw.
+- Card placement.
+- Card shuffle.
+- Skip card.
+- Reverse card.
+- Draw Two.
+- Wild card.
+- UNO declaration.
+- Countdown.
+- Player joined.
+- Player disconnected.
+- Victory.
+
+SETTINGS:
+
+- Master volume.
+- Sound effects toggle.
+- Music toggle, if background music is included.
+
+IMPORTANT:
+
+Start with sound disabled.
+
+Audio must only play after the user enables it.
+
+Do not autoplay music.
+
+Provide clear sound controls in the game interface.
+
+========================================================
+10. RESPONSIVE DESIGN
+========================================================
+
+DESKTOP:
+
+- Full immersive table.
+- Four-player arrangement.
+- Fan-shaped hand.
+- Hover animations.
+- Drag-and-drop support.
+- Spacious lobby.
+
+TABLET:
+
+- Compact table.
+- Adjusted player positioning.
+- Responsive hand.
+- Touch controls.
+
+MOBILE:
+
+- Vertical game layout.
+- Opponent information at the top.
+- Smaller central table.
+- Local player hand at the bottom.
+- Horizontal card scrolling if required.
+- Large UNO button.
+- Touch-friendly actions.
+- Compact top navigation.
+
+Never allow cards to become too small to read.
+
+All four primary screens must be responsive.
+
+========================================================
+11. UI STATES & ERROR HANDLING
+========================================================
+
+Create complete visual states for:
+
+WELCOME:
+- Empty nickname.
+- Invalid nickname.
+- Avatar selected.
+
+ROOM SETUP:
+- Room creating.
+- Code generated.
+- Invalid room code.
+- Room not found.
+- Room full.
+- Joining.
+- Waiting.
+- Player connected.
+- Player disconnected.
+- Host disconnected.
+- Game starting.
+
+GAME ARENA:
+- Waiting for turn.
+- Your turn.
+- Drawing card.
+- Playing card.
+- Invalid move.
+- UNO warning.
+- Network interruption.
+- Reconnecting.
+- Opponent disconnected.
+- Opponent reconnected.
+- Match finished.
+
+RESULTS:
+- Winner.
+- Tie, where applicable.
+- Match statistics.
+- Rematch available.
+- Host-only controls.
+
+Every state must have clear feedback.
+
+========================================================
+12. COMPONENT SYSTEM
+========================================================
+
+Create reusable components.
+
+GLOBAL COMPONENTS:
+
+- GameLogo
+- PrimaryButton
+- SecondaryButton
+- Avatar
+- PlayerProfile
+- Modal
+- ToastNotification
+- LoadingIndicator
+- SoundControl
+- RoomCode
+- ConnectionStatus
+
+ROOM COMPONENTS:
+
+- RoomSettings
+- PlayerSlot
+- PlayerLobby
+- RoomInvitation
+- RoomCodeInput
+- StartGameButton
+
+GAME COMPONENTS:
+
+- GameTable
+- UnoCard
+- CardHand
+- DrawPile
+- DiscardPile
+- PlayerHand
+- OpponentProfile
+- TurnIndicator
+- TurnTimer
+- WildColourSelector
+- UnoButton
+- GameNotification
+- GameScoreboard
+
+RESULT COMPONENTS:
+
+- VictoryHeader
+- WinnerProfile
+- CrownAnimation
+- ConfettiEffect
+- FinalScoreboard
+- RematchButton
+
+Maintain consistent component styling across
+the four primary screens.
+
+========================================================
+13. TECHNICAL IMPLEMENTATION PLAN
+========================================================
+
+IMPORTANT:
+
+GOOGLE STITCH IS RESPONSIBLE FOR THE VISUAL DESIGN
+AND UI PROTOTYPE.
+
+THE FOLLOWING IS THE RECOMMENDED DEVELOPMENT STACK
+FOR BUILDING THE ACTUAL WORKING WEBSITE.
+
+FRONTEND:
+
+React + Vite
+
+STYLING:
+
+Tailwind CSS
+
+ANIMATIONS:
+
+Framer Motion
+
+ICONS:
+
+Lucide React
+
+BACKEND:
+
+Supabase
+
+DATABASE:
+
+PostgreSQL
+
+REAL-TIME MULTIPLAYER:
+
+Supabase Realtime or an appropriate authoritative
+multiplayer server.
+
+HOSTING:
+
+Vercel
+
+--------------------------------------------------------
+A. BACKEND ROOM SYSTEM
+--------------------------------------------------------
+
+Create a private room management system.
+
+Each room should contain:
+
+- Unique room ID.
+- Six-character join code.
+- Host ID.
+- Player list.
+- Maximum players.
+- Room status.
+- Game settings.
+- Creation timestamp.
+
+Room statuses:
+
+WAITING
+STARTING
+PLAYING
+COMPLETED
+CLOSED
+
+ROOM RULES:
+
+- Join only with a valid room code.
+- Maximum four players.
+- Only host can start the game.
+- Only authorised players can join.
+- Prevent joining closed rooms.
+- Prevent duplicate player sessions.
+- Validate all room actions server-side.
+
+--------------------------------------------------------
+B. MULTIPLAYER ARCHITECTURE
+--------------------------------------------------------
+
+The server must control:
+
+- Deck generation.
+- Card distribution.
+- Turn order.
+- Valid card plays.
+- Active colour.
+- Draw pile.
+- Discard pile.
+- Special-card effects.
+- Turn timers.
+- UNO declarations.
+- Penalties.
+- Match completion.
+
+Never expose opponents' private card identities.
+
+Never allow players to modify game state directly
+through frontend requests.
+
+Every game action should be validated server-side.
+
+Use real-time events to synchronise:
+
+- Player joins.
+- Player leaves.
+- Card played.
+- Card drawn.
+- Turn changed.
+- Active colour changed.
+- Special effect.
+- UNO declared.
+- Player disconnected.
+- Player reconnected.
+- Match finished.
+
+Implement reconnection safely.
+
+========================================================
+14. GOOGLE STITCH DESIGN GENERATION INSTRUCTIONS
+========================================================
+
+Create all four primary screens using one unified
+design system.
+
+SCREEN GENERATION PRIORITY:
+
+1. SCREEN 03 — MAIN GAME ARENA.
+2. SCREEN 01 — WELCOME / ENTRY.
+3. SCREEN 02 — ROOM SETUP.
+4. SCREEN 04 — VICTORY / RESULTS.
+
+The game arena must receive the most attention.
+
+IMPORTANT DESIGN DETAILS:
+
+- Design the actual cards carefully.
+- Keep card numbers readable.
+- Maintain attractive player positioning.
+- Make the central table immersive.
+- Avoid clutter.
+- Maintain visual consistency.
+- Show realistic multiplayer states.
+- Use attractive avatar illustrations.
+- Make buttons visually clear.
+- Use realistic card proportions.
+- Make the layout responsive.
+
+The four screens must look like parts of one
+professionally designed gaming product.
+
+Do not invent a fifth primary screen.
+
+Use overlays for:
+
+- Avatar selection.
+- Room code sharing.
+- Settings.
+- Wild colour selection.
+- Exit confirmation.
+- Connection warnings.
+- Game notifications.
+
+========================================================
+15. FINAL QUALITY REQUIREMENTS
+========================================================
+
+The final UNO ARENA website design must achieve:
+
+1. Premium gaming aesthetics.
+2. Beautiful dark visual identity.
+3. Realistic UNO-inspired cards.
+4. Smooth 3D card animations.
+5. Immersive multiplayer arena.
+6. Excellent four-player layout.
+7. Beautiful room creation experience.
+8. Easy room joining through a six-character code.
+9. Clear game controls.
+10. High-quality victory animation.
+11. Responsive desktop, tablet and mobile UI.
+12. Accessible text and controls.
+13. Consistent component system.
+14. Complete loading, error and success states.
+15. Smooth transitions across all four screens.
+
+FINAL INSTRUCTION:
+
+Design UNO ARENA as a premium, cinematic,
+multiplayer card-game experience.
+
+It should feel like a real commercial-quality
+gaming website.
+
+Do not create a generic dashboard.
+
+Do not create more than FOUR primary screens.
+
+Prioritise the central gameplay experience,
+3D cards, smooth animations, beautiful lighting
+and multiplayer interactions.
+
+Make the main game arena the centrepiece of
+the entire visual experience.
+
+END OF MASTER PROMPT.
