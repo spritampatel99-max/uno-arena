@@ -2,10 +2,11 @@
 import { h, clear, Disposer } from '../dom.js';
 import { icon } from '../icons.js';
 import { avatar, logoMark, AVATAR_IDS, AVATAR_LABEL } from '../avatars.js';
-import { cardEl } from '../cards.js';
+import { createHeroTable } from '../hero-table.js';
+import { canInstall, onInstallChange, promptInstall, isStandalone } from '../pwa.js';
 import { store, setProfile } from '../store.js';
 import { getStats } from '../net.js';
-import { soundControl, openModal, avatarPicker } from '../ui.js';
+import { soundControl, openModal, avatarPicker, openGuide } from '../ui.js';
 import { audio } from '../audio.js';
 import { shake } from '../anim.js';
 
@@ -77,42 +78,51 @@ export function createWelcome(ctx, props = {}) {
   };
   d.interval(loadStats, 15000);
 
+  // ---- top bar: help, settings, install (only when the browser offers it), sound
+  const installBtn = h('button', { class: 'top-link', hidden: true, onclick: async () => { const ok = await promptInstall(); if (ok) audio.play('join'); } }, icon('download'), h('span', {}, 'Install app'));
+  const paintInstall = () => { installBtn.hidden = !canInstall() || isStandalone(); };
+  paintInstall();
+  d.add(onInstallChange(paintInstall));
+  const openSettingsModal = async () => { const m = await import('../settings.js'); m.openSettings({ onGuide: openGuide }); };
+
+  const table = createHeroTable();
+
   const el = h('div', { class: 'welcome' },
     h('header', { class: 'topbar' },
       h('div', { class: 'brand' }, logoMark(), h('span', {}, 'UNO ARENA')),
-      h('div', { class: 'tools' }, soundControl())),
+      h('div', { class: 'top-tools' },
+        installBtn,
+        h('button', { class: 'top-link', 'aria-label': 'How to play', onclick: () => { audio.play('click'); openGuide(); } }, icon('help'), h('span', {}, 'How to play')),
+        h('button', { class: 'icon-btn', 'aria-label': 'Settings', title: 'Settings', onclick: () => { audio.play('click'); openSettingsModal(); } }, icon('gear')),
+        soundControl())),
     h('section', { class: 'hero' },
-      h('div', { class: 'ticker' }, live, h('span', { class: 'chip' }, icon('zap'), 'Real-time multiplayer'), h('span', { class: 'chip' }, icon('users'), '2–4 players')),
-      h('h1', { class: 'display hero-title' }, 'Play together.', h('br'), h('span', { class: 'grad-text' }, 'Outsmart everyone.')),
-      h('p', { class: 'hero-sub' }, 'Create a private room, share the code, and battle your friends in a fast, fair card arena. Every move is validated by the server.'),
-      h('div', { class: 'card-stage', 'aria-hidden': 'true' },
-        h('div', { class: 'stage-card s1' }, cardEl({ id: -1, color: 'red', kind: 'draw2', value: null }, { size: 'hero' })),
-        h('div', { class: 'stage-card s2' }, cardEl({ id: -2, color: 'blue', kind: 'skip', value: null }, { size: 'hero' })),
-        h('div', { class: 'stage-card s3' }, cardEl({ id: -3, color: null, kind: 'wild4', value: null }, { size: 'hero' })),
-        h('div', { class: 'stage-card s4' }, cardEl({ id: -4, color: 'green', kind: 'num', value: 7 }, { size: 'hero' })),
-        h('div', { class: 'stage-card s5' }, cardEl({ id: -5, color: 'yellow', kind: 'reverse', value: null }, { size: 'hero' }))),
-      invite ? h('div', { class: 'invite-banner', role: 'status' }, icon('link'), h('span', {}, 'You were invited to room ', h('b', { class: 'mono' }, invite))) : null,
-      h('div', { class: 'panel profile' },
-        avatarSlot,
-        h('div', { class: 'field grow' },
-          h('label', { class: 'label', for: 'nick' }, 'Your nickname'),
-          nameInput,
-          nameErr)),
-      h('div', { class: 'cta' },
-        invite
-          ? [h('button', { class: 'btn lg green', onclick: () => go('join') }, icon('arrowRight'), 'Join room ' + invite),
-             h('button', { class: 'btn lg ghost', onclick: () => go('create') }, icon('plus'), 'Create room')]
-          : [h('button', { class: 'btn lg red', onclick: () => go('create') }, icon('plus'), 'Create room'),
-             h('button', { class: 'btn lg ghost', onclick: () => go('join') }, icon('arrowRight'), 'Join room')]),
-      h('ul', { class: 'perks' },
-        h('li', {}, icon('shield'), 'Server-authoritative rules'),
-        h('li', {}, icon('bot'), 'Add bots to fill seats'),
-        h('li', {}, icon('refresh'), 'Reconnect if you drop'))),
+      h('div', { class: 'hero-copy' },
+        h('div', { class: 'ticker' }, live, h('span', { class: 'chip' }, icon('zap'), 'Real-time multiplayer'), h('span', { class: 'chip' }, icon('users'), '2–4 players')),
+        h('h1', { class: 'display hero-title' }, 'Play together.', h('br'), h('span', { class: 'grad-text' }, 'Outsmart', h('br'), 'everyone.')),
+        h('p', { class: 'hero-sub' }, 'Create a private room, share the code, and battle your friends in a fast, fair card arena. Every move is validated by the server.'),
+        invite ? h('div', { class: 'invite-banner', role: 'status' }, icon('link'), h('span', {}, 'You were invited to room ', h('b', { class: 'mono' }, invite))) : null,
+        h('div', { class: 'panel profile' },
+          avatarSlot,
+          h('div', { class: 'field grow' },
+            h('label', { class: 'label', for: 'nick' }, 'Your nickname'),
+            nameInput,
+            nameErr)),
+        h('div', { class: 'cta' },
+          invite
+            ? [h('button', { class: 'btn lg green', onclick: () => go('join') }, icon('arrowRight'), 'Join room ' + invite),
+               h('button', { class: 'btn lg ghost', onclick: () => go('create') }, icon('plus'), 'Create room')]
+            : [h('button', { class: 'btn lg red', onclick: () => go('create') }, icon('plus'), 'Create room'),
+               h('button', { class: 'btn lg ghost', onclick: () => go('join') }, icon('arrowRight'), 'Join room')]),
+        h('ul', { class: 'perks' },
+          h('li', {}, icon('shield'), 'Server-authoritative rules'),
+          h('li', {}, icon('bot'), 'Add bots to fill seats'),
+          h('li', {}, icon('refresh'), 'Reconnect if you drop'))),
+      h('div', { class: 'hero-play' }, table.el)),
     h('footer', { class: 'foot dim' }, 'Fan-made card game · Play responsibly · Sound is off until you turn it on'));
 
   return {
     el,
-    mount() { loadStats(); if (!nameInput.value) setTimeout(() => nameInput.focus({ preventScroll: true }), 400); },
-    unmount() { d.dispose(); },
+    mount() { loadStats(); table.mount(); if (!nameInput.value) setTimeout(() => nameInput.focus({ preventScroll: true }), 400); },
+    unmount() { table.unmount(); d.dispose(); },
   };
 }

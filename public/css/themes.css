@@ -1,0 +1,66 @@
+/* =====================================================================
+   Appearance: table themes, card backs, colour-blind symbols.
+   Themes only recolour the room (felt, glow, orbs). The four UNO colours
+   never change, so cards stay readable in every theme.
+   ===================================================================== */
+
+/* ---------- table themes (data-theme on <html>) ---------- */
+html[data-theme="emerald"] {
+  --atmos-a: rgba(39, 201, 120, .15); --atmos-b: rgba(249, 216, 61, .07); --atmos-c: rgba(40, 123, 255, .07);
+  --orb1: #27C978; --orb2: #F9D83D; --orb3: #287BFF;
+  --felt-1: #1f6b4c; --felt-2: #124030; --felt-3: #0a2218; --rim: rgba(8, 30, 21, .86); --felt-line: #2e6a52;
+}
+html[data-theme="crimson"] {
+  --atmos-a: rgba(255, 65, 75, .15); --atmos-b: rgba(249, 216, 61, .06); --atmos-c: rgba(150, 70, 220, .08);
+  --orb1: #FF414B; --orb2: #F9D83D; --orb3: #8a4bff;
+  --felt-1: #7a2840; --felt-2: #461526; --felt-3: #1f0a12; --rim: rgba(36, 10, 19, .86); --felt-line: #6a3044;
+}
+html[data-theme="aurora"] {
+  --atmos-a: rgba(124, 92, 255, .18); --atmos-b: rgba(0, 214, 200, .11); --atmos-c: rgba(255, 65, 150, .08);
+  --orb1: #7c5cff; --orb2: #00d6c8; --orb3: #ff4196;
+  --felt-1: #4a3f9c; --felt-2: #2a2362; --felt-3: #10112f; --rim: rgba(18, 15, 52, .86); --felt-line: #443f86;
+}
+
+/* ---------- card backs ---------- */
+html[data-back="gilded"] .uno-card.back:not([data-b]), .uno-card.back[data-b="gilded"] {
+  --back-edge: linear-gradient(145deg, #f8e7ac, #c99c3d 60%, #f4dc92);
+  --back-face: linear-gradient(160deg, #18235a, #0a0f2b);
+  --back-pattern: repeating-linear-gradient(45deg, rgba(240, 200, 110, .2) 0 1px, transparent 1px calc(var(--u) * 7)), repeating-linear-gradient(-45deg, rgba(240, 200, 110, .2) 0 1px, transparent 1px calc(var(--u) * 7));
+  --back-oval: linear-gradient(150deg, #fdeeb4, #c8963a 58%, #8f6420);
+  --back-ring: rgba(255, 240, 190, .92);
+  --back-word: #1a1f3f; --back-shadow: rgba(255, 255, 255, .38);
+}
+html[data-back="neon"] .uno-card.back:not([data-b]), .uno-card.back[data-b="neon"] {
+  --back-edge: linear-gradient(145deg, #00e5ff, #a855f7 55%, #ff2bd6);
+  --back-face: radial-gradient(circle at 50% 40%, #12142e, #04050e 72%);
+  --back-pattern: linear-gradient(rgba(0, 229, 255, .2) 1px, transparent 1px) 0 0 / calc(var(--u) * 10) calc(var(--u) * 10), linear-gradient(90deg, rgba(255, 43, 214, .17) 1px, transparent 1px) 0 0 / calc(var(--u) * 10) calc(var(--u) * 10);
+  --back-oval: linear-gradient(150deg, #00e5ff, #7c3aed 55%, #ff2bd6);
+  --back-ring: rgba(255, 255, 255, .92);
+  --back-word: #fff; --back-shadow: rgba(4, 5, 14, .7);
+}
+html[data-back="mono"] .uno-card.back:not([data-b]), .uno-card.back[data-b="mono"] {
+  --back-edge: #f2f2f5;
+  --back-face: radial-gradient(circle at 50% 40%, #1a1a20, #08080b 72%);
+  --back-pattern: radial-gradient(rgba(255, 255, 255, .1) 1px, transparent 1.4px) 0 0 / calc(var(--u) * 8) calc(var(--u) * 8);
+  --back-oval: linear-gradient(150deg, #ffffff, #c4c4ce);
+  --back-ring: rgba(255, 255, 255, .7);
+  --back-word: #0c0c10; --back-shadow: rgba(255, 255, 255, .55);
+}
+
+/* ---------- colour-blind symbols ---------- */
+.uno-card .cb { display: none; position: absolute; width: calc(var(--u) * 16); height: calc(var(--u) * 16); color: #fff; filter: drop-shadow(0 calc(var(--u) * 1.5) calc(var(--u) * 2.5) rgba(0, 0, 0, .45)); pointer-events: none; }
+.uno-card .cb svg { width: 100%; height: 100%; }
+.uno-card .cb.tr { right: calc(var(--u) * 7); top: calc(var(--u) * 7); }
+.uno-card .cb.bl { left: calc(var(--u) * 7); bottom: calc(var(--u) * 7); transform: rotate(180deg); }
+body.cb .uno-card:not(.back):not(.c-wild) .cb { display: block; }
+body.cb .uno-card.sz-xs .cb, body.cb .uno-card.sz-mini .cb { display: none; }
+/* the oval of a coloured card also carries a faint watermark of the same shape */
+body.cb .uno-card:not(.back):not(.c-wild) .oval::before { content: ''; position: absolute; inset: 14%; border-radius: 50%; border: calc(var(--u) * 2) dashed color-mix(in srgb, var(--glyph) 28%, transparent); }
+
+/* colour dots get the same shapes so the active colour is never colour-only */
+body.cb .color-dot.red { clip-path: polygon(50% 4%, 98% 92%, 2% 92%); border-radius: 0; box-shadow: none; }
+body.cb .color-dot.yellow { border-radius: 3px; box-shadow: none; }
+body.cb .color-dot.green { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); border-radius: 0; box-shadow: none; }
+.cb-shape { display: none; width: 22px; height: 22px; }
+.cb-shape svg { width: 100%; height: 100%; }
+body.cb .cb-shape { display: inline-block; }

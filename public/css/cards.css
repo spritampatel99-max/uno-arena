@@ -55,12 +55,20 @@
 .uno-card .wild-mark { display: block; width: 0; height: 0; }
 .uno-card .mini-wild { display: block; width: calc(var(--u) * 15); height: calc(var(--u) * 15); border-radius: 50%; background: conic-gradient(var(--red) 0 25%, var(--yellow) 0 50%, var(--green) 0 75%, var(--blue) 0 100%); box-shadow: 0 0 0 calc(var(--u) * 1.5) #fff; }
 
-/* card back */
-.uno-card.back { background: #fff; }
-.uno-card.back .face { background: radial-gradient(circle at 50% 40%, #1d2540, #0a0e1c 70%); }
-.uno-card.back .face::before { background: repeating-linear-gradient(45deg, rgba(255, 255, 255, .035) 0 calc(var(--u) * 5), transparent calc(var(--u) * 5) calc(var(--u) * 10)); }
-.uno-card.back .oval { background: linear-gradient(150deg, #ff5a64, #d11f2d); width: 80%; height: 66%; box-shadow: 0 0 0 calc(var(--u) * 2.5) rgba(255, 255, 255, .85), 0 calc(var(--u) * 4) calc(var(--u) * 10) rgba(0, 0, 0, .45); }
-.uno-card .logo-word { transform: rotate(24deg); font-size: calc(var(--u) * 30); font-weight: 700; letter-spacing: .02em; color: var(--yellow); text-shadow: calc(var(--u) * 2) calc(var(--u) * 2.5) 0 #0b0f1d, 0 0 calc(var(--u) * 10) rgba(0, 0, 0, .5); font-style: italic; }
+/* card back — every part is a variable so the Appearance setting can swap skins (see themes.css) */
+.uno-card.back {
+  --back-edge: #fff;
+  --back-face: radial-gradient(circle at 50% 40%, #1d2540, #0a0e1c 70%);
+  --back-pattern: repeating-linear-gradient(45deg, rgba(255, 255, 255, .035) 0 calc(var(--u) * 5), transparent calc(var(--u) * 5) calc(var(--u) * 10));
+  --back-oval: linear-gradient(150deg, #ff5a64, #d11f2d);
+  --back-ring: rgba(255, 255, 255, .85);
+  --back-word: var(--yellow); --back-shadow: #0b0f1d;
+  background: var(--back-edge);
+}
+.uno-card.back .face { background: var(--back-face); }
+.uno-card.back .face::before { background: var(--back-pattern); }
+.uno-card.back .oval { background: var(--back-oval); width: 80%; height: 66%; box-shadow: 0 0 0 calc(var(--u) * 2.5) var(--back-ring), 0 calc(var(--u) * 4) calc(var(--u) * 10) rgba(0, 0, 0, .45); }
+.uno-card .logo-word { transform: rotate(24deg); font-size: calc(var(--u) * 30); font-weight: 700; letter-spacing: .02em; color: var(--back-word, var(--yellow)); text-shadow: calc(var(--u) * 2) calc(var(--u) * 2.5) 0 var(--back-shadow, #0b0f1d), 0 0 calc(var(--u) * 10) rgba(0, 0, 0, .35); font-style: italic; }
 .uno-card.sz-xs .logo-word { font-size: calc(var(--u) * 26); }
 .uno-card.sz-xs, .uno-card.sz-mini { padding: calc(var(--u) * 4); }
 .uno-card.sz-xs .idx, .uno-card.sz-xs .glyph > *:not(.num) { }

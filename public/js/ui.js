@@ -3,7 +3,7 @@ import { h, clear, $ } from './dom.js';
 import { icon } from './icons.js';
 import { avatar, AVATAR_IDS, AVATAR_LABEL } from './avatars.js';
 import { audio } from './audio.js';
-import { store, subscribe, setPrefs } from './store.js';
+import { store, subscribe } from './store.js';
 
 // ------------------------------------------------------------------ toast
 export function toast(message, kind = 'info', ms = 3200) {
@@ -74,38 +74,45 @@ export function confirmModal({ title, body, confirmLabel = 'Confirm', cancelLabe
 
 export function closeAllModals() { for (const m of [...modalStack]) m.close('dismiss'); }
 
-// ------------------------------------------------------------------ sound control (master volume + toggle)
+// ------------------------------------------------------------------ how-to-play (loaded on demand)
+export async function openGuide() { const m = await import('./guide.js'); return m.openGuide(); }
+
+// ------------------------------------------------------------------ sound control (quick popover; full panel in settings.js)
 export function soundControl() {
-  const btn = h('button', { class: 'icon-btn', 'aria-label': 'Sound settings', 'aria-haspopup': 'true', 'aria-expanded': 'false' });
+  const btn = h('button', { class: 'icon-btn', 'aria-label': 'Sound and settings', 'aria-haspopup': 'true', 'aria-expanded': 'false' });
   const wrap = h('div', { class: 'sound' }, btn);
   let pop = null;
 
   const paint = () => {
     clear(btn);
-    btn.append(icon(store.prefs.sound ? 'volume' : 'mute'));
-    btn.classList.toggle('on', store.prefs.sound);
+    const live = store.prefs.sound || store.prefs.music;
+    btn.append(icon(live ? 'volume' : 'mute'));
+    btn.classList.toggle('on', live);
   };
 
   const close = () => { if (pop) { pop.remove(); pop = null; btn.setAttribute('aria-expanded', 'false'); document.removeEventListener('pointerdown', outside, true); } };
   const outside = (e) => { if (pop && !wrap.contains(e.target)) close(); };
 
   const open = () => {
-    const toggle = h('button', { class: 'switch', role: 'switch', 'aria-checked': String(store.prefs.sound), 'aria-label': 'Sound effects', onclick: () => {
-      audio.setEnabled(!store.prefs.sound);
-      toggle.setAttribute('aria-checked', String(store.prefs.sound));
-      paint();
-    } });
-    const vol = h('input', { class: 'range', type: 'range', min: 0, max: 100, step: 1, value: Math.round(store.prefs.volume * 100), 'aria-label': 'Master volume',
-      oninput: () => audio.setVolume(Number(vol.value) / 100), onchange: () => audio.play('click') });
-    const motion = h('button', { class: 'switch', role: 'switch', 'aria-checked': String(store.prefs.reduceMotion), 'aria-label': 'Reduce motion', onclick: () => {
-      setPrefs({ reduceMotion: !store.prefs.reduceMotion });
-      motion.setAttribute('aria-checked', String(store.prefs.reduceMotion));
-    } });
-    pop = h('div', { class: 'sound-pop', role: 'group', 'aria-label': 'Sound and motion' },
-      h('div', { class: 'row' }, h('span', {}, 'Sound effects'), toggle),
-      h('div', { class: 'row' }, h('span', {}, 'Volume'), h('span', { class: 'dim mono', style: { fontSize: '12px' } }, 'MASTER')),
-      h('div', { style: { marginTop: '10px' } }, vol),
-      h('div', { class: 'row' }, h('span', {}, 'Reduce motion'), motion));
+    const mk = (label, key, fn) => {
+      const sw = h('button', { class: 'switch', role: 'switch', 'aria-checked': String(!!store.prefs[key]), 'aria-label': label, onclick: () => {
+        fn(!store.prefs[key]);
+        sw.setAttribute('aria-checked', String(!!store.prefs[key]));
+        paint();
+      } });
+      return h('div', { class: 'row' }, h('span', {}, label), sw);
+    };
+    const vol = h('input', { class: 'range', type: 'range', min: 0, max: 100, step: 1, value: Math.round(store.prefs.volume * 100), 'aria-label': 'Effects volume',
+      oninput: () => audio.setVolume(Number(vol.value) / 100), onchange: () => audio.play('flick') });
+    const mvol = h('input', { class: 'range', type: 'range', min: 0, max: 100, step: 1, value: Math.round(store.prefs.musicVolume * 100), 'aria-label': 'Music volume',
+      oninput: () => audio.setMusicVolume(Number(mvol.value) / 100) });
+    const more = h('button', { class: 'pop-link', onclick: async () => { close(); const m = await import('./settings.js'); m.openSettings({ onGuide: openGuide }); } }, icon('gear'), 'All settings');
+    pop = h('div', { class: 'sound-pop', role: 'group', 'aria-label': 'Sound' },
+      mk('Sound effects', 'sound', (on) => audio.setEnabled(on)),
+      h('div', { class: 'pop-slider' }, vol),
+      mk('Music', 'music', (on) => audio.setMusic(on)),
+      h('div', { class: 'pop-slider' }, mvol),
+      h('div', { class: 'pop-links' }, more, h('button', { class: 'pop-link', onclick: () => { close(); openGuide(); } }, icon('help'), 'How to play')));
     wrap.append(pop);
     btn.setAttribute('aria-expanded', 'true');
     document.addEventListener('pointerdown', outside, true);

@@ -4,13 +4,17 @@
 import { h, s, clear, Disposer } from '../dom.js';
 import { icon } from '../icons.js';
 import { avatar, logoMark } from '../avatars.js';
-import { cardEl, backEl, sortHand, cardName, COLOR_NAME } from '../cards.js';
-import { store, serverNow, reducedMotion } from '../store.js';
+import { cardEl, backEl, sortHand, cardName, COLOR_NAME, shapeSvg } from '../cards.js';
+import { store, serverNow, reducedMotion, subscribe } from '../store.js';
 import { action } from '../net.js';
 import { soundControl, toast, confirmModal, openModal, copyText } from '../ui.js';
 import { audio } from '../audio.js';
 import { fly, rectOf, shake, popIn, pulse } from '../anim.js';
-import { burst } from '../fx.js';
+import { burst, confetti, sparks } from '../fx.js';
+import { createMoments } from '../moments.js';
+import { haptic } from '../haptics.js';
+import { emoteButton, emoteById, emoteBubble } from '../emotes.js';
+import { suggestPlay, suggestColor } from '../hints.js';
 
 const SEAT_LAYOUT = { 1: ['top'], 2: ['top-left', 'top-right'], 3: ['left', 'top-left', 'top-right'] };
 const RING_R = 34;
@@ -37,6 +41,13 @@ export function createArena(ctx) {
   let backlog = 0;
   let drag = null;
   let tickSecond = -1;
+  let suggestion = null;          // { id, reason } while move hints are on and it is my turn
+  let dealState = null;           // { token, order, per, counts } while the opening deal plays
+  let dealToken = 0;
+  let introHold = false;          // the starter card stays face-down until the deal ends
+  let handDeal = null;            // { base, step, np, myIdx } stagger for my hand cards during the deal
+  const baseTitle = document.title;
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   const logItems = [];
 
   const player = (pid) => st.players.find((p) => p.id === pid);
@@ -100,17 +111,22 @@ export function createArena(ctx) {
   function paintSort() { clear(sortSeg); sortSeg.append(h('span', { class: 'sort-ic', 'aria-hidden': 'true' }, icon('sort')), sortBtn('colour', 'Colour'), sortBtn('number', 'Number')); }
   paintSort();
   const passBtn = h('button', { class: 'btn sm ghost pass-btn', hidden: true, onclick: () => doPass() }, 'Keep & pass');
+  const emotes = emoteButton({ onPick: (id) => sendEmote(id) });
   const meBar = h('div', { class: 'me-bar' },
     h('div', { class: 'me-left' }, myAvatarWrap, h('div', { class: 'me-meta' }, myName, myStatus, myScore)),
-    h('div', { class: 'me-right' }, passBtn, sortSeg));
+    h('div', { class: 'me-right' }, passBtn, sortSeg, emotes.el));
   const zone = h('div', { class: 'hand-zone' }, meBar, handScroll);
 
   const unoLabel = h('span', { class: 'uno-label' }, 'UNO');
   const unoSub = h('span', { class: 'uno-sub' }, '');
   const unoBtn = h('button', { class: 'uno-btn', hidden: true, 'aria-label': 'Call UNO', onclick: () => doUno() }, unoLabel, unoSub);
   const overlay = h('div', { class: 'arena-overlay', hidden: true });
+  const fxLayer = h('div', { class: 'fx-layer', 'aria-hidden': 'true' });
+  const turnGlow = h('div', { class: 'turn-glow', 'aria-hidden': 'true' });
+  const emoteLayer = h('div', { class: 'emote-layer', 'aria-hidden': 'true' });
 
-  const el = h('div', { class: 'arena' }, hud, stage, zone, unoBtn, overlay);
+  const el = h('div', { class: 'arena' }, hud, stage, zone, unoBtn, turnGlow, fxLayer, emoteLayer, overlay);
+  const moments = createMoments(fxLayer, () => rectOf(table), () => hit());
 
   // ================================================================= sizing
   function setSizes() {
@@ -193,12 +209,13 @@ export function createArena(ctx) {
       else if (!p.connected) seat.tags.append(h('span', { class: 'tag off' }, icon('wifiOff'), 'Auto'));
       else if (p.afk) seat.tags.append(h('span', { class: 'tag off' }, 'Auto'));
       // card fan: show up to 7 backs
-      const shown = Math.min(p.cards, 7);
-      while (seat.fanN < shown) { seat.fan.append(backEl({ size: 'xs' })); seat.fanN++; }
+      const cardsNow = dealState ? (dealState.counts.get(pid) || 0) : p.cards;
+      const shown = Math.min(cardsNow, 7);
+      while (seat.fanN < shown) { seat.fan.append(backEl({ size: 'xs', cls: dealState ? 'dealt' : '' })); seat.fanN++; }
       while (seat.fanN > shown) { seat.fan.lastElementChild.remove(); seat.fanN--; }
       [...seat.fan.children].forEach((c, k) => { c.style.setProperty('--k', k); c.style.setProperty('--n', shown); });
-      seat.count.textContent = String(p.cards);
-      seat.root.classList.toggle('one', p.cards === 1);
+      seat.count.textContent = String(cardsNow);
+      seat.root.classList.toggle('one', cardsNow === 1);
       // UNO flag / catch
       clear(seat.flag);
       const catchable = p.uno && p.uno.catchUntil > serverNow();
@@ -215,7 +232,8 @@ export function createArena(ctx) {
   // ================================================================= piles
   function renderPile(holdCount = 0) {
     const g = st.game;
-    const cards = holdCount ? g.pile.slice(0, Math.max(0, g.pile.length - holdCount)) : g.pile;
+    const hold = holdCount + (introHold ? 1 : 0);
+    const cards = hold ? g.pile.slice(0, Math.max(0, g.pile.length - hold)) : g.pile;
     clear(discardSlot);
     for (const c of cards) {
       const e = cardEl(c, { size: 'pile' });
@@ -269,6 +287,9 @@ export function createArena(ctx) {
     }
     layoutHand(cards, fresh, animate);
     const myTurn = g.turnId === me && g.phase === 'playing';
+    suggestion = store.prefs.hints && myTurn && !dealState
+      ? suggestPlay({ hand: g.hand, playable: g.playable, opponents: st.players.filter((p) => p.id !== me && !p.left).map((p) => ({ name: p.name, cards: p.cards })) })
+      : null;
     for (const c of cards) {
       const w = handEls.get(c.id);
       const playable = g.playable.includes(c.id);
@@ -277,6 +298,9 @@ export function createArena(ctx) {
       w.classList.toggle('jumpin', jump && !playable);
       w.classList.toggle('dimmed', myTurn && !playable && !jump);
       w.classList.toggle('selected', selectedId === c.id);
+      const hinted = !!suggestion && suggestion.id === c.id;
+      w.classList.toggle('hinted', hinted);
+      if (hinted) w.title = suggestion.reason; else w.removeAttribute('title');
       w.setAttribute('aria-disabled', String(!(playable || jump)));
     }
   }
@@ -295,7 +319,7 @@ export function createArena(ctx) {
     const content = n > 0 ? (n - 1) * sp + cw : 0;
     const trackW = Math.max(W, content + pad * 2);
     handTrack.style.width = trackW + 'px';
-    handTrack.style.height = Math.round(ch + 70) + 'px';
+    handTrack.style.height = Math.round(ch + 88) + 'px'; // room above the cards for the hover, hint and selected lift
     handScroll.classList.toggle('scrolling', scrolling);
     const start = (trackW - content) / 2;
     const step = !scrolling && n > 1 ? Math.min(4.4, 40 / (n - 1)) : 0;
@@ -312,6 +336,7 @@ export function createArena(ctx) {
       const x = start + i * sp;
       const y = scrolling ? 0 : t * t * cw * 0.014;
       w.style.zIndex = String(i + 1);
+      w.style.setProperty('--i', String(i));
       if (origin && fresh.includes(w)) {
         w.classList.add('noanim');
         w.style.setProperty('--x', origin.x + 'px');
@@ -321,10 +346,11 @@ export function createArena(ctx) {
         w.style.opacity = '0';
         void w.offsetWidth;
         const k = fresh.indexOf(w);
-        w.style.setProperty('--delay', Math.min(k, 12) * (fresh.length > 4 ? 60 : 110) + 'ms');
+        const delay = handDeal ? handDeal.base + (k * handDeal.np + handDeal.myIdx) * handDeal.step : Math.min(k, 12) * (fresh.length > 4 ? 60 : 110);
+        w.style.setProperty('--delay', delay + 'ms');
         w.classList.remove('noanim');
         w.style.opacity = '';
-        setTimeout(() => w.style.removeProperty('--delay'), 1400);
+        setTimeout(() => w.style.removeProperty('--delay'), delay + 900);
       }
       w.style.setProperty('--x', x + 'px');
       w.style.setProperty('--y', y + 'px');
@@ -356,6 +382,7 @@ export function createArena(ctx) {
     else if (card.kind === 'wild4') msg = 'WILD DRAW FOUR ONLY WORKS WHEN YOU HAVE NO CARD OF THE CURRENT COLOUR.';
     shake(w);
     audio.play('error');
+    haptic('error');
     toast(msg, 'error', 2400);
   }
 
@@ -465,19 +492,22 @@ export function createArena(ctx) {
     if (e.key === 'd' || e.key === 'D') { doDraw(); }
     else if (e.key === 'p' || e.key === 'P') { doPass(); }
     else if (e.key === 'u' || e.key === 'U') { doUno(); }
+    else if (e.key === 'e' || e.key === 'E') { emotes.toggle(); }
   };
   d.on(window, 'keydown', onGlobalKey);
+  d.add(subscribe((keys) => { if (keys.includes('prefs') && st.game) { renderHand(false); renderControls(); } }));
 
   // ================================================================= actions
   function pickColor() {
     return new Promise((resolve) => {
       let m;
-      const choose = (c) => { audio.play('click'); resolve(c); m.close('picked'); };
+      const choose = (c) => { audio.play('color'); haptic('tap'); resolve(c); m.close('picked'); };
       const key = (e) => {
         const c = { r: 'red', b: 'blue', y: 'yellow', g: 'green', 1: 'red', 2: 'blue', 3: 'yellow', 4: 'green' }[e.key.toLowerCase()];
         if (c) { e.preventDefault(); e.stopPropagation(); choose(c); }
       };
-      const btn = (cls, c, k) => h('button', { class: cls, 'aria-label': COLOR_NAME[c], onclick: () => choose(c) }, h('span', { class: 'kb' }, k), COLOR_NAME[c]);
+      const best = store.prefs.hints ? suggestColor(st.game.hand, card.id) : null;
+      const btn = (cls, c, k) => h('button', { class: cls + (c === best ? ' suggest' : ''), 'aria-label': COLOR_NAME[c] + (c === best ? ', suggested' : ''), onclick: () => choose(c) }, h('span', { class: 'kb' }, k), h('i', { class: 'cb-shape' }, shapeSvg(c)), COLOR_NAME[c]);
       m = openModal([
         h('h2', { class: 'center' }, 'Choose a colour'),
         h('p', { class: 'center' }, 'Pick the colour the next player must match.'),
@@ -490,7 +520,7 @@ export function createArena(ctx) {
   }
 
   async function attemptPlay(card, w, opts = {}) {
-    if (myFlight) return;
+    if (myFlight || dealState) return;
     let color;
     if (card.kind === 'wild' || card.kind === 'wild4') {
       color = await pickColor();
@@ -506,8 +536,12 @@ export function createArena(ctx) {
     const flight = fly(ghost, from, to, { duration: 360, rotateFrom: 0, rotateTo: rot });
     myFlight = { id: card.id, promise: flight };
     audio.play('play');
+    haptic('play');
+    let refused = false;
+    flight.then(() => { if (!refused) audio.land(card); });
     const res = await action('play', { cardId: card.id, color });
     if (!res.ok) {
+      refused = true;
       ghost.remove();
       myFlight = null;
       w.classList.remove('flying');
@@ -522,7 +556,7 @@ export function createArena(ctx) {
 
   async function doDraw() {
     const g = st.game;
-    if (g.phase !== 'playing') return;
+    if (g.phase !== 'playing' || dealState) return;
     if (g.turnId !== me) { shake(drawBtn); audio.play('error'); toast('IT IS NOT YOUR TURN.', 'error', 1800); return; }
     if (!g.canDraw) { shake(drawBtn); audio.play('error'); toast('YOU HAVE ALREADY DRAWN — PLAY THE CARD OR PASS.', 'error', 2200); return; }
     const res = await action('draw');
@@ -545,6 +579,35 @@ export function createArena(ctx) {
   async function doCatch(pid) {
     const res = await action('catch', { target: pid });
     if (!res.ok) { audio.play('error'); toast(res.message, 'error', 2000); }
+  }
+
+  async function sendEmote(id) {
+    const res = await action('emote', { id });
+    if (!res.ok) { toast(res.message, 'error', 1600); return; }
+    audio.play('emote');
+  }
+
+  // A bubble beside the player who sent it, on whichever side has room. It never takes clicks.
+  function showEmote(pid, id) {
+    const em = emoteById(id);
+    if (!em) return;
+    const anchor = pid === me ? rectOf(myAvatarWrap) : (seatEls.get(pid) ? rectOf(seatEls.get(pid).root) : null);
+    if (!anchor) return;
+    const box = el.getBoundingClientRect();
+    for (const old of emoteLayer.querySelectorAll(`[data-pid="${pid}"]`)) old.remove();
+    const b = emoteBubble(em, { name: pid === me ? 'You' : nameOf(pid), mine: pid === me });
+    b.dataset.pid = pid;
+    const ax = anchor.x - box.left; const ay = anchor.y - box.top;
+    const roomRight = box.width - (ax + anchor.w); const roomLeft = ax;
+    let bx; let by; let tx = '-50%'; let ty = '0%';
+    if (pid === me) { bx = ax + anchor.w + 12; by = ay - 6; tx = '0%'; ty = '-100%'; }
+    else if (roomRight >= 190) { bx = ax + anchor.w + 10; by = ay + anchor.h / 2; tx = '0%'; ty = '-50%'; }
+    else if (roomLeft >= 190) { bx = ax - 10; by = ay + anchor.h / 2; tx = '-100%'; ty = '-50%'; }
+    else { bx = Math.max(100, Math.min(box.width - 100, ax + anchor.w / 2)); by = ay + anchor.h + 8; }
+    b.style.setProperty('--bx', bx + 'px'); b.style.setProperty('--by', by + 'px');
+    b.style.setProperty('--tx', tx); b.style.setProperty('--ty', ty);
+    emoteLayer.append(b);
+    setTimeout(() => b.remove(), 2800);
   }
 
   async function leaveMatch() {
@@ -578,7 +641,7 @@ export function createArena(ctx) {
       if (myTurn) {
         if (g.pending) { text = `Stack a ${g.pending.kind === 'draw2' ? '+2' : '+4'} or draw ${g.pending.amount} cards`; shortText = `Stack or draw ${g.pending.amount}`; }
         else if (g.drawnCardId !== null) { text = 'Play the drawn card, or keep it and pass'; shortText = 'Play it or pass'; }
-        else if (g.playable.length) { text = 'Your turn — play a card'; shortText = 'Your turn'; }
+        else if (g.playable.length) { text = suggestion ? `Hint: ${suggestion.reason}` : 'Your turn — play a card'; shortText = suggestion ? 'Try the starred card' : 'Your turn'; }
         else { text = 'No playable card — draw from the pile'; shortText = 'Draw a card'; }
       } else if (g.turnId) text = `${nameOf(g.turnId)}${g.turnId === me ? '' : "'s"} turn`;
     }
@@ -667,14 +730,123 @@ export function createArena(ctx) {
     return seat ? rectOf(seat.av) : rectOf(table);
   };
 
+  // ================================================================= dealing + cues
+  function hit() {
+    if (reducedMotion()) return;
+    stage.animate([
+      { transform: 'translate(0, 0)' }, { transform: 'translate(-6px, 4px)' }, { transform: 'translate(5px, -3px)' },
+      { transform: 'translate(-3px, 2px)' }, { transform: 'translate(0, 0)' },
+    ], { duration: 340, easing: 'ease-out' });
+  }
+
+  // The opening deal: shuffle, one card at a time round the table, then the starter card turns over.
+  // It is cosmetic only: the server view is already the real state, which this just reveals in order.
+  function beginDeal() {
+    if (reducedMotion() || !st.game || !st.game.turnOrder.length) return null;
+    const order = st.game.turnOrder.slice();
+    dealState = { token: ++dealToken, order, per: Math.max(1, st.game.hand.length), counts: new Map(order.map((pid) => [pid, 0])) };
+    handDeal = { base: 580, step: 62, np: order.length, myIdx: Math.max(0, order.indexOf(me)) };
+    introHold = true;
+    el.classList.add('dealing');
+    return dealState;
+  }
+
+  function endDeal() {
+    dealState = null; handDeal = null; introHold = false;
+    el.classList.remove('dealing');
+  }
+
+  function cancelDeal() {
+    if (!dealState) return;
+    dealToken++;
+    endDeal();
+  }
+
+  async function runDeal(state) {
+    const alive = () => dealState === state;
+    const stack = drawBtn.querySelector('.draw-stack');
+    banner(`ROUND ${st.game.round}`, { kind: 'round', ic: 'sparkles' });
+    audio.play('shuffle');
+    stack.classList.add('shuffling');
+    await wait(handDeal ? handDeal.base - 60 : 640);
+    stack.classList.remove('shuffling');
+    if (!alive()) return;
+    const from = rectOf(stack);
+    const jobs = [];
+    for (let k = 0; k < state.per; k++) {
+      state.order.forEach((pid, i) => {
+        const t = (k * state.order.length + i) * handDeal.step;
+        jobs.push((async () => {
+          await wait(t);
+          if (!alive()) return;
+          audio.play('flick');
+          if (pid === me) return; // my cards travel by themselves (see layoutHand)
+          await fly(backEl({ size: 'mini' }), from, seatCenter(pid), { duration: 340, rotateTo: 18 });
+          if (!alive()) return;
+          state.counts.set(pid, (state.counts.get(pid) || 0) + 1);
+          renderSeats();
+        })());
+      });
+    }
+    await Promise.all(jobs);
+    await wait(140); // my last card is still landing
+    if (!alive()) return;
+    // turn the starter card over from the deck
+    audio.play('flick');
+    const topCard = st.game.pile[st.game.pile.length - 1];
+    const rot = topCard ? ((topCard.id * 37) % 21) - 10 : 0;
+    await fly(backEl({ size: 'pile' }), rectOf(stack), rectOf(discardSlot), { duration: 380, rotateTo: rot });
+    if (!alive()) return;
+    endDeal();
+    renderSeats();
+    renderPile(pileHeld);
+    renderHand(false);
+    renderControls();
+    const top = discardSlot.lastElementChild;
+    if (top) popIn(top, { duration: 360, from: 0.88 });
+  }
+
+  function flashTurn() {
+    if (reducedMotion()) return;
+    el.classList.remove('turn-flash');
+    void el.offsetWidth;
+    el.classList.add('turn-flash');
+    setTimeout(() => el.classList.remove('turn-flash'), 1100);
+  }
+
+  function syncTitle() {
+    const g = st && st.game;
+    const mine = !!(g && g.phase === 'playing' && g.turnId === me);
+    document.title = document.hidden && mine ? '● Your turn · UNO ARENA' : baseTitle;
+  }
+
+  function turnCue() {
+    const g = st.game;
+    if (!g || g.phase !== 'playing' || g.turnId !== me) return;
+    audio.play('turn');
+    haptic('turn');
+    pulse(myAvatarWrap);
+    flashTurn();
+    syncTitle();
+  }
+
   // ================================================================= events → cosmetics
+  function nextVictim(pid) {
+    const g = st.game;
+    const order = g.turnOrder;
+    if (!order.length) return '';
+    const i = order.indexOf(pid);
+    const n = order[(i + g.dir + order.length * 2) % order.length];
+    const stacks = st.settings && st.settings.stacking;
+    if (stacks) return n === me ? 'Your move' : `${nameOf(n)} to answer`;
+    return n === me ? 'You draw' : `${nameOf(n)} draws`;
+  }
+
   async function handleEvent(ev) {
     const g = st.game;
     switch (ev.type) {
       case 'round_start':
         pushLog(`Round ${ev.round} begins`, { ic: 'sparkles' });
-        banner(`ROUND ${ev.round}`, { kind: 'round', ic: 'sparkles' });
-        audio.play('deal');
         break;
       case 'play': {
         const who = nameOf(ev.pid);
@@ -690,20 +862,30 @@ export function createArena(ctx) {
             const rot = ((ev.card.id * 37) % 21) - 10;
             await fly(ghost, from, rectOf(discardSlot), { duration: 420, rotateFrom: -18, rotateTo: rot });
           }
+          audio.land(ev.card);
         } else if (myFlight) {
           await myFlight.promise;
         }
         if (pileHeld > 0) { pileHeld -= 1; if (pileHeld === 0) releasePile(); }
         const r = rectOf(discardSlot);
         burst(r.cx, r.cy, ev.color ? { red: '#FF414B', blue: '#287BFF', yellow: '#F9D83D', green: '#27C978' }[ev.color] : '#fff', ev.card.kind === 'num' ? 12 : 26);
-        if (ev.card.kind === 'draw2') banner('DRAW TWO', { kind: 'pen', ic: 'layers' });
-        else if (ev.card.kind === 'wild4') banner('WILD DRAW FOUR', { kind: 'pen', ic: 'layers' });
-        else if (ev.card.kind === 'wild') { audio.play('wild'); }
+        if (store.prefs.cardStyle === 'metal') {
+          sparks(r.cx, r.cy, ev.card.kind === 'num' ? 10 : 20);
+          const topCard = pileHeld === 0 ? discardSlot.lastElementChild : null;
+          if (topCard) topCard.classList.add('glint');
+        }
+        if (ev.card.kind === 'draw2' || ev.card.kind === 'wild4') {
+          const four = ev.card.kind === 'wild4';
+          audio.play('slam', { duck: true });
+          haptic('penalty');
+          if (!moments.show('draw', { amount: four ? 4 : 2, color: ev.card.color, wild: four, who: nextVictim(ev.pid) })) banner(four ? 'WILD DRAW FOUR' : 'DRAW TWO', { kind: 'pen', ic: 'layers' });
+        }
         break;
       }
       case 'color':
-        banner(`COLOUR: ${COLOR_NAME[ev.color].toUpperCase()}`, { kind: 'color', color: ev.color });
+        pushLog(`Colour is now ${COLOR_NAME[ev.color]}`, { ic: 'sparkles' });
         audio.play('wild');
+        if (!moments.showSoon('color', { color: ev.color })) banner(`COLOUR: ${COLOR_NAME[ev.color].toUpperCase()}`, { kind: 'color', color: ev.color });
         break;
       case 'draw': {
         const who = nameOf(ev.pid);
@@ -713,6 +895,7 @@ export function createArena(ctx) {
           armedLocal = false;
         } else pushLog(`${who} drew ${ev.count} ${ev.count === 1 ? 'card' : 'cards'}${penalty ? ' (penalty)' : ''}`, { ic: 'layers' });
         audio.play(penalty ? 'penalty' : 'draw');
+        if (ev.pid === me && penalty) haptic('penalty');
         if (ev.pid !== me) {
           const from = rectOf(drawBtn.querySelector('.draw-stack'));
           const to = seatCenter(ev.pid);
@@ -725,14 +908,14 @@ export function createArena(ctx) {
       }
       case 'skip':
         pushLog(ev.pid === me ? 'You were skipped' : `${nameOf(ev.pid)} was skipped`, { ic: 'ban' });
-        banner(ev.pid === me ? 'YOU WERE SKIPPED' : `${nameOf(ev.pid).toUpperCase()} SKIPPED`, { kind: 'skip', ic: 'ban' });
         audio.play('skip');
+        if (!moments.show('skip', { who: ev.pid === me ? 'You miss a turn' : nameOf(ev.pid) })) banner(ev.pid === me ? 'YOU WERE SKIPPED' : `${nameOf(ev.pid).toUpperCase()} SKIPPED`, { kind: 'skip', ic: 'ban' });
         break;
       case 'reverse':
         pushLog('Direction reversed', { ic: 'repeat' });
-        banner('REVERSE', { kind: 'reverse', ic: 'repeat' });
         audio.play('reverse');
         pulse(dirChip);
+        if (!moments.show('reverse', { ccw: g.dir === -1 })) banner('REVERSE', { kind: 'reverse', ic: 'repeat' });
         break;
       case 'pending':
         pushLog(`Stacked! ${ev.amount} cards pending`, { ic: 'layers', tone: 'warn' });
@@ -740,8 +923,10 @@ export function createArena(ctx) {
         break;
       case 'uno':
         pushLog(`${nameOf(ev.pid)} called UNO!`, { ic: 'zap', tone: 'hot' });
-        banner(`${nameOf(ev.pid).toUpperCase()}: UNO!`, { kind: 'uno', ic: 'zap' });
-        audio.play('uno');
+        audio.play('uno', { duck: true });
+        haptic('uno');
+        if (!moments.show('uno', { who: nameOf(ev.pid), force: true })) banner(`${nameOf(ev.pid).toUpperCase()}: UNO!`, { kind: 'uno', ic: 'zap' });
+        else if (ev.pid !== me) { const c = seatCenter(ev.pid); burst(c.cx, c.cy, '#F9D83D', 30); }
         break;
       case 'uno_armed':
         armedLocal = true;
@@ -757,16 +942,23 @@ export function createArena(ctx) {
         banner(`${nameOf(ev.target).toUpperCase()} CAUGHT!`, { kind: 'uno', ic: 'zap' });
         audio.play('caught');
         break;
+      case 'emote':
+        showEmote(ev.pid, ev.id);
+        if (ev.pid !== me) audio.play('emote');
+        break;
       case 'pass':
         if (!ev.auto) pushLog(`${nameOf(ev.pid)} passed`, { ic: 'arrowRight' });
         break;
       case 'timeout':
         pushLog(`${nameOf(ev.pid)} ran out of time`, { ic: 'timer', tone: 'warn' });
         break;
-      case 'reshuffle':
+      case 'reshuffle': {
         pushLog('Discard pile reshuffled into the deck', { ic: 'refresh' });
-        audio.play('deal');
+        audio.play('shuffle');
+        const stack = drawBtn.querySelector('.draw-stack');
+        if (!reducedMotion()) { stack.classList.add('shuffling'); setTimeout(() => stack.classList.remove('shuffling'), 680); }
         break;
+      }
       case 'afk':
         pushLog(`${nameOf(ev.pid)} is on autopilot`, { ic: 'bot', tone: 'warn' });
         if (ev.pid === me) toast('YOU TIMED OUT TWICE — AUTOPILOT IS PLAYING FOR YOU. MAKE A MOVE TO TAKE OVER.', 'error', 5200);
@@ -785,14 +977,16 @@ export function createArena(ctx) {
         break;
       case 'round_end': {
         pushLog(`${nameOf(ev.winnerId)} won round ${ev.round} (+${ev.points})`, { ic: 'trophy', tone: 'good' });
-        audio.play('roundWin');
+        audio.play('roundWin', { duck: true });
         const r = rectOf(table);
         burst(r.cx, r.cy, '#F9D83D', 40);
+        if (ev.winnerId === me) { confetti({ count: 90, power: 640 }); haptic('win'); }
         break;
       }
       case 'match_end': {
         pushLog(`${nameOf(ev.winnerId)} won the match!`, { ic: 'trophy', tone: 'good' });
-        audio.play(ev.winnerId === me ? 'win' : 'lose');
+        audio.play(ev.winnerId === me ? 'win' : 'lose', { duck: true });
+        if (ev.winnerId === me) haptic('win');
         break;
       }
       default: break;
@@ -883,26 +1077,42 @@ export function createArena(ctx) {
       pileTimer = setTimeout(releasePile, 1800); // safety net if an animation is interrupted
     }
     const drewMine = events.some((e) => e.type === 'draw' && e.pid === me) || newRound;
+    const dealing = newRound && events.some((e) => e.type === 'round_start') ? beginDeal() : null;
     renderAll({ animate: drewMine && !reducedMotion(), holdPile: pileHeld });
-
-    // my turn cue
-    const g = st.game;
-    if (g.phase === 'playing' && g.turnId === me && lastTurnId !== me) {
-      audio.play('turn');
-      banner('YOUR TURN', { kind: 'turn', ic: 'zap' });
-      pulse(myAvatarWrap);
+    if (dealing) {
+      const done = runDeal(dealing).catch(console.error);
+      chain = chain.then(() => done); // events of this batch wait for the deal to finish
+    } else if (newRound && !reducedMotion()) {
+      banner(`ROUND ${st.game.round}`, { kind: 'round', ic: 'sparkles' });
     }
+
+    const g = st.game;
+    const turnChanged = g.phase === 'playing' && g.turnId !== lastTurnId;
+    const myTurnNow = g.phase === 'playing' && g.turnId === me && lastTurnId !== me;
     lastTurnId = g.phase === 'playing' ? g.turnId : null;
     lastPhase = g.phase;
     lastRound = g.round;
     if (events.length) runEvents(events);
+    // cues for whose turn it is run after the animations above have landed
+    if (myTurnNow) chain = chain.then(() => turnCue()).catch(console.error);
+    else if (turnChanged && g.turnId !== me) {
+      const seat = seatEls.get(g.turnId);
+      if (seat) chain = chain.then(() => pulse(seat.av)).catch(console.error);
+    }
+    syncTitle();
   }
 
   return {
     el,
     mount() {
       setSizes();
-      renderAll({ animate: !!(st.game && st.game.discardCount <= 1) && !reducedMotion() });
+      const fresh = !!(st.game && st.game.discardCount <= 1 && st.game.phase === 'playing');
+      const dealing = fresh ? beginDeal() : null;
+      renderAll({ animate: fresh && !reducedMotion() });
+      if (dealing) {
+        const done = runDeal(dealing).catch(console.error);
+        chain = chain.then(() => done);
+      }
       lastTurnId = st.game && st.game.phase === 'playing' ? st.game.turnId : null;
       lastPhase = st.game && st.game.phase;
       lastRound = st.game ? st.game.round : 0;
@@ -920,20 +1130,25 @@ export function createArena(ctx) {
         ro.observe(handScroll);
         d.add(() => ro.disconnect());
       }
-      d.on(document, 'visibilitychange', () => { if (!document.hidden && st.game) renderAll({ animate: false }); });
+      d.on(document, 'visibilitychange', () => { syncTitle(); if (!document.hidden && st.game && !dealState) renderAll({ animate: false }); });
       d.on(handScroll, 'pointerdown', (e) => { if (e.target === handScroll || e.target === handTrack) { selectedId = null; renderHand(false); } });
-      setTimeout(() => { if (st.game && st.game.round === 1 && st.game.discardCount <= 1) banner('ROUND 1', { kind: 'round', ic: 'sparkles' }); }, 450);
+      if (!dealing) setTimeout(() => { if (st.game && st.game.round === 1 && st.game.discardCount <= 1) banner('ROUND 1', { kind: 'round', ic: 'sparkles' }); }, 450);
     },
     onSync(msg) {
       st = msg.state;
       if (!st.game) return;
+      cancelDeal();
       pileHeld = 0;
       renderAll({ animate: false });
+      syncTitle();
     },
     onEvents(msg) { applyUpdate(msg); },
     unmount() {
       cancelAnimationFrame(raf);
       clearTimeout(pileTimer);
+      cancelDeal();
+      moments.clear();
+      document.title = baseTitle;
       d.dispose();
       document.documentElement.style.removeProperty('--hand-cw');
       document.documentElement.style.removeProperty('--pile-cw');

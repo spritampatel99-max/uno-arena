@@ -18,6 +18,12 @@ const CODE_LENGTH = 6;
 const AVATARS = ['fox', 'bunny', 'panda', 'cat', 'penguin', 'dragon'];
 const NAME_RE = /^[\p{L}\p{N}][\p{L}\p{N} _.\-]{1,15}$/u;
 const MAX_ROOMS = 500;
+// Quick reactions. A fixed allowlist, so nobody can type free text at another player.
+const EMOTES = ['gg', 'nice', 'wow', 'haha', 'thanks', 'think', 'fire', 'great'];
+const EMOTE_REPLY = { gg: 'gg', nice: 'thanks', wow: 'think', haha: 'haha', thanks: 'nice', think: 'wow', fire: 'wow', great: 'thanks' };
+const EMOTE_BURST = 3;        // at most 3 reactions...
+const EMOTE_WINDOW_MS = 6000; // ...per 6 seconds per player
+const EMOTE_GAP_MS = 700;     // and never closer together than this
 
 const MESSAGES = {
   EMPTY_CODE: 'PLEASE ENTER A ROOM CODE.',
@@ -414,6 +420,14 @@ class RoomManager {
 
   isHost(room, player) { return room.hostId === player.id; }
 
+  /** Bots sometimes answer a reaction, or say "gg" when a round ends. Delivered later from tick(). */
+  queueBotEmote(room, id, delayMin, delayMax, exceptId = null) {
+    const bots = this.active(room).filter((p) => p.isBot && p.id !== exceptId);
+    if (!bots.length) return;
+    const bot = bots[Math.floor(this.rng() * bots.length)];
+    (room.botEmotes || (room.botEmotes = [])).push({ at: this.now() + this.rand(delayMin, delayMax), pid: bot.id, id });
+  }
+
   /** Common tail for engine actions: emit, detect match end, reset bot timers. */
   afterEngine(room, res, now) {
     if (!res.ok) return fail(res.error);
@@ -422,6 +436,7 @@ class RoomManager {
     for (const ev of events) {
       if (ev.type === 'round_end' && room.match.phase === 'round_over') {
         room.intermissionEndsAt = now + this.cfg.intermissionMs;
+        if (this.rng() < 0.45) this.queueBotEmote(room, 'gg', 1200, 2600, ev.winnerId);
       }
       if (ev.type === 'match_end') {
         room.status = 'COMPLETED';
@@ -541,6 +556,15 @@ class RoomManager {
     else {
       if (!room.noHumansSince) room.noHumansSince = now;
       if (now - room.noHumansSince >= this.cfg.roomIdleMs) { this.closeRoom(room, 'idle'); return; }
+    }
+
+    if (room.botEmotes && room.botEmotes.length) {
+      const due = room.botEmotes.filter((b) => now >= b.at);
+      if (due.length) {
+        room.botEmotes = room.botEmotes.filter((b) => now < b.at);
+        const out = due.filter((b) => room.players.has(b.pid) && !room.players.get(b.pid).left).map((b) => ({ type: 'emote', pid: b.pid, id: b.id }));
+        if (out.length) this.emit(room, out);
+      }
     }
 
     const m = room.match;
@@ -724,6 +748,19 @@ const ACTIONS = {
     return { ok: true };
   },
 
+  // A reaction is chatter, not play: it never counts as activity for the AFK check and is never stored in the log.
+  emote(room, player, args, now) {
+    if (room.status === 'CLOSED') return fail('WRONG_STATE');
+    if (typeof args.id !== 'string' || !EMOTES.includes(args.id)) return fail('BAD_REQUEST');
+    const recent = (player.emoteAt || []).filter((t) => now - t < EMOTE_WINDOW_MS);
+    if (recent.length >= EMOTE_BURST || (recent.length && now - recent[recent.length - 1] < EMOTE_GAP_MS)) return fail('RATE_LIMITED');
+    recent.push(now);
+    player.emoteAt = recent;
+    this.emit(room, [{ type: 'emote', pid: player.id, id: args.id }]);
+    if (this.rng() < 0.4) this.queueBotEmote(room, EMOTE_REPLY[args.id] || 'nice', 900, 2200);
+    return { ok: true };
+  },
+
   leave(room, player, args, now) {
     this.removeFromRoom(room, player, 'left', now);
     return { ok: true };
@@ -799,4 +836,4 @@ RoomManager.prototype.purge = function purge(room) {
   }
 };
 
-module.exports = { RoomManager, MESSAGES, CODE_ALPHABET, CODE_LENGTH, AVATARS, configFromEnv, normalizeCode, cleanName };
+module.exports = { RoomManager, MESSAGES, CODE_ALPHABET, CODE_LENGTH, AVATARS, EMOTES, configFromEnv, normalizeCode, cleanName };

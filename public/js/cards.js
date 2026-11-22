@@ -76,6 +76,16 @@ function indexFor(card) {
   }
 }
 
+/** One distinct shape per colour, used by the colour-blind mode so colour is never the only cue. */
+export function shapeSvg(color) {
+  const svg = svgBase({ fill: 'currentColor' });
+  if (color === 'red') svg.append(s('path', { d: 'M12 3 22 21H2z' }));
+  else if (color === 'yellow') svg.append(s('rect', { x: 4, y: 4, width: 16, height: 16, rx: 2.5 }));
+  else if (color === 'green') svg.append(s('path', { d: 'M12 2 22 12 12 22 2 12z' }));
+  else if (color === 'blue') svg.append(s('circle', { cx: 12, cy: 12, r: 9 }));
+  return svg;
+}
+
 export function cardEl(card, { size = 'hand', cls = '' } = {}) {
   const color = card.color || 'wild';
   const el = h('div', {
@@ -84,13 +94,16 @@ export function cardEl(card, { size = 'hand', cls = '' } = {}) {
   },
   h('div', { class: 'face' },
     h('span', { class: 'idx tl' }, indexFor(card)),
+    card.color ? h('i', { class: 'cb tr' }, shapeSvg(card.color)) : null,
     h('div', { class: 'oval' }, h('div', { class: 'glyph' }, glyphFor(card))),
+    card.color ? h('i', { class: 'cb bl' }, shapeSvg(card.color)) : null,
     h('span', { class: 'idx br' }, indexFor(card))));
   return el;
 }
 
-export function backEl({ size = 'hand', cls = '' } = {}) {
-  return h('div', { class: `uno-card back sz-${size} ${cls}`.trim() },
+/** `back` previews a specific skin (used by the Appearance panel); otherwise the player's chosen skin applies via CSS. */
+export function backEl({ size = 'hand', cls = '', back = null } = {}) {
+  return h('div', { class: `uno-card back sz-${size} ${cls}`.trim(), dataset: back ? { b: back } : null },
     h('div', { class: 'face' }, h('div', { class: 'oval' }, h('span', { class: 'logo-word' }, 'UNO'))));
 }
 

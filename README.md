@@ -41,11 +41,21 @@ Other endpoints: `GET /healthz` (liveness) and `GET /api/stats` (live room/playe
 
 ---
 
-Screenshots of every screen are in `docs/screenshots/`.
+<p align="center">
+  <img src="docs/screenshots/welcome.png" alt="Welcome screen with the practice table" width="49%">
+  <img src="docs/screenshots/arena-desktop.png" alt="Game arena with metal cards" width="49%">
+</p>
+<p align="center">
+  <img src="docs/screenshots/lobby.png" alt="Room lobby" width="32%">
+  <img src="docs/screenshots/settings.png" alt="Settings: card material, themes and card backs" width="32%">
+  <img src="docs/screenshots/victory.png" alt="Victory screen" width="32%">
+</p>
+
+More captures (phone layouts, the invite QR, the How to play guide) are in `docs/screenshots/`.
 
 ## The four screens
 
-1. **Welcome** – nickname, avatar, Create Room / Join Room, sound and reduced-motion toggles.
+1. **Welcome** – nickname, avatar, Create Room / Join Room, a playable practice table, How to play, Settings and sound toggles, and an Install button when the browser offers one.
 2. **Room setup & lobby** – Create/Join tabs with six code boxes; once inside, the code card, four player slots, host settings, bot controls and the Start button with a countdown.
 3. **Game arena** – opponent seats, draw and discard piles, active-colour indicator, turn timer rings, fan-shaped hand, UNO button, live log.
 4. **Victory** – champion, final standings (rank, avatar, name, score, cards played, cards drawn, special cards), and Play Again / Return to Lobby / Exit Room.
@@ -88,26 +98,50 @@ Settings lock once the match starts. Changing them is host-only and validated on
 
 ## Client features
 
-- Fan-shaped hand with hover lift, tap/click to select and play, **drag-and-drop** onto the table, keyboard play (arrow keys + Enter; `D` draw, `P` pass, `U` UNO; `R B Y G` in the colour picker) and sort by **colour** or **number**.
-- Card-flight animations for plays and draws, special-card banners (Skip, Reverse, Draw Two, Wild…), turn-timer rings, direction ring, UNO and Catch-UNO prompts, confetti on victory.
-- **Sound** is synthesised with WebAudio, starts **off**, never autoplays, and has a master volume and a toggle.
-- **Reduced motion** is respected from the OS setting and can be forced from the toggle.
-- Responsive layouts for desktop, tablet and phone (touch uses tap-to-select, then tap-to-play).
+### Look and feel
+
+- **Metal cards (the default).** Every card is a bevelled steel plate: a chrome frame, an anodised brushed-metal face and a polished chrome oval with the number engraved in colour. Wilds are gunmetal with an enamelled colour wheel, and the backs are metal too. A card that lands on the table throws a few sparks and a glint runs across the plate. **Settings → Card material** switches to the printed **Classic** look at any time, even mid-game.
+- **Opening deal.** The deck is riffled, cards are dealt around the table and the starter is flipped, instead of the hand simply appearing.
+- **Card moments.** Draw Two / Draw Four, Skip, Reverse, a colour change and UNO each get a short full-table flourish, and a clear **turn cue** (a glow on the table, a chime, vibration on phones that support it, and `● Your turn` in the browser tab title while the tab is in the background).
+- **Table themes** (Midnight, Emerald, Crimson, Aurora) and **card backs** (Classic, Gilded, Neon grid, Mono). Themes only recolour the room; the four UNO colours never change, so cards stay readable everywhere.
+- **Colour-blind symbols:** every colour also carries its own shape (triangle, circle, square, diamond) on cards, in the colour picker and on the active-colour chip.
+- **Practice table** on the welcome screen: tap a glowing card to learn "match the colour, number or symbol" before joining a room. It is local and never touches the server.
+- Responsive layouts for desktop, tablet and phone (touch uses tap-to-select, then tap-to-play). **Reduced motion** is respected from the OS setting and can be forced in Settings; it skips dealing, flights, moments and sparks.
 - Palette, fonts (Space Grotesk, Sora, Inter) and radii follow the master prompt. Fonts load from Google Fonts with system fallbacks, so the game still works offline.
+
+### Sound and vibration
+
+- Sound and music both start **off**, never autoplay, and have separate volume sliders.
+- **Metal cards sound like metal.** A card leaving your hand makes a quick slide through the air, and a clank when it lands on the table (a heavier, longer clang for action and wild cards). Drawing, dealing and shuffling use matching metal slides, ticks and rattles. Classic cards use the paper sounds instead, and switching material switches the sounds with it.
+- Everything you hear is **synthesised live in the browser** (oscillators and filtered noise, no audio files), so nothing is downloaded or licensed. The clank is a small physical model of a struck steel plate (a ringing set of inharmonic partials, a hard contact click and a table thump), not a studio recording.
+- Vibration on your turn and on big plays, where the browser has the Vibration API (Android Chrome yes, iOS Safari no). It can be switched off in Settings.
+
+### Controls and play aids
+
+- Fan-shaped hand with hover lift, tap/click to select and play, **drag-and-drop** onto the table, and sort by **colour** or **number**.
+- **Keyboard:** arrow keys + Enter to play, `D` draw, `P` pass, `U` UNO, `E` open reactions, `R B Y G` in the colour picker.
+- **Move hints** (Settings, off by default): marks a good card with a star and suggests a colour after a wild. It only ranks cards the server already allows, and prefers shedding high-value cards and saving wilds.
+- **Reactions:** eight preset emotes (GG, Nice!, Wow, Haha, Thanks, Hmm…, On fire, Great play) shown as a bubble beside the sender. The list is fixed, nobody can type free text, the server rate-limits them, and bots occasionally answer or say "gg" after a round. They are available in the arena only.
+
+### Inviting and installing
+
+- **Invite by link or QR code** from the lobby: copy the link, share it from the phone share sheet, or show a scannable QR (**Save QR** downloads it as an image). The QR encoder is written in the project (`public/js/qr.js`), so there is no library or external service. The lobby warns when the address is `localhost`, because other devices can't open that.
+- **Installable (PWA):** a manifest, icons and a small service worker let supporting browsers add UNO ARENA to the home screen. Live game traffic (`/api/…`) is never cached, so rooms always reflect the server.
 
 ## Architecture
 
 ```
 server/
   engine.js   Pure, deterministic rules engine (injectable RNG and clock). No I/O.
-  rooms.js    RoomManager: rooms, lobby, presence, bots, timers, per-player views, results.
+  rooms.js    RoomManager: rooms, lobby, presence, bots, timers, reactions, per-player views, results.
   index.js    HTTP server: static files, JSON actions, SSE streams, security headers, rate limits.
 public/
-  index.html, favicon.svg
-  css/        base · cards · screens · arena
-  js/         main, store, net, audio, fx, anim, ui, cards, avatars, icons, dom
+  index.html, favicon.svg, manifest.webmanifest, sw.js, icons/
+  css/        base · cards · themes · metal · extras · screens · arena
+  js/         main, store, net, audio, sound/kit, fx, anim, moments, hero-table, hints, emotes,
+              themes, settings, guide, haptics, pwa, qr, qr-view, ui, cards, avatars, icons, dom
   js/screens/ welcome · room · arena · results
-tests/        engine.test.js · simulate.js · check-syntax.js
+tests/        engine · rooms · hints · qr · sound (node:test) · simulate.js · check-syntax.js
 design-reference/  the original master prompt and four Stitch HTML screens
 docs/screenshots/  captures of the finished game (desktop and phone)
 ```
@@ -123,7 +157,7 @@ docs/screenshots/  captures of the finished game (desktop and phone)
 | `POST /api/rooms` | Create a room → `{code, playerId, token}` |
 | `POST /api/rooms/join` | Join by code |
 | `POST /api/rooms/resume` | Restore a session after refresh |
-| `POST /api/action` | `settings` `add_bot` `remove_bot` `kick` `start` `leave` `play` `draw` `pass` `uno` `catch` `rematch` `to_lobby` |
+| `POST /api/action` | `settings` `add_bot` `remove_bot` `kick` `start` `leave` `play` `draw` `pass` `uno` `catch` `rematch` `to_lobby` `emote` |
 | `GET /api/events?code&pid&token` | SSE stream: `sync`, `update`, `closed`, `kicked` |
 | `GET /api/stats` · `GET /healthz` | Counters / liveness |
 
@@ -134,14 +168,17 @@ Session tokens are random and compared in constant time; mutating requests must 
 ## Testing
 
 ```bash
-npm test             # 42 engine/rules tests (node:test)
+npm test             # 67 node:test tests: 42 rules, 7 room/reaction, 9 move-hint, 6 QR, 3 sound
 npm run simulate     # boots a real server and plays full matches over HTTP/SSE:
                      #   lobby errors, kick, late join, reconnection, hidden-hand leak check,
-                     #   card conservation on every update, rematch, host transfer, rate limiting
+                     #   card conservation on every update, rematch, host transfer, rate limiting,
+                     #   reactions (allowlist, rate limit, bots answering)
 npm run check        # parses every server and client file; verifies client imports resolve
 ```
 
-The browser flow (create room → add bots → change settings → drag-and-drop plays → UNO → round over → results, plus a phone-sized run) was also driven end to end in headless Chromium with no unexpected console errors. That script isn't shipped because it needs Playwright, which this project deliberately doesn't depend on.
+- The QR encoder is pinned by golden hashes. During development every generated code was also decoded with OpenCV's QR detector to confirm that real scanners read it.
+- The sound test runs the whole kit against a recording stand-in for the Web Audio graph (Node has none): every effect must schedule without errors, and the metal effects and the metal-voice swaps must exist. Loudness and clipping were measured separately in Chromium with an `OfflineAudioContext`: the clank and clang sit at the level of the existing card sound (about -18 and -15 dB RMS) with peaks under 0.9, so they can't clip.
+- The browser flow (welcome practice table → create room → add bots → settings → deal → drag-and-drop and tap plays → special cards → UNO → round over → results, on a 1366×768 desktop and an iPhone 13 profile) was driven end to end in headless Chromium: it played whole matches to the results screen with no console errors and no horizontal overflow. Those scripts aren't shipped because they need Playwright, which this project deliberately doesn't depend on.
 
 ## Deployment
 
@@ -159,6 +196,10 @@ To move to the originally suggested Supabase/Vercel stack later, `server/engine.
 ## Known limits
 
 - In-memory rooms: a server restart ends all games.
-- Names and rooms are anonymous; there are no accounts, chat or persistent leaderboards.
+- Names and rooms are anonymous; there are no accounts, free-text chat or persistent leaderboards. Reactions are a fixed set and only work inside the arena.
 - Touch devices can't drag-and-drop cards (tap to select, then tap again to play).
-- Sound effects are synthesised beeps and chimes, not recorded audio.
+- All sound and music is synthesised, not recorded. The metal clank is a physical model, so it is a clean steel "tink" rather than a studio sample. It has only been tuned by measurement and by ear in a browser, not on a wide range of speakers.
+- Vibration works only where the browser provides the Vibration API (not iOS Safari).
+- Installing UNO ARENA as an app doesn't make it playable offline: the game needs the server. Only the shell is cached.
+- A QR invite only helps other devices if you opened the game by a network address (such as `http://192.168.x.x:3000`), not `localhost`. The lobby warns about this.
+- The desktop table is sized with CSS container-query units (Chrome and Edge 105+, Safari 16+, Firefox 110+). Older browsers fall back to a window-based size.

@@ -44,6 +44,11 @@
   --safe-t: env(safe-area-inset-top, 0px);
   --card-w: 92px;
   --card-h: 138px;
+
+  /* theme slots (see themes.css) */
+  --atmos-a: rgba(40, 123, 255, .13); --atmos-b: rgba(255, 65, 75, .10); --atmos-c: rgba(39, 201, 120, .08);
+  --orb1: var(--blue); --orb2: var(--red); --orb3: var(--green);
+  --felt-1: #243762; --felt-2: #141c36; --felt-3: #0b1124; --rim: rgba(16, 23, 41, .8); --felt-line: var(--border);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -81,17 +86,17 @@ svg { display: block; }
 
 /* ---------- atmosphere ---------- */
 .atmos { position: absolute; inset: 0; z-index: -1; overflow: hidden; background:
-  radial-gradient(1200px 700px at 50% -10%, rgba(40, 123, 255, .13), transparent 60%),
-  radial-gradient(900px 600px at 105% 40%, rgba(255, 65, 75, .10), transparent 60%),
-  radial-gradient(900px 600px at -5% 85%, rgba(39, 201, 120, .08), transparent 60%),
-  var(--bg); }
+  radial-gradient(1200px 700px at 50% -10%, var(--atmos-a), transparent 60%),
+  radial-gradient(900px 600px at 105% 40%, var(--atmos-b), transparent 60%),
+  radial-gradient(900px 600px at -5% 85%, var(--atmos-c), transparent 60%),
+  var(--bg); transition: background .6s; }
 .atmos::after { content: ''; position: absolute; inset: 0; opacity: .5;
   background-image: linear-gradient(rgba(120, 146, 200, .045) 1px, transparent 1px), linear-gradient(90deg, rgba(120, 146, 200, .045) 1px, transparent 1px);
   background-size: 56px 56px; mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%); }
-.orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .5; animation: drift 18s ease-in-out infinite alternate; }
-.orb.o1 { width: 340px; height: 340px; background: var(--blue); left: 12%; top: -8%; opacity: .22; }
-.orb.o2 { width: 300px; height: 300px; background: var(--red); right: -6%; top: 36%; opacity: .2; animation-duration: 22s; }
-.orb.o3 { width: 280px; height: 280px; background: var(--green); left: 4%; bottom: -8%; opacity: .14; animation-duration: 26s; }
+.orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .5; animation: drift 18s ease-in-out infinite alternate; transition: background .8s; }
+.orb.o1 { width: 340px; height: 340px; background: var(--orb1); left: 12%; top: -8%; opacity: .22; }
+.orb.o2 { width: 300px; height: 300px; background: var(--orb2); right: -6%; top: 36%; opacity: .2; animation-duration: 22s; }
+.orb.o3 { width: 280px; height: 280px; background: var(--orb3); left: 4%; bottom: -8%; opacity: .14; animation-duration: 26s; }
 @keyframes drift { to { transform: translate3d(40px, 30px, 0) scale(1.1); } }
 
 /* ---------- screens ---------- */

@@ -1,0 +1,151 @@
+/* =====================================================================
+   Metal cards.
+   Every card is a steel plate: a bevelled chrome frame, an anodised
+   brushed-metal face, and a polished chrome oval with the number
+   engraved in colour. Nothing here changes layout or sizes, so the
+   switch (Settings > Card material) can happen mid-game.
+
+   Specificity note: base rules use :where() so they sit exactly where
+   cards.css does, and the state rules in arena.css / screens.css
+   (playable ring, hint ring, seat fans) keep winning over them.
+   ===================================================================== */
+
+html[data-cards="metal"] {
+  --steel: linear-gradient(135deg, #fbfcfe 0%, #b4bdcc 15%, #f3f6fa 30%, #8a95a8 49%, #e8edf4 64%, #a3adbe 82%, #f7f9fc 100%);
+  --steel-dark: linear-gradient(150deg, #5a6479, #2a3244 38%, #4b556a 62%, #1b2230);
+  /* fine horizontal brushing; dropped on the tiny sizes where it would only shimmer */
+  --brush: repeating-linear-gradient(0deg, rgba(255, 255, 255, .075) 0 1px, rgba(0, 0, 0, .085) 1px 2px, rgba(255, 255, 255, 0) 2px 3px);
+}
+
+/* ---------- frame ---------- */
+:where(html[data-cards="metal"]) .uno-card:not(.back) {
+  background: var(--steel);
+}
+:where(html[data-cards="metal"]) .uno-card {
+  box-shadow:
+    0 calc(var(--u) * 7) calc(var(--u) * 16) rgba(2, 5, 14, .6),
+    0 calc(var(--u) * 1.6) 0 rgba(8, 12, 24, .55),
+    inset 0 0 0 1px rgba(255, 255, 255, .8),
+    inset 0 calc(var(--u) * -1.4) 0 rgba(60, 72, 96, .5);
+}
+html[data-cards="metal"] .uno-card.sz-xs, html[data-cards="metal"] .uno-card.sz-mini { --brush: none; }
+
+/* ---------- anodised face ---------- */
+:where(html[data-cards="metal"]) .uno-card:not(.back) .face {
+  background: var(--brush), linear-gradient(150deg, var(--c1), var(--c2) 70%, var(--cd));
+  box-shadow:
+    0 0 0 calc(var(--u) * 1) rgba(28, 36, 54, .6),
+    inset 0 0 0 calc(var(--u) * 1) rgba(255, 255, 255, .42),
+    inset 0 0 0 calc(var(--u) * 2.4) rgba(0, 0, 0, .24),
+    inset 0 calc(var(--u) * -10) calc(var(--u) * 22) rgba(0, 0, 0, .3);
+}
+/* a conic highlight, like light raking across brushed aluminium */
+html[data-cards="metal"] .uno-card:not(.back) .face::before {
+  background:
+    conic-gradient(from 214deg at 22% 12%, rgba(255, 255, 255, 0) 0deg, rgba(255, 255, 255, .5) 16deg, rgba(255, 255, 255, 0) 44deg, rgba(255, 255, 255, .14) 96deg, rgba(255, 255, 255, 0) 140deg, rgba(0, 0, 0, .26) 230deg, rgba(0, 0, 0, 0) 300deg);
+}
+/* the glint that crosses a card as it lands (see .glint below); invisible otherwise */
+html[data-cards="metal"] .uno-card .face::after {
+  content: ''; position: absolute; inset: -20%; pointer-events: none; opacity: 0;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, .85) 48%, rgba(255, 255, 255, .15) 54%, transparent 62%);
+  transform: translateX(-70%);
+}
+html[data-cards="metal"] .uno-card.glint .face::after { animation: metalGlint .75s cubic-bezier(.3, .6, .3, 1) .02s both; }
+@keyframes metalGlint { 0% { opacity: 0; transform: translateX(-70%); } 15% { opacity: 1; } 100% { opacity: 0; transform: translateX(70%); } }
+
+/* ---------- chrome oval with an engraved symbol ---------- */
+html[data-cards="metal"] .uno-card:not(.back):not(.c-wild) .oval {
+  background:
+    radial-gradient(ellipse at 26% 16%, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0) 46%),
+    linear-gradient(168deg, #ffffff 0%, #e4e9f1 30%, #b9c3d2 49%, #d9e0ea 52%, #f4f7fb 80%, #cfd7e3 100%);
+  box-shadow:
+    inset 0 calc(var(--u) * 1.6) calc(var(--u) * 1) rgba(255, 255, 255, .95),
+    inset 0 calc(var(--u) * -3.2) calc(var(--u) * 5) rgba(72, 86, 110, .38),
+    0 0 0 calc(var(--u) * 1.4) rgba(255, 255, 255, .6),
+    0 0 0 calc(var(--u) * 3) var(--cd),
+    0 calc(var(--u) * 4.5) calc(var(--u) * 9) rgba(0, 0, 0, .42);
+}
+html[data-cards="metal"] .uno-card.c-yellow { --glyph: #8c6700; }
+html[data-cards="metal"] .uno-card:not(.back) .num,
+html[data-cards="metal"] .uno-card:not(.back):not(.c-wild) .plus b {
+  text-shadow: 0 calc(var(--u) * 1.4) 0 rgba(255, 255, 255, .95), 0 calc(var(--u) * -.9) 0 rgba(0, 0, 0, .3);
+}
+html[data-cards="metal"] .uno-card:not(.back):not(.c-wild) .glyph svg,
+html[data-cards="metal"] .uno-card:not(.back):not(.c-wild) .plus i svg {
+  filter: drop-shadow(0 calc(var(--u) * 1.4) 0 rgba(255, 255, 255, .95)) drop-shadow(0 calc(var(--u) * -.8) 0 rgba(0, 0, 0, .28));
+}
+html[data-cards="metal"] .uno-card .idx { text-shadow: 0 calc(var(--u) * -1) 0 rgba(0, 0, 0, .4), 0 calc(var(--u) * 1) 0 rgba(255, 255, 255, .28); }
+
+/* ---------- wild cards: gunmetal with an enamelled colour wheel in a chrome ring ---------- */
+html[data-cards="metal"] .uno-card.c-wild .face {
+  background: var(--brush), linear-gradient(150deg, #566075, #1b2233 52%, #0b0f1a);
+}
+html[data-cards="metal"] .uno-card.c-wild .oval {
+  box-shadow:
+    0 0 0 calc(var(--u) * 2.2) #eef2f8,
+    0 0 0 calc(var(--u) * 3.6) #7d889b,
+    inset 0 calc(var(--u) * 1.4) calc(var(--u) * 2) rgba(255, 255, 255, .5),
+    0 calc(var(--u) * 4) calc(var(--u) * 10) rgba(0, 0, 0, .55);
+}
+html[data-cards="metal"] .uno-card .mini-wild { box-shadow: 0 0 0 calc(var(--u) * 1.5) #e8edf5, 0 calc(var(--u) * 1.5) calc(var(--u) * 3) rgba(0, 0, 0, .4); }
+
+/* ---------- backs ---------- */
+html[data-cards="metal"] .uno-card.back .face {
+  background: var(--brush), var(--back-face);
+  box-shadow:
+    0 0 0 calc(var(--u) * 1) rgba(20, 26, 40, .65),
+    inset 0 0 0 calc(var(--u) * 1) rgba(255, 255, 255, .22),
+    inset 0 0 0 calc(var(--u) * 2.4) rgba(0, 0, 0, .35),
+    inset 0 calc(var(--u) * -10) calc(var(--u) * 22) rgba(0, 0, 0, .25);
+}
+html[data-cards="metal"] .uno-card.back .oval {
+  box-shadow: 0 0 0 calc(var(--u) * 2.5) var(--back-ring), 0 0 0 calc(var(--u) * 3.6) rgba(0, 0, 0, .45), inset 0 calc(var(--u) * 1.4) calc(var(--u) * 1.5) rgba(255, 255, 255, .4), 0 calc(var(--u) * 4) calc(var(--u) * 10) rgba(0, 0, 0, .5);
+}
+/* a faint reflection across the whole back */
+html[data-cards="metal"] .uno-card.back:not(.sz-xs) .face::after {
+  opacity: 1; transform: none; inset: 0; animation: none;
+  background: conic-gradient(from 205deg at 24% 10%, rgba(255, 255, 255, 0) 0deg, rgba(255, 255, 255, .26) 14deg, rgba(255, 255, 255, 0) 40deg, rgba(255, 255, 255, .07) 100deg, rgba(255, 255, 255, 0) 150deg);
+}
+
+/* the default back becomes gunmetal with a chrome frame and a red enamel oval */
+html[data-cards="metal"][data-back="classic"] .uno-card.back:not([data-b]),
+html[data-cards="metal"] .uno-card.back[data-b="classic"] {
+  --back-edge: var(--steel);
+  --back-face: linear-gradient(155deg, #4a546a, #1a2132 55%, #2c3548);
+  --back-pattern: repeating-linear-gradient(45deg, rgba(255, 255, 255, .09) 0 1px, transparent 1px calc(var(--u) * 6)), repeating-linear-gradient(-45deg, rgba(255, 255, 255, .09) 0 1px, transparent 1px calc(var(--u) * 6));
+  --back-oval: linear-gradient(150deg, #ff6f78, #d3212f 52%, #8c0f1a);
+  --back-ring: #eef2f8;
+  --back-word: #fff7d6; --back-shadow: rgba(60, 4, 10, .7);
+}
+html[data-cards="metal"][data-back="mono"] .uno-card.back:not([data-b]),
+html[data-cards="metal"] .uno-card.back[data-b="mono"] {
+  --back-edge: var(--steel);
+  --back-face: linear-gradient(155deg, #3b3d46, #0c0d11 60%, #1a1b21);
+}
+/* the brass back reads as polished brass with a deeper edge line */
+html[data-cards="metal"][data-back="gilded"] .uno-card.back:not([data-b]),
+html[data-cards="metal"] .uno-card.back[data-b="gilded"] {
+  --back-edge: linear-gradient(135deg, #fff2bf 0%, #c9993d 18%, #f7e3a0 34%, #9a7020 52%, #f1d98c 68%, #b8862e 84%, #fff0b4 100%);
+}
+
+/* ---------- table-top details ---------- */
+html[data-cards="metal"] .discard-slot .uno-card { box-shadow: 0 calc(var(--u) * 3) calc(var(--u) * 8) rgba(0, 0, 0, .5), 0 calc(var(--u) * 1.2) 0 rgba(8, 12, 24, .55), inset 0 0 0 1px rgba(255, 255, 255, .8), inset 0 calc(var(--u) * -1.4) 0 rgba(60, 72, 96, .5); }
+
+/* ---------- settings: material picker (small drawn plates, independent of the live card styles) ---------- */
+.mat-mini { display: flex; justify-content: center; align-items: center; height: 62px; }
+.mat-plate { position: relative; display: block; width: 32px; height: 48px; border-radius: 5px; padding: 3px; margin: 0 -4px; box-shadow: 0 5px 10px rgba(0, 0, 0, .45); }
+.mat-plate:first-child { transform: rotate(-9deg); }
+.mat-plate:last-child { transform: rotate(8deg) translateY(2px); }
+.mat-plate i { position: relative; display: block; width: 100%; height: 100%; border-radius: 3px; background: linear-gradient(150deg, var(--p1), var(--p2)); overflow: hidden; }
+.mat-plate i::after { content: ''; position: absolute; left: 50%; top: 50%; width: 70%; height: 56%; border-radius: 50%; transform: translate(-50%, -50%) rotate(-24deg); }
+.mat-plate.r { --p1: #ff6670; --p2: #d9303c; }
+.mat-plate.b { --p1: #4b92ff; --p2: #1d65e0; }
+.mat-plate.classic { background: #fff; }
+.mat-plate.classic i::after { background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .25); }
+.mat-plate.metal { background: linear-gradient(135deg, #fbfcfe 0%, #b4bdcc 22%, #f3f6fa 40%, #8a95a8 60%, #e8edf4 80%, #a3adbe 100%); box-shadow: 0 5px 10px rgba(0, 0, 0, .45), inset 0 0 0 1px rgba(255, 255, 255, .8); }
+.mat-plate.metal i { background: repeating-linear-gradient(0deg, rgba(255, 255, 255, .09) 0 1px, rgba(0, 0, 0, .1) 1px 2px, transparent 2px 3px), linear-gradient(150deg, var(--p1), var(--p2)); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .4), inset 0 0 0 2px rgba(0, 0, 0, .2); }
+.mat-plate.metal i::after { background: linear-gradient(160deg, #fff, #cbd3df 60%, #f1f4f9); box-shadow: 0 0 0 1px rgba(0, 0, 0, .3); }
+
+/* reduced motion: the card is simply still metal; only the landing glint is dropped */
+body.reduce-motion .uno-card.glint .face::after { animation: none; opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .uno-card.glint .face::after { animation: none !important; opacity: 0; } }

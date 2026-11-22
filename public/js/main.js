@@ -3,6 +3,7 @@ import { $, h, clear, sleep } from './dom.js';
 import { store, subscribe, setSession, clearRoom, setPrefs } from './store.js';
 import { connectEvents, resume, action } from './net.js';
 import { initFx } from './fx.js';
+import { registerServiceWorker } from './pwa.js';
 import { toast } from './ui.js';
 import { icon } from './icons.js';
 import { createWelcome } from './screens/welcome.js';
@@ -160,6 +161,7 @@ window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') document.activeElement && document.activeElement.blur && document.activeElement.blur();
 });
 
+registerServiceWorker();
 boot().catch((err) => {
   console.error(err);
   root.append(h('div', { style: { padding: '24px' } }, 'Something went wrong while starting UNO ARENA. Please reload the page.'));

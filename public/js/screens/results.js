@@ -2,16 +2,34 @@
 import { h, Disposer } from '../dom.js';
 import { icon } from '../icons.js';
 import { avatar, logoMark } from '../avatars.js';
-import { store, subscribe } from '../store.js';
+import { store, subscribe, reducedMotion } from '../store.js';
 import { action } from '../net.js';
 import { soundControl, toast, confirmModal } from '../ui.js';
 import { audio } from '../audio.js';
+import { haptic } from '../haptics.js';
 import { celebrate } from '../fx.js';
 
 function fmtDuration(ms) {
   const sec = Math.max(0, Math.round(ms / 1000));
   const m = Math.floor(sec / 60);
   return `${m}:${String(sec % 60).padStart(2, '0')}`;
+}
+
+// Scores tick up from zero so the final numbers land one after another. Skipped with reduced motion.
+function countUp(node, to, { duration = 900, delay = 0 } = {}) {
+  if (reducedMotion() || !Number.isFinite(to) || to <= 0) return () => {};
+  node.textContent = '0';
+  let raf = 0;
+  const timer = setTimeout(() => {
+    const t0 = performance.now();
+    const step = (now) => {
+      const k = Math.min(1, (now - t0) / duration);
+      node.textContent = String(Math.round(to * (1 - Math.pow(1 - k, 3))));
+      if (k < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+  }, delay);
+  return () => { clearTimeout(timer); cancelAnimationFrame(raf); node.textContent = String(to); };
 }
 
 function accolades(rows) {
@@ -44,7 +62,7 @@ export function createResults(ctx) {
   const standings = h('ol', { class: 'board', 'aria-label': 'Final scoreboard' },
     h('li', { class: 'board-head', 'aria-hidden': 'true' },
       h('span', {}, 'Rank'), h('span', { class: 'who' }, 'Player'), h('span', {}, 'Score'), h('span', {}, 'Played'), h('span', {}, 'Drawn'), h('span', {}, 'Special')),
-    rows.map((r) => h('li', { class: 'board-row' + (r.id === me ? ' me' : '') + (r.isWinner ? ' winner' : '') },
+    rows.map((r, i) => h('li', { class: 'board-row' + (r.id === me ? ' me' : '') + (r.isWinner ? ' winner' : ''), style: { '--i': i } },
       medal(r.rank),
       h('span', { class: 'who' }, avatar(r.avatar, 44),
         h('span', { class: 'who-name' }, h('b', { class: 'ellipsis' }, r.name), h('small', { class: 'dim' }, [r.id === me ? 'You' : null, r.isBot ? 'Bot' : null, r.left ? 'Left the match' : null].filter(Boolean).join(' · ') || ' '))),
@@ -87,7 +105,7 @@ export function createResults(ctx) {
           h('div', { class: 'winner-meta' },
             h('div', { class: 'label' }, 'Champion'),
             h('div', { class: 'h1 ellipsis' }, winner.name),
-            h('div', { class: 'winner-score mono' }, String(winner.score), h('small', {}, ' pts')),
+            h('div', { class: 'winner-score mono' }, h('span', { class: 'js-count', 'data-to': String(winner.score) }, String(winner.score)), h('small', {}, ' pts')),
             h('div', { class: 'winner-chips' },
               h('span', { class: 'chip' }, icon('trophy'), `${winner.roundsWon} ${winner.roundsWon === 1 ? 'round' : 'rounds'} won`),
               h('span', { class: 'chip' }, icon('clock'), fmtDuration(res.durationMs)),
@@ -112,8 +130,13 @@ export function createResults(ctx) {
         btnAgain.title = host ? '' : 'Only the host can start a rematch';
         btnLobby.title = host ? '' : 'Only the host can return the room to the lobby';
       }));
-      if (iWon) { audio.play('win'); setTimeout(celebrate, 350); }
-      else if (winner) { audio.play('lose'); }
+      const finish = [];
+      const wc = el.querySelector('.js-count');
+      if (wc) finish.push(countUp(wc, Number(wc.dataset.to), { duration: 1100, delay: 450 }));
+      el.querySelectorAll('.board-row .score').forEach((n, i) => finish.push(countUp(n, Number(n.textContent), { duration: 800, delay: 650 + i * 110 })));
+      d.add(() => finish.forEach((f) => f()));
+      if (iWon) { audio.play('win', { duck: true }); haptic('win'); setTimeout(celebrate, 350); }
+      else if (winner) { audio.play('lose', { duck: true }); }
     },
     onEvents(msg) {
       for (const ev of msg.events || []) {

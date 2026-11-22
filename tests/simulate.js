@@ -302,9 +302,17 @@ async function main() {
   // sanity on first view
   // (use the first view the server ever sent: autoplaying clients may already have moved by now)
   const g0 = host.firstGame;
-  assert.equal(g0.hand.length, 5);
+  // 5 cards were dealt; a Draw Two as the starter card gives the first player 2 more before anyone has moved
+  assert.ok(g0.hand.length === 5 || g0.hand.length === 7, `dealt hand was ${g0.hand.length}`);
   assert.equal(g0.turnSeconds, 30);
   assert.ok(g0.turnEndsAt > 0);
+
+  // reactions over the real wire: allowlisted ones are broadcast, free text is refused
+  const em = await host.send('emote', { id: 'gg' });
+  assert.ok(em.json.ok, 'emote accepted');
+  const bad = await host.send('emote', { id: '<img src=x onerror=alert(1)>' });
+  assert.equal(bad.json.error, 'BAD_REQUEST');
+  ok('reactions: allowlist enforced');
 
   // mid-game: player 3 loses connection, autopilot must keep the game moving, then reconnects
   await host.waitFor((s) => s.game && s.game.round >= 1 && s.game.discardCount > 3, 15000, 'some plays');

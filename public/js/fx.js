@@ -82,6 +82,20 @@ export function burst(x, y, color, count = 26) {
   kick();
 }
 
+/** Hot metal sparks: tiny, fast, short-lived. Used when a metal card hits the table. */
+export function sparks(x, y, count = 12) {
+  if (!g || reducedMotion()) return;
+  for (let i = 0; i < count; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const v = 220 + Math.random() * 340;
+    parts.push({
+      x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 60, gravity: 520, drag: 3.2,
+      size: 1.6 + Math.random() * 2, rot: 0, spin: 0, color: Math.random() < 0.5 ? '#fff6d6' : '#ffd98a', shape: 'circle', life: 0.28 + Math.random() * 0.3, fade: 0.5,
+    });
+  }
+  kick();
+}
+
 export function celebrate() {
   if (reducedMotion()) return;
   const w = window.innerWidth;

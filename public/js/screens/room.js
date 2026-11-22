@@ -5,6 +5,7 @@ import { avatar, logoMark } from '../avatars.js';
 import { store, subscribe, serverNow } from '../store.js';
 import { createRoom as apiCreate, joinRoom as apiJoin, action } from '../net.js';
 import { soundControl, toast, confirmModal, openModal, copyText, shareInvite, inviteLink } from '../ui.js';
+import { qrElement, downloadQr, isLocalOnly } from '../qr-view.js';
 import { audio } from '../audio.js';
 import { shake } from '../anim.js';
 
@@ -259,11 +260,14 @@ export function createRoomScreen(ctx, props = {}) {
     let m;
     m = openModal([
       h('h2', {}, 'Share invitation'),
-      h('p', {}, 'Send this link or the code to friends. Anyone with it can join while the room is open.'),
+      h('p', {}, 'Send this link or the code to friends, or let them scan the code below with a phone camera. Anyone with it can join while the room is open.'),
+      h('div', { class: 'qr-tile' }, qrElement(link, { label: `Scan to join room ${code}` })),
+      isLocalOnly() ? h('p', { class: 'qr-warn', role: 'note' }, icon('info'), 'This link only works on this computer. To let phones join, open the game by its network address (for example http://192.168.1.20:3000) and share from there.') : null,
       h('div', { class: 'share-code' }, [...code].map((c) => h('span', { class: 'code-char sm' }, c))),
       h('div', { class: 'field', style: { marginTop: '16px' } }, h('label', { class: 'label' }, 'Invitation link'), input),
       h('div', { class: 'actions' },
         h('button', { class: 'btn ghost', onclick: async () => { const ok = await copyText(link); toast(ok ? 'LINK COPIED' : 'COULD NOT COPY THE LINK', ok ? 'good' : 'error'); } }, icon('link'), 'Copy link'),
+        h('button', { class: 'btn ghost', onclick: () => { downloadQr(link, `uno-arena-${code}.svg`); toast('QR CODE SAVED', 'good'); } }, icon('download'), 'Save QR'),
         navigator.share ? h('button', { class: 'btn', onclick: async () => { const r = await shareInvite(code); if (r === 'copied') toast('LINK COPIED', 'good'); m.close(); } }, icon('share'), 'Share…') : null,
         h('button', { class: 'btn ghost', 'data-autofocus': '', onclick: () => m.close() }, 'Close')),
     ], { label: 'Share invitation' });
