@@ -25,7 +25,7 @@ html[data-theme="aurora"] {
 html[data-back="gilded"] .uno-card.back:not([data-b]), .uno-card.back[data-b="gilded"] {
   --back-edge: linear-gradient(145deg, #f8e7ac, #c99c3d 60%, #f4dc92);
   --back-face: linear-gradient(160deg, #18235a, #0a0f2b);
-  --back-pattern: repeating-linear-gradient(45deg, rgba(240, 200, 110, .2) 0 1px, transparent 1px calc(var(--u) * 7)), repeating-linear-gradient(-45deg, rgba(240, 200, 110, .2) 0 1px, transparent 1px calc(var(--u) * 7));
+  --back-pattern: repeating-linear-gradient(45deg, rgba(240, 200, 110, .2) 0 calc(1px * var(--s)), transparent calc(1px * var(--s)) calc(var(--u) * 7)), repeating-linear-gradient(-45deg, rgba(240, 200, 110, .2) 0 calc(1px * var(--s)), transparent calc(1px * var(--s)) calc(var(--u) * 7));
   --back-oval: linear-gradient(150deg, #fdeeb4, #c8963a 58%, #8f6420);
   --back-ring: rgba(255, 240, 190, .92);
   --back-word: #1a1f3f; --back-shadow: rgba(255, 255, 255, .38);
@@ -33,7 +33,7 @@ html[data-back="gilded"] .uno-card.back:not([data-b]), .uno-card.back[data-b="gi
 html[data-back="neon"] .uno-card.back:not([data-b]), .uno-card.back[data-b="neon"] {
   --back-edge: linear-gradient(145deg, #00e5ff, #a855f7 55%, #ff2bd6);
   --back-face: radial-gradient(circle at 50% 40%, #12142e, #04050e 72%);
-  --back-pattern: linear-gradient(rgba(0, 229, 255, .2) 1px, transparent 1px) 0 0 / calc(var(--u) * 10) calc(var(--u) * 10), linear-gradient(90deg, rgba(255, 43, 214, .17) 1px, transparent 1px) 0 0 / calc(var(--u) * 10) calc(var(--u) * 10);
+  --back-pattern: linear-gradient(rgba(0, 229, 255, .2) calc(1px * var(--s)), transparent calc(1px * var(--s))) 0 0 / calc(var(--u) * 10) calc(var(--u) * 10), linear-gradient(90deg, rgba(255, 43, 214, .17) calc(1px * var(--s)), transparent calc(1px * var(--s))) 0 0 / calc(var(--u) * 10) calc(var(--u) * 10);
   --back-oval: linear-gradient(150deg, #00e5ff, #7c3aed 55%, #ff2bd6);
   --back-ring: rgba(255, 255, 255, .92);
   --back-word: #fff; --back-shadow: rgba(4, 5, 14, .7);
@@ -41,7 +41,7 @@ html[data-back="neon"] .uno-card.back:not([data-b]), .uno-card.back[data-b="neon
 html[data-back="mono"] .uno-card.back:not([data-b]), .uno-card.back[data-b="mono"] {
   --back-edge: #f2f2f5;
   --back-face: radial-gradient(circle at 50% 40%, #1a1a20, #08080b 72%);
-  --back-pattern: radial-gradient(rgba(255, 255, 255, .1) 1px, transparent 1.4px) 0 0 / calc(var(--u) * 8) calc(var(--u) * 8);
+  --back-pattern: radial-gradient(rgba(255, 255, 255, .1) calc(1px * var(--s)), transparent calc(1.4px * var(--s))) 0 0 / calc(var(--u) * 8) calc(var(--u) * 8);
   --back-oval: linear-gradient(150deg, #ffffff, #c4c4ce);
   --back-ring: rgba(255, 255, 255, .7);
   --back-word: #0c0c10; --back-shadow: rgba(255, 255, 255, .55);
@@ -59,8 +59,8 @@ body.cb .uno-card:not(.back):not(.c-wild) .oval::before { content: ''; position:
 
 /* colour dots get the same shapes so the active colour is never colour-only */
 body.cb .color-dot.red { clip-path: polygon(50% 4%, 98% 92%, 2% 92%); border-radius: 0; box-shadow: none; }
-body.cb .color-dot.yellow { border-radius: 3px; box-shadow: none; }
+body.cb .color-dot.yellow { border-radius: calc(3px * var(--s)); box-shadow: none; }
 body.cb .color-dot.green { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); border-radius: 0; box-shadow: none; }
-.cb-shape { display: none; width: 22px; height: 22px; }
+.cb-shape { display: none; width: calc(22px * var(--s)); height: calc(22px * var(--s)); }
 .cb-shape svg { width: 100%; height: 100%; }
 body.cb .cb-shape { display: inline-block; }

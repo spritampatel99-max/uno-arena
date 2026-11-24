@@ -14,7 +14,7 @@ html[data-cards="metal"] {
   --steel: linear-gradient(135deg, #fbfcfe 0%, #b4bdcc 15%, #f3f6fa 30%, #8a95a8 49%, #e8edf4 64%, #a3adbe 82%, #f7f9fc 100%);
   --steel-dark: linear-gradient(150deg, #5a6479, #2a3244 38%, #4b556a 62%, #1b2230);
   /* fine horizontal brushing; dropped on the tiny sizes where it would only shimmer */
-  --brush: repeating-linear-gradient(0deg, rgba(255, 255, 255, .075) 0 1px, rgba(0, 0, 0, .085) 1px 2px, rgba(255, 255, 255, 0) 2px 3px);
+  --brush: repeating-linear-gradient(0deg, rgba(255, 255, 255, .075) 0 calc(1px * var(--s)), rgba(0, 0, 0, .085) calc(1px * var(--s)) calc(2px * var(--s)), rgba(255, 255, 255, 0) calc(2px * var(--s)) calc(3px * var(--s)));
 }
 
 /* ---------- frame ---------- */
@@ -25,7 +25,7 @@ html[data-cards="metal"] {
   box-shadow:
     0 calc(var(--u) * 7) calc(var(--u) * 16) rgba(2, 5, 14, .6),
     0 calc(var(--u) * 1.6) 0 rgba(8, 12, 24, .55),
-    inset 0 0 0 1px rgba(255, 255, 255, .8),
+    inset 0 0 0 calc(1px * var(--s)) rgba(255, 255, 255, .8),
     inset 0 calc(var(--u) * -1.4) 0 rgba(60, 72, 96, .5);
 }
 html[data-cards="metal"] .uno-card.sz-xs, html[data-cards="metal"] .uno-card.sz-mini { --brush: none; }
@@ -112,7 +112,7 @@ html[data-cards="metal"][data-back="classic"] .uno-card.back:not([data-b]),
 html[data-cards="metal"] .uno-card.back[data-b="classic"] {
   --back-edge: var(--steel);
   --back-face: linear-gradient(155deg, #4a546a, #1a2132 55%, #2c3548);
-  --back-pattern: repeating-linear-gradient(45deg, rgba(255, 255, 255, .09) 0 1px, transparent 1px calc(var(--u) * 6)), repeating-linear-gradient(-45deg, rgba(255, 255, 255, .09) 0 1px, transparent 1px calc(var(--u) * 6));
+  --back-pattern: repeating-linear-gradient(45deg, rgba(255, 255, 255, .09) 0 calc(1px * var(--s)), transparent calc(1px * var(--s)) calc(var(--u) * 6)), repeating-linear-gradient(-45deg, rgba(255, 255, 255, .09) 0 calc(1px * var(--s)), transparent calc(1px * var(--s)) calc(var(--u) * 6));
   --back-oval: linear-gradient(150deg, #ff6f78, #d3212f 52%, #8c0f1a);
   --back-ring: #eef2f8;
   --back-word: #fff7d6; --back-shadow: rgba(60, 4, 10, .7);
@@ -129,22 +129,22 @@ html[data-cards="metal"] .uno-card.back[data-b="gilded"] {
 }
 
 /* ---------- table-top details ---------- */
-html[data-cards="metal"] .discard-slot .uno-card { box-shadow: 0 calc(var(--u) * 3) calc(var(--u) * 8) rgba(0, 0, 0, .5), 0 calc(var(--u) * 1.2) 0 rgba(8, 12, 24, .55), inset 0 0 0 1px rgba(255, 255, 255, .8), inset 0 calc(var(--u) * -1.4) 0 rgba(60, 72, 96, .5); }
+html[data-cards="metal"] .discard-slot .uno-card { box-shadow: 0 calc(var(--u) * 3) calc(var(--u) * 8) rgba(0, 0, 0, .5), 0 calc(var(--u) * 1.2) 0 rgba(8, 12, 24, .55), inset 0 0 0 calc(1px * var(--s)) rgba(255, 255, 255, .8), inset 0 calc(var(--u) * -1.4) 0 rgba(60, 72, 96, .5); }
 
 /* ---------- settings: material picker (small drawn plates, independent of the live card styles) ---------- */
-.mat-mini { display: flex; justify-content: center; align-items: center; height: 62px; }
-.mat-plate { position: relative; display: block; width: 32px; height: 48px; border-radius: 5px; padding: 3px; margin: 0 -4px; box-shadow: 0 5px 10px rgba(0, 0, 0, .45); }
+.mat-mini { display: flex; justify-content: center; align-items: center; height: calc(62px * var(--s)); }
+.mat-plate { position: relative; display: block; width: calc(32px * var(--s)); height: calc(48px * var(--s)); border-radius: calc(5px * var(--s)); padding: calc(3px * var(--s)); margin: 0 calc(-4px * var(--s)); box-shadow: 0 calc(5px * var(--s)) calc(10px * var(--s)) rgba(0, 0, 0, .45); }
 .mat-plate:first-child { transform: rotate(-9deg); }
-.mat-plate:last-child { transform: rotate(8deg) translateY(2px); }
-.mat-plate i { position: relative; display: block; width: 100%; height: 100%; border-radius: 3px; background: linear-gradient(150deg, var(--p1), var(--p2)); overflow: hidden; }
+.mat-plate:last-child { transform: rotate(8deg) translateY(calc(2px * var(--s))); }
+.mat-plate i { position: relative; display: block; width: 100%; height: 100%; border-radius: calc(3px * var(--s)); background: linear-gradient(150deg, var(--p1), var(--p2)); overflow: hidden; }
 .mat-plate i::after { content: ''; position: absolute; left: 50%; top: 50%; width: 70%; height: 56%; border-radius: 50%; transform: translate(-50%, -50%) rotate(-24deg); }
 .mat-plate.r { --p1: #ff6670; --p2: #d9303c; }
 .mat-plate.b { --p1: #4b92ff; --p2: #1d65e0; }
 .mat-plate.classic { background: #fff; }
-.mat-plate.classic i::after { background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .25); }
-.mat-plate.metal { background: linear-gradient(135deg, #fbfcfe 0%, #b4bdcc 22%, #f3f6fa 40%, #8a95a8 60%, #e8edf4 80%, #a3adbe 100%); box-shadow: 0 5px 10px rgba(0, 0, 0, .45), inset 0 0 0 1px rgba(255, 255, 255, .8); }
-.mat-plate.metal i { background: repeating-linear-gradient(0deg, rgba(255, 255, 255, .09) 0 1px, rgba(0, 0, 0, .1) 1px 2px, transparent 2px 3px), linear-gradient(150deg, var(--p1), var(--p2)); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .4), inset 0 0 0 2px rgba(0, 0, 0, .2); }
-.mat-plate.metal i::after { background: linear-gradient(160deg, #fff, #cbd3df 60%, #f1f4f9); box-shadow: 0 0 0 1px rgba(0, 0, 0, .3); }
+.mat-plate.classic i::after { background: #fff; box-shadow: 0 calc(1px * var(--s)) calc(3px * var(--s)) rgba(0, 0, 0, .25); }
+.mat-plate.metal { background: linear-gradient(135deg, #fbfcfe 0%, #b4bdcc 22%, #f3f6fa 40%, #8a95a8 60%, #e8edf4 80%, #a3adbe 100%); box-shadow: 0 calc(5px * var(--s)) calc(10px * var(--s)) rgba(0, 0, 0, .45), inset 0 0 0 calc(1px * var(--s)) rgba(255, 255, 255, .8); }
+.mat-plate.metal i { background: repeating-linear-gradient(0deg, rgba(255, 255, 255, .09) 0 calc(1px * var(--s)), rgba(0, 0, 0, .1) calc(1px * var(--s)) calc(2px * var(--s)), transparent calc(2px * var(--s)) calc(3px * var(--s))), linear-gradient(150deg, var(--p1), var(--p2)); box-shadow: inset 0 0 0 calc(1px * var(--s)) rgba(255, 255, 255, .4), inset 0 0 0 calc(2px * var(--s)) rgba(0, 0, 0, .2); }
+.mat-plate.metal i::after { background: linear-gradient(160deg, #fff, #cbd3df 60%, #f1f4f9); box-shadow: 0 0 0 calc(1px * var(--s)) rgba(0, 0, 0, .3); }
 
 /* reduced motion: the card is simply still metal; only the landing glint is dropped */
 body.reduce-motion .uno-card.glint .face::after { animation: none; opacity: 0; }

@@ -50,6 +50,7 @@ export function openSettings({ onGuide } = {}) {
   function markGroup(btns, id) { for (const b of btns) { const on = b.dataset.id === id; b.classList.toggle('sel', on); b.setAttribute('aria-checked', String(on)); } }
 
   const cb = switchRow({ title: 'Colour-blind symbols', note: 'Adds a different shape to each card colour', checked: store.prefs.colorBlind, onChange: (on) => setPrefs({ colorBlind: on }) });
+  const chatAlerts = switchRow({ title: 'Chat alerts', note: 'A small preview and a soft ping when someone writes', checked: store.prefs.chatAlerts, onChange: (on) => { setPrefs({ chatAlerts: on }); if (on) audio.play('chat'); } });
   const hints = switchRow({ title: 'Move hints', note: 'Marks a good card to play on your turn', checked: store.prefs.hints, onChange: (on) => { setPrefs({ hints: on }); if (on) audio.play('hint'); } });
   const vib = hapticsSupported() ? switchRow({ title: 'Vibration', note: 'A short buzz on your turn and big plays', checked: store.prefs.haptics, onChange: (on) => { setPrefs({ haptics: on }); if (on) haptic('turn'); } }) : null;
   const motion = switchRow({ title: 'Reduce motion', note: 'Skips dealing, flying cards and screen effects', checked: store.prefs.reduceMotion, onChange: (on) => setPrefs({ reduceMotion: on }) });
@@ -71,7 +72,7 @@ export function openSettings({ onGuide } = {}) {
       h('div', { class: 'swatch-grid mats', role: 'radiogroup', 'aria-label': 'Card material' }, styleBtns),
       h('div', { class: 'set-label' }, 'Card back'),
       h('div', { class: 'swatch-grid backs', role: 'radiogroup', 'aria-label': 'Card back' }, backBtns)),
-    section('eye', 'Play aids and comfort', cb.el, hints.el, vib ? vib.el : null, motion.el),
+    section('eye', 'Play aids and comfort', cb.el, hints.el, chatAlerts.el, vib ? vib.el : null, motion.el),
     h('footer', { class: 'set-foot-row' },
       onGuide ? h('button', { class: 'btn ghost', onclick: () => { modal.close(); onGuide(); } }, icon('help'), 'How to play') : null,
       h('button', { class: 'btn', 'data-autofocus': '', onclick: () => modal.close() }, 'Done'))),

@@ -6,8 +6,8 @@
  *   GET  /healthz                liveness probe
  *   GET  /api/stats              { online, rooms, playing } — live counts only
  *   GET  /api/events?code&pid&token   SSE stream with per-player filtered state
- *   POST /api/rooms              create a room        { name, avatar }
- *   POST /api/rooms/join         join a room          { code, name, avatar }
+ *   POST /api/rooms              create a room        { name, avatar, frame }
+ *   POST /api/rooms/join         join a room          { code, name, avatar, frame }
  *   POST /api/rooms/resume       validate a session   { code, pid, token }
  *   POST /api/action             game / host action   { code, pid, token, type, ... }
  */

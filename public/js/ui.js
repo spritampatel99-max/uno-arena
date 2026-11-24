@@ -1,7 +1,7 @@
 // Shared UI pieces: toasts, modals, sound control, avatar picker, clipboard/share helpers.
 import { h, clear, $ } from './dom.js';
 import { icon } from './icons.js';
-import { avatar, AVATAR_IDS, AVATAR_LABEL } from './avatars.js';
+import { avatar, AVATAR_IDS, AVATAR_LABEL, FRAME_IDS, FRAME_LABEL } from './avatars.js';
 import { audio } from './audio.js';
 import { store, subscribe } from './store.js';
 
@@ -124,6 +124,20 @@ export function soundControl() {
   wrap.dispose = () => { unsub(); close(); };
   paint();
   return wrap;
+}
+
+// ------------------------------------------------------------------ frame picker
+export function framePicker({ avatarId, value, onPick, size = 56 }) {
+  const grid = h('div', { class: 'frame-grid', role: 'radiogroup', 'aria-label': 'Choose an avatar frame' });
+  const paint = (cur) => {
+    clear(grid);
+    for (const id of FRAME_IDS) {
+      grid.append(h('button', { class: 'frame-opt' + (id === cur ? ' sel' : ''), type: 'button', role: 'radio', 'aria-checked': String(id === cur), 'aria-label': FRAME_LABEL[id], title: FRAME_LABEL[id],
+        onclick: () => { paint(id); onPick(id); } }, avatar(avatarId, size, '', id), h('span', { class: 'frame-name' }, FRAME_LABEL[id])));
+    }
+  };
+  paint(value);
+  return grid;
 }
 
 // ------------------------------------------------------------------ avatar picker

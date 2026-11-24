@@ -238,6 +238,8 @@ export function createKit(ctx, { random = Math.random, sfxVolume = 0.6, musicVol
     },
     turn: (t, v) => { bell(t, midi(76) * v, { vol: 0.17, dur: 0.7, send: 0.45 }); bell(t + 0.1, midi(83) * v, { vol: 0.14, dur: 0.8, send: 0.5 }); },
     tick: (t, v) => { tone(t, { f: 1900 * v, f2: 1200, dur: 0.04, vol: 0.3, type: 'triangle' }); noise(t, { dur: 0.018, vol: 0.12, f: 3200, q: 2 }); },
+    // a new chat message: two soft bell tones, quieter than a game sound so it never competes with the table
+    chat: (t, v) => { tone(t, { f: midi(81) * v, dur: 0.16, vol: 0.07, type: 'sine', send: 0.25 }); tone(t + 0.07, { f: midi(86) * v, dur: 0.22, vol: 0.075, type: 'sine', send: 0.3 }); },
     join: (t, v) => { tone(t, { f: midi(69) * v, dur: 0.22, vol: 0.14, type: 'triangle', send: 0.3 }); tone(t + 0.09, { f: midi(76) * v, dur: 0.3, vol: 0.15, type: 'triangle', send: 0.35 }); },
     leave: (t, v) => { tone(t, { f: midi(76) * v, dur: 0.2, vol: 0.12, type: 'triangle', send: 0.3 }); tone(t + 0.09, { f: midi(69) * v, dur: 0.3, vol: 0.12, type: 'triangle', send: 0.35 }); },
     error: (t, v) => { tone(t, { f: 160 * v, dur: 0.09, vol: 0.12, type: 'square', lp: 700 }); tone(t + 0.1, { f: 130 * v, dur: 0.14, vol: 0.12, type: 'square', lp: 700 }); },

@@ -11,9 +11,9 @@ function safeSet(storage, key, value) {
 // sound and music are never persisted as "on": audio must always start disabled and needs a user gesture.
 const DEFAULT_PREFS = {
   sound: false, music: false, volume: 0.6, musicVolume: 0.35,
-  reduceMotion: false, theme: 'midnight', cardBack: 'classic', cardStyle: 'metal', colorBlind: false, haptics: true, hints: false,
+  reduceMotion: false, theme: 'midnight', cardBack: 'classic', cardStyle: 'metal', colorBlind: false, haptics: true, hints: false, chatAlerts: true,
 };
-const PERSISTED = ['volume', 'musicVolume', 'reduceMotion', 'theme', 'cardBack', 'cardStyle', 'colorBlind', 'haptics', 'hints'];
+const PERSISTED = ['volume', 'musicVolume', 'reduceMotion', 'theme', 'cardBack', 'cardStyle', 'colorBlind', 'haptics', 'hints', 'chatAlerts'];
 
 function sanitizePrefs(p) {
   const out = { ...DEFAULT_PREFS, ...(p || {}), sound: false, music: false };
@@ -24,13 +24,13 @@ function sanitizePrefs(p) {
     const n = Number(out[k]);
     out[k] = Number.isFinite(n) ? Math.min(1, Math.max(0, n)) : DEFAULT_PREFS[k];
   }
-  for (const k of ['reduceMotion', 'colorBlind', 'haptics', 'hints']) out[k] = !!out[k];
+  for (const k of ['reduceMotion', 'colorBlind', 'haptics', 'hints', 'chatAlerts']) out[k] = !!out[k];
   return out;
 }
 
 export const store = {
   session: safeGet(sessionStorage, 'uno.session'),   // { code, pid, token } — survives refresh, not a new tab
-  profile: safeGet(localStorage, 'uno.profile') || { name: '', avatar: 'fox' },
+  profile: safeGet(localStorage, 'uno.profile') || { name: '', avatar: 'fox', frame: 'steel' },
   prefs: sanitizePrefs(safeGet(localStorage, 'uno.prefs')),
   state: null,          // latest per-player room view from the server
   conn: 'idle',         // idle | connecting | online | reconnecting

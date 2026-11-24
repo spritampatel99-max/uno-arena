@@ -6,10 +6,14 @@ import { initFx } from './fx.js';
 import { registerServiceWorker } from './pwa.js';
 import { toast } from './ui.js';
 import { icon } from './icons.js';
+import { initChat, chatSync, chatEvents, chatScreen } from './chat.js';
+import { initScale } from './scale.js';
 import { createWelcome } from './screens/welcome.js';
 import { createRoomScreen } from './screens/room.js';
 import { createArena } from './screens/arena.js';
 import { createResults } from './screens/results.js';
+
+initScale();
 
 const FACTORIES = { welcome: createWelcome, room: createRoomScreen, arena: createArena, results: createResults };
 const root = $('#screen-root');
@@ -48,6 +52,7 @@ async function show(name, props = {}) {
     screen.el.dataset.screen = name;
     root.append(screen.el);
     screen.mount && screen.mount();
+    chatScreen(name);
     document.title = name === 'arena' ? 'UNO ARENA — In match' : 'UNO ARENA — Play together. Outsmart everyone.';
   } finally {
     transitioning = false;
@@ -86,8 +91,9 @@ function applyRoute() {
 function startEvents() {
   if (events) events.close();
   events = connectEvents({
-    onSync: (msg) => { applyRoute(); if (current && current.screen.onSync) current.screen.onSync(msg); },
+    onSync: (msg) => { chatSync(msg); applyRoute(); if (current && current.screen.onSync) current.screen.onSync(msg); },
     onUpdate: (msg) => {
+      chatEvents(msg);
       applyRoute();
       if (current && current.screen.onEvents) current.screen.onEvents(msg);
     },
@@ -141,6 +147,7 @@ function paintConn() {
 async function boot() {
   setPrefs({}); // applies the reduce-motion class and keeps sound OFF at startup
   initFx(document.getElementById('fx'));
+  initChat();
 
   const params = new URLSearchParams(location.search);
   const invite = (params.get('room') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
@@ -164,5 +171,5 @@ window.addEventListener('keydown', (e) => {
 registerServiceWorker();
 boot().catch((err) => {
   console.error(err);
-  root.append(h('div', { style: { padding: '24px' } }, 'Something went wrong while starting UNO ARENA. Please reload the page.'));
+  root.append(h('div', { style: { padding: 'calc(24px * var(--s))' } }, 'Something went wrong while starting UNO ARENA. Please reload the page.'));
 });

@@ -1,0 +1,93 @@
+/* =====================================================================
+   Motion graphics: hero choreography, travelling rim lights, frames.
+   Everything here is decoration. It is switched off by reduced motion
+   (both the OS setting and the in-app switch) and never carries meaning
+   on its own. All lengths scale with --s (see js/scale.js).
+   ===================================================================== */
+@property --rim-a { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@keyframes rimLap { to { --rim-a: 360deg; } }
+@keyframes rimIgnite { 0% { --rim-a: 0deg; opacity: 0; } 12% { opacity: 1; } 100% { --rim-a: 720deg; opacity: 1; } }
+@keyframes rimFlash { 0% { filter: brightness(1) drop-shadow(0 0 calc(8px * var(--s)) var(--glow)); } 30% { filter: brightness(1.9) drop-shadow(0 0 calc(18px * var(--s)) var(--glow)); } 100% { filter: brightness(1) drop-shadow(0 0 calc(8px * var(--s)) var(--glow)); } }
+
+/* ---------- welcome: depth layer of out-of-focus metal cards ---------- */
+.welcome { position: relative; isolation: isolate; }
+.welcome > .topbar { position: relative; z-index: 2; }
+.welcome > .hero, .welcome > .foot { position: relative; z-index: 1; }
+.hero-drift { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.drift { position: absolute; left: var(--l); top: var(--t); opacity: var(--o); filter: blur(calc(var(--blur) * 1px * var(--s))) saturate(.85);
+  translate: calc(var(--px, 0) * var(--depth) * -1px * var(--s)) calc(var(--py, 0) * var(--depth) * -1px * var(--s));
+  transition: translate .5s var(--ease); }
+.drift-in { display: block; rotate: var(--rot); animation: driftFloat var(--dur) ease-in-out var(--delay) infinite alternate; will-change: transform; }
+.drift .uno-card.sz-hero { --cw: calc(var(--w) * 1px * var(--s)); }
+@keyframes driftFloat { from { transform: translateY(calc(-12px * var(--s))) rotate(-3deg); } to { transform: translateY(calc(14px * var(--s))) rotate(3deg); } }
+
+/* ---------- welcome: headline ---------- */
+.hero-title .t-line { display: inline-block; animation: lineIn .9s var(--ease) both; animation-delay: var(--d, 0s); }
+@keyframes lineIn { from { clip-path: inset(0 100% 0 0); transform: translateY(.18em); opacity: 0; } to { clip-path: inset(0 0 0 0); transform: none; opacity: 1; } }
+/* a brushed-steel highlight crosses the first line now and then */
+.hero-title .t-steel { text-shadow: none; color: transparent; -webkit-text-fill-color: transparent;
+  background: linear-gradient(105deg, #fff 0%, #fff 41%, #b9d0ff 47%, #fff 50%, #fff 100%) 100% 0 / 320% 100% no-repeat; -webkit-background-clip: text; background-clip: text;
+  animation: lineIn .9s var(--ease) both, steelGlint 11s ease-in-out 1.9s infinite; }
+@keyframes steelGlint { 0%, 62% { background-position: 100% 0; } 100% { background-position: 0 0; } }
+
+/* ---------- practice table: rim light that follows the active colour ---------- */
+.ht-rim { position: absolute; z-index: 1; left: calc(-11px * var(--s)); right: calc(-11px * var(--s)); top: calc(2% - 11px * var(--s)); height: calc(66% + 22px * var(--s)); border-radius: 50%; pointer-events: none;
+  background: conic-gradient(from var(--rim-a), transparent 0 50%, color-mix(in srgb, var(--glow) 30%, transparent) 68%, var(--glow) 86%, #fff 92%, transparent 93% 100%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px * var(--s)), #000 calc(100% - 3px * var(--s))); mask: radial-gradient(farthest-side, transparent calc(100% - 4px * var(--s)), #000 calc(100% - 3px * var(--s)));
+  filter: drop-shadow(0 0 calc(8px * var(--s)) var(--glow)); animation: rimLap 9s linear infinite; }
+.ht-rim.flash { animation: rimLap 9s linear infinite, rimFlash .7s ease-out; }
+.ht.intro .ht-felt { animation: feltIn .8s var(--ease) both; }
+.ht.intro .ht-rim { animation: rimIgnite 1.5s cubic-bezier(.3, .6, .2, 1) .25s both, rimLap 9s linear 1.8s infinite; }
+.ht.intro .ht-piles { animation: pilesIn .7s var(--ease) .35s both; }
+@keyframes feltIn { from { opacity: 0; transform: scale(.9); } to { opacity: 1; transform: none; } }
+@keyframes pilesIn { from { opacity: 0; transform: translateY(calc(-18px * var(--s))) scale(.92); } to { opacity: 1; transform: none; } }
+
+/* ---------- arena: the table rail is lit by a comet that runs in the direction of play, in the active colour ---------- */
+.rail { position: absolute; inset: calc(-11px * var(--s)); border-radius: 50%; pointer-events: none; z-index: 1;
+  background: conic-gradient(from var(--rim-a), transparent 0 52%, color-mix(in srgb, var(--glow) 28%, transparent) 70%, var(--glow) 87%, #fff 93%, transparent 94% 100%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px * var(--s)), #000 calc(100% - 3px * var(--s))); mask: radial-gradient(farthest-side, transparent calc(100% - 4px * var(--s)), #000 calc(100% - 3px * var(--s)));
+  filter: drop-shadow(0 0 calc(9px * var(--s)) var(--glow)); animation: rimLap 10s linear infinite; transition: opacity .4s; }
+.rail.ccw { animation-direction: reverse; }
+
+/* ---------- arena: whoever's turn it is gets a travelling light around their seat ---------- */
+.seat.turn::before { content: ''; position: absolute; inset: calc(-3px * var(--s)); border-radius: calc(var(--r-lg) + 3px * var(--s)); padding: calc(2px * var(--s)); pointer-events: none;
+  background: conic-gradient(from var(--rim-a), transparent 0 55%, rgba(39, 201, 120, .35) 72%, var(--green) 88%, #fff 95%, transparent 96% 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  filter: drop-shadow(0 0 calc(6px * var(--s)) rgba(39, 201, 120, .8)); animation: rimLap 3.2s linear infinite; }
+
+/* ---------- avatar frames ---------- */
+@property --fr-a { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@keyframes frameSpin { to { --fr-a: 360deg; } }
+@keyframes framePulse { 50% { box-shadow: 0 0 calc(18px * var(--s)) calc(1px * var(--s)) rgba(40, 123, 255, .85); } }
+.avatar[data-frame] { padding: var(--fw, calc(3px * var(--s))); box-shadow: none; }
+.avatar[data-frame] svg { border-radius: 50%; }
+.avatar[data-frame="steel"] { background: conic-gradient(from 200deg, #6c7a95, #eef3ff, #7a88a3, #cdd8ef, #6c7a95 55%, #f4f7ff, #6c7a95); }
+.avatar[data-frame="gilded"] { background: conic-gradient(from var(--fr-a), #a8740a, #ffe28a, #b8860b, #f8d56b, #8f6407, #ffeaa0, #a8740a); animation: frameSpin 14s linear infinite; box-shadow: 0 0 calc(12px * var(--s)) calc(-2px * var(--s)) rgba(249, 216, 61, .5); }
+.avatar[data-frame="prism"] { background: conic-gradient(from var(--fr-a), var(--red), var(--yellow), var(--green), var(--blue), var(--red)); animation: frameSpin 6s linear infinite; }
+.avatar[data-frame="neon"] { background: conic-gradient(from var(--fr-a), #1d4ed8, #7ee7ff, #287bff 35%, #153a99 65%, #287bff); animation: frameSpin 4.5s linear infinite, framePulse 2.4s ease-in-out infinite; box-shadow: 0 0 calc(12px * var(--s)) rgba(40, 123, 255, .5); }
+.frame-title { margin: calc(22px * var(--s)) 0 0; font: 700 calc(16px * var(--s)) var(--font-head); }
+.frame-sub { margin: calc(4px * var(--s)) 0 0; font-size: calc(13px * var(--s)); color: var(--text-3); }
+.frame-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: calc(10px * var(--s)); margin-top: calc(14px * var(--s)); }
+.frame-opt { display: flex; flex-direction: column; align-items: center; gap: calc(8px * var(--s)); padding: calc(10px * var(--s)) calc(4px * var(--s)) calc(8px * var(--s)); border-radius: calc(16px * var(--s)); background: rgba(16, 23, 41, .6); box-shadow: inset 0 0 0 calc(1px * var(--s)) var(--border-soft); transition: transform .2s var(--ease-spring), box-shadow .2s; }
+.frame-opt:hover { transform: translateY(calc(-2px * var(--s))); }
+.frame-opt.sel { box-shadow: inset 0 0 0 calc(2px * var(--s)) var(--yellow), 0 0 calc(20px * var(--s)) rgba(249, 216, 61, .25); }
+.frame-name { font-size: calc(12px * var(--s)); font-weight: 600; color: var(--text-2); }
+.frame-opt.sel .frame-name { color: #fff; }
+
+/* ---------- phones: the depth layer would only fight with the form ---------- */
+@media (max-width: 760px) { .hero-drift .drift:nth-child(n+3) { display: none; } .drift { opacity: .14 !important; } }
+@media (max-width: 520px) { .hero-drift { display: none; } }
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .drift-in, .ht-rim, .ht-rim.flash, .hero-title .t-line, .hero-title .t-steel, .ht.intro .ht-felt, .ht.intro .ht-rim, .ht.intro .ht-piles { animation: none !important; }
+  .drift { translate: none; transition: none; }
+  .hero-title .t-steel { background-position: 100% 0; }
+  .avatar[data-frame] { animation: none !important; }
+  .rail, .seat.turn::before { animation: none !important; }
+}
+body.reduce-motion .drift-in, body.reduce-motion .ht-rim, body.reduce-motion .ht-rim.flash, body.reduce-motion .hero-title .t-line, body.reduce-motion .hero-title .t-steel, body.reduce-motion .ht.intro .ht-felt, body.reduce-motion .ht.intro .ht-rim, body.reduce-motion .ht.intro .ht-piles { animation: none !important; }
+body.reduce-motion .drift { translate: none; transition: none; }
+body.reduce-motion .hero-title .t-steel { background-position: 100% 0; }
+body.reduce-motion .avatar[data-frame] { animation: none !important; }
+body.reduce-motion .rail, body.reduce-motion .seat.turn::before { animation: none !important; }

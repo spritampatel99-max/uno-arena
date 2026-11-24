@@ -106,6 +106,8 @@ class Client {
 
   onMessage(msg) {
     if (msg.type === 'sync' || msg.type === 'update') {
+      if (msg.type === 'sync') this.lastSync = msg;
+      else if (msg.chat) this.violations.push('chat history repeated in an update');
       this.state = msg.state;
       if (msg.state.game && !this.firstGame) this.firstGame = JSON.parse(JSON.stringify(msg.state.game));
       this.checkInvariants(msg);
@@ -314,6 +316,20 @@ async function main() {
   assert.equal(bad.json.error, 'BAD_REQUEST');
   ok('reactions: allowlist enforced');
 
+  // table chat over the real wire: delivered to everyone as plain text, sender identity comes from the session, limits enforced, history on reconnect
+  const said = '<b>hi</b> ready? ' + 'x'.repeat(10);
+  const cm = await host.send('chat', { text: said, name: 'Admin', from: 'someone-else' });
+  assert.ok(cm.json.ok, 'chat accepted');
+  await others[0].waitFor(() => others[0].events.some((e) => e.type === 'chat' && e.msg.text === said), 3000, 'chat delivered');
+  const got = others[0].events.find((e) => e.type === 'chat' && e.msg.text === said).msg;
+  assert.equal(got.pid, host.pid, 'sender is the authenticated player, not a claimed one');
+  assert.notEqual(got.name, 'Admin');
+  assert.equal((await host.send('chat', { text: 'y'.repeat(201) })).json.error, 'CHAT_TOO_LONG');
+  assert.equal((await host.send('chat', { text: '   ' })).json.ok, false, 'blank message refused');
+  assert.equal((await host.send('chat', { text: 'too soon' })).json.error, 'RATE_LIMITED', 'back-to-back message refused');
+  assert.equal((await others[0].send('chat_mode', { on: false })).json.ok, false, 'only the host can switch chat off');
+  ok('chat: plain text delivered, identity from session, length and rate limits, host-only switch');
+
   // mid-game: player 3 loses connection, autopilot must keep the game moving, then reconnects
   await host.waitFor((s) => s.game && s.game.round >= 1 && s.game.discardCount > 3, 15000, 'some plays');
   const dropped = others[1];
@@ -328,6 +344,7 @@ async function main() {
   await back.connect();
   await host.waitFor((s) => s.players.find((p) => p.id === dropped.pid && p.connected), 4000, 'reconnected');
   assert.ok(back.state.game || back.state.status === 'COMPLETED', 'reconnect restores full state');
+  assert.ok(back.lastSync && (back.lastSync.chat || []).some((m) => m.text === said), 'reconnect restores chat history');
   back.autoplay = true;
   others[1] = back; all[2] = back;
   ok('reconnect restores state; autopilot kept the game moving');
@@ -342,6 +359,19 @@ async function main() {
   for (const row of results.standings) {
     for (const k of ['name', 'avatar', 'score', 'cardsPlayed', 'cardsDrawn', 'specialCards']) assert.ok(k in row, 'scoreboard field ' + k);
   }
+  // dashboard data: seat order and a cumulative score timeline that agrees with the final standings
+  assert.deepEqual(results.standings.map((s) => s.seat).sort(), [0, 1, 2, 3], 'every row carries its seat');
+  assert.ok(Array.isArray(results.timeline) && results.timeline.length === results.rounds, 'one timeline entry per round');
+  const byId = new Map(results.standings.map((s) => [s.id, s]));
+  let prev = {};
+  results.timeline.forEach((t, i) => {
+    assert.equal(t.round, i + 1, 'timeline rounds are in order');
+    for (const s of results.standings) {
+      assert.ok(t.scores[s.id] >= (prev[s.id] || 0), 'cumulative scores never go down');
+    }
+    prev = t.scores;
+  });
+  for (const [id, row] of byId) assert.equal(prev[id], row.score, 'last timeline entry equals the final score');
   ok(`match finished after ${host.state.game.round} round(s); winner ${results.standings[0].name} with ${results.standings[0].score}`);
 
   for (const c of all) assert.deepEqual(c.violations, [], `${c.name} violations`);

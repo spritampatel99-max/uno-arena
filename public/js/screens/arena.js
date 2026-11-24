@@ -3,6 +3,7 @@
 // that caused each change into animation, sound and log lines. Nothing here decides whether a move is legal.
 import { h, s, clear, Disposer } from '../dom.js';
 import { icon } from '../icons.js';
+import { chatButton } from '../chat.js';
 import { avatar, logoMark } from '../avatars.js';
 import { cardEl, backEl, sortHand, cardName, COLOR_NAME, shapeSvg } from '../cards.js';
 import { store, serverNow, reducedMotion, subscribe } from '../store.js';
@@ -15,6 +16,7 @@ import { createMoments } from '../moments.js';
 import { haptic } from '../haptics.js';
 import { emoteButton, emoteById, emoteBubble } from '../emotes.js';
 import { suggestPlay, suggestColor } from '../hints.js';
+import { uiScale } from '../scale.js';
 
 const SEAT_LAYOUT = { 1: ['top'], 2: ['top-left', 'top-right'], 3: ['left', 'top-left', 'top-right'] };
 const RING_R = 34;
@@ -71,7 +73,7 @@ export function createArena(ctx) {
   const hud = h('header', { class: 'hud' },
     h('div', { class: 'hud-left' }, h('div', { class: 'brand mini' }, logoMark()), roundChip, codeChip),
     h('div', { class: 'hud-mid' }, colorChip, dirChip, timeChip),
-    h('div', { class: 'hud-right' }, soundControl(),
+    h('div', { class: 'hud-right' }, soundControl(), chatButton(),
       h('button', { class: 'icon-btn', 'aria-label': 'Leave match', title: 'Leave match', onclick: leaveMatch }, icon('logout'))));
 
   // table
@@ -89,7 +91,8 @@ export function createArena(ctx) {
   const narrowMq = window.matchMedia('(max-width: 760px)');
   const hint = h('div', { class: 'hint', role: 'status', 'aria-live': 'polite' }, '');
   const bannerLayer = h('div', { class: 'banners', 'aria-live': 'assertive' });
-  const table = h('div', { class: 'table' }, dirRing, h('div', { class: 'felt' }), h('div', { class: 'piles' }, drawBtn, discard), hint, bannerLayer);
+  const rail = h('i', { class: 'rail', 'aria-hidden': 'true' });
+  const table = h('div', { class: 'table' }, dirRing, h('div', { class: 'felt' }), rail, h('div', { class: 'piles' }, drawBtn, discard), hint, bannerLayer);
   const seatsEl = h('div', { class: 'seats' });
   const logEl = h('ul', { class: 'log', 'aria-label': 'Game log', 'aria-live': 'polite' });
   const stage = h('div', { class: 'stage' }, seatsEl, table, logEl);
@@ -102,7 +105,7 @@ export function createArena(ctx) {
     s('circle', { cx: 40, cy: 40, r: RING_R, class: 'ring-fg', 'stroke-dasharray': RING_C, 'stroke-dashoffset': RING_C, transform: 'rotate(-90 40 40)' }));
   const myRingFg = ringSvg.querySelector('.ring-fg');
   const mySeconds = h('div', { class: 'me-seconds mono', 'aria-hidden': 'true' }, '');
-  const myAvatarWrap = h('div', { class: 'me-avatar' }, ringSvg, avatar(player(me).avatar, 52), mySeconds);
+  const myAvatarWrap = h('div', { class: 'me-avatar' }, ringSvg, avatar(player(me).avatar, 52, '', player(me).frame), mySeconds);
   const myName = h('div', { class: 'me-name ellipsis' }, player(me).name);
   const myStatus = h('div', { class: 'me-status' }, '');
   const myScore = h('div', { class: 'me-score mono' }, '0 pts');
@@ -131,8 +134,9 @@ export function createArena(ctx) {
   // ================================================================= sizing
   function setSizes() {
     const w = window.innerWidth; const hgt = window.innerHeight;
-    const cw = Math.round(Math.max(58, Math.min(104, hgt * 0.128, w * 0.19)));
-    const pw = Math.round(Math.max(70, Math.min(124, hgt * 0.15, w * 0.22)));
+    const k = uiScale();
+    const cw = Math.round(Math.max(58, Math.min(104 * k, hgt * 0.128, w * 0.19)));
+    const pw = Math.round(Math.max(70, Math.min(124 * k, hgt * 0.15, w * 0.22)));
     const root = document.documentElement.style;
     root.setProperty('--hand-cw', cw + 'px');
     root.setProperty('--pile-cw', pw + 'px');
@@ -150,6 +154,7 @@ export function createArena(ctx) {
     dirChip.classList.toggle('ccw', g.dir === -1);
     dirChip.querySelector('.dir-text').textContent = g.dir === -1 ? 'Counter-clockwise' : 'Clockwise';
     dirRing.classList.toggle('ccw', g.dir === -1);
+    rail.classList.toggle('ccw', g.dir === -1);
     table.dataset.color = c || '';
     discard.dataset.color = c || '';
   }
@@ -172,7 +177,7 @@ export function createArena(ctx) {
     const ringFg = s('circle', { cx: 40, cy: 40, r: RING_R, class: 'ring-fg', 'stroke-dasharray': RING_C, 'stroke-dashoffset': RING_C, transform: 'rotate(-90 40 40)' });
     const ring = s('svg', { class: 'ring', viewBox: '0 0 80 80', 'aria-hidden': 'true' }, s('circle', { cx: 40, cy: 40, r: RING_R, class: 'ring-bg' }), ringFg);
     const p = player(pid);
-    const av = h('div', { class: 'seat-avatar' }, ring, avatar(p.avatar, 52));
+    const av = h('div', { class: 'seat-avatar' }, ring, avatar(p.avatar, 52, '', p.frame));
     const nameEl = h('div', { class: 'seat-name ellipsis' }, p.name);
     const tags = h('div', { class: 'seat-tags' });
     const fan = h('div', { class: 'seat-fan', 'aria-hidden': 'true' });
@@ -240,7 +245,7 @@ export function createArena(ctx) {
       const rot = ((c.id * 37) % 21) - 10;
       const ox = ((c.id * 13) % 15) - 7;
       const oy = ((c.id * 29) % 11) - 5;
-      e.style.transform = `translate(${ox}px, ${oy}px) rotate(${rot}deg)`;
+      e.style.transform = `translate(${ox * uiScale()}px, ${oy * uiScale()}px) rotate(${rot}deg)`;
       discardSlot.append(e);
     }
     drawCount.textContent = String(g.deckCount);
@@ -254,7 +259,7 @@ export function createArena(ctx) {
   }
 
   // ================================================================= hand
-  function cardW() { return Math.round(Math.max(58, Math.min(104, window.innerHeight * 0.128, window.innerWidth * 0.19))); }
+  function cardW() { return Math.round(Math.max(58, Math.min(104 * uiScale(), window.innerHeight * 0.128, window.innerWidth * 0.19))); }
 
   function isLegal(id) { return st.game.playable.includes(id) || st.game.jumpIn.includes(id); }
 
@@ -310,7 +315,7 @@ export function createArena(ctx) {
     const cw = cardW();
     const ch = cw * 1.5;
     const W = handScroll.clientWidth || window.innerWidth;
-    const pad = 14;
+    const pad = 14 * uiScale();
     const maxSp = cw * 0.62;
     const minSp = cw * 0.36;
     let sp = n > 1 ? Math.min(maxSp, (W - cw - pad * 2) / (n - 1)) : 0;
@@ -319,7 +324,7 @@ export function createArena(ctx) {
     const content = n > 0 ? (n - 1) * sp + cw : 0;
     const trackW = Math.max(W, content + pad * 2);
     handTrack.style.width = trackW + 'px';
-    handTrack.style.height = Math.round(ch + 88) + 'px'; // room above the cards for the hover, hint and selected lift
+    handTrack.style.height = Math.round(ch + 88 * uiScale()) + 'px'; // room above the cards for the hover, hint and selected lift
     handScroll.classList.toggle('scrolling', scrolling);
     const start = (trackW - content) / 2;
     const step = !scrolling && n > 1 ? Math.min(4.4, 40 / (n - 1)) : 0;
@@ -600,10 +605,10 @@ export function createArena(ctx) {
     const ax = anchor.x - box.left; const ay = anchor.y - box.top;
     const roomRight = box.width - (ax + anchor.w); const roomLeft = ax;
     let bx; let by; let tx = '-50%'; let ty = '0%';
-    if (pid === me) { bx = ax + anchor.w + 12; by = ay - 6; tx = '0%'; ty = '-100%'; }
-    else if (roomRight >= 190) { bx = ax + anchor.w + 10; by = ay + anchor.h / 2; tx = '0%'; ty = '-50%'; }
-    else if (roomLeft >= 190) { bx = ax - 10; by = ay + anchor.h / 2; tx = '-100%'; ty = '-50%'; }
-    else { bx = Math.max(100, Math.min(box.width - 100, ax + anchor.w / 2)); by = ay + anchor.h + 8; }
+    if (pid === me) { bx = ax + anchor.w + 12 * uiScale(); by = ay - 6 * uiScale(); tx = '0%'; ty = '-100%'; }
+    else if (roomRight >= 190 * uiScale()) { bx = ax + anchor.w + 10 * uiScale(); by = ay + anchor.h / 2; tx = '0%'; ty = '-50%'; }
+    else if (roomLeft >= 190 * uiScale()) { bx = ax - 10 * uiScale(); by = ay + anchor.h / 2; tx = '-100%'; ty = '-50%'; }
+    else { const m = 100 * uiScale(); bx = Math.max(m, Math.min(box.width - m, ax + anchor.w / 2)); by = ay + anchor.h + 8 * uiScale(); }
     b.style.setProperty('--bx', bx + 'px'); b.style.setProperty('--by', by + 'px');
     b.style.setProperty('--tx', tx); b.style.setProperty('--ty', ty);
     emoteLayer.append(b);
@@ -1017,7 +1022,7 @@ export function createArena(ctx) {
       const rows = [...st.players].sort((a, b) => b.score - a.score).map((p) => {
         const pct = Math.min(100, (p.score / st.settings.winningScore) * 100);
         return h('li', { class: 'ro-row' + (p.id === rr.winnerId ? ' win' : '') },
-          avatar(p.avatar, 36),
+          avatar(p.avatar, 36, '', p.frame),
           h('div', { class: 'grow' },
             h('div', { class: 'row' }, h('span', { class: 'ro-name ellipsis grow' }, p.id === me ? `${p.name} (you)` : p.name), h('b', { class: 'mono' }, String(p.score))),
             h('div', { class: 'bar' }, h('i', { style: { width: pct + '%' } }))));
@@ -1026,7 +1031,7 @@ export function createArena(ctx) {
       clear(overlay);
       overlay.append(h('div', { class: 'round-card panel' },
         h('div', { class: 'label' }, `Round ${rr.round} complete`),
-        h('div', { class: 'ro-winner' }, winner ? avatar(winner.avatar, 64) : null,
+        h('div', { class: 'ro-winner' }, winner ? avatar(winner.avatar, 64, '', winner.frame) : null,
           h('div', {}, h('div', { class: 'h1' }, rr.winnerId === me ? 'You win the round!' : `${nameOf(rr.winnerId)} wins the round`), h('div', { class: 'muted' }, `+${rr.points} points`))),
         h('ul', { class: 'ro-list' }, rows),
         h('div', { class: 'ro-next dim' }, 'Next round in ', h('b', { class: 'mono ro-secs' }, ''), ' s · first to ', String(st.settings.winningScore), ' wins')));

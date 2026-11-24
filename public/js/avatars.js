@@ -80,8 +80,14 @@ export function avatarSVG(id) {
     <rect width="64" height="64" fill="url(#${g})"/>${ART[key]}</svg>`);
 }
 
-export function avatar(id, size = 48, extraClass = '') {
-  return h('span', { class: 'avatar ' + extraClass, style: { width: size + 'px', height: size + 'px' } }, avatarSVG(id));
+// Cosmetic rings (the server keeps the same list; see FRAMES in server/rooms.js).
+export const FRAME_IDS = ['steel', 'gilded', 'prism', 'neon'];
+export const FRAME_LABEL = { steel: 'Brushed steel', gilded: 'Gilded', prism: 'Prism', neon: 'Neon' };
+
+export function avatar(id, size = 48, extraClass = '', frame = 'steel') {
+  const f = FRAME_IDS.includes(frame) ? frame : 'steel';
+  const fw = Math.max(2, Math.round(size * 0.065 * 10) / 10);
+  return h('span', { class: 'avatar ' + extraClass, dataset: { frame: f }, style: { width: `calc(${size}px * var(--s))`, height: `calc(${size}px * var(--s))`, '--fw': `calc(${fw}px * var(--s))` } }, avatarSVG(id));
 }
 
 /** UNO ARENA mark: a tilted card with a four-colour ring. */

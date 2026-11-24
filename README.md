@@ -51,6 +51,20 @@ Other endpoints: `GET /healthz` (liveness) and `GET /api/stats` (live room/playe
   <img src="docs/screenshots/victory.png" alt="Victory screen" width="32%">
 </p>
 
+<p align="center">
+  <img src="docs/screenshots/dashboard-4k.jpg" alt="The victory screen as a match dashboard, captured at 3840×2160" width="100%">
+</p>
+<p align="center">
+  <img src="docs/screenshots/frames.png" alt="Avatar and frame picker" width="49%">
+  <img src="docs/screenshots/victory-phone.png" alt="The match dashboard on a phone" width="22%">
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/chat-lobby.png" alt="Lobby with a chat preview bubble and unread badge" width="32%">
+  <img src="docs/screenshots/chat-arena.png" alt="Table chat open beside the arena" width="32%">
+  <img src="docs/screenshots/chat-phone.png" alt="Chat as a bottom sheet on a phone" width="32%">
+</p>
+
 More captures (phone layouts, the invite QR, the How to play guide) are in `docs/screenshots/`.
 
 ## The four screens
@@ -58,7 +72,7 @@ More captures (phone layouts, the invite QR, the How to play guide) are in `docs
 1. **Welcome** – nickname, avatar, Create Room / Join Room, a playable practice table, How to play, Settings and sound toggles, and an Install button when the browser offers one.
 2. **Room setup & lobby** – Create/Join tabs with six code boxes; once inside, the code card, four player slots, host settings, bot controls and the Start button with a countdown.
 3. **Game arena** – opponent seats, draw and discard piles, active-colour indicator, turn timer rings, fan-shaped hand, UNO button, live log.
-4. **Victory** – champion, final standings (rank, avatar, name, score, cards played, cards drawn, special cards), and Play Again / Return to Lobby / Exit Room.
+4. **Victory** – a match dashboard: an animated podium, match summary figures, a score-race chart (cumulative score after every round, with hover), per-stat bars (points, cards played, cards drawn, special cards), the full scoreboard (rank, player, score, rounds won, played, drawn, special), highlights, and Play Again / Return to Lobby / Exit Room. Every number comes from the server's match record; nothing is invented.
 
 Everything else (wild colour picker, round summary, settings, errors) is a modal or overlay, as the brief required.
 
@@ -101,6 +115,10 @@ Settings lock once the match starts. Changing them is host-only and validated on
 ### Look and feel
 
 - **Metal cards (the default).** Every card is a bevelled steel plate: a chrome frame, an anodised brushed-metal face and a polished chrome oval with the number engraved in colour. Wilds are gunmetal with an enamelled colour wheel, and the backs are metal too. A card that lands on the table throws a few sparks and a glint runs across the plate. **Settings → Card material** switches to the printed **Classic** look at any time, even mid-game.
+- **Animated hero.** The welcome headline writes itself in, a brushed-steel glint crosses the first line now and then, a slow drift of out-of-focus metal cards gives the page depth (and shifts a little with the pointer), and the practice table opens with a short choreography: the rim light ignites, cards fan out and each valid play makes the rim flash. Hidden on phones where it would only add haze.
+- **Avatar frames.** Four rings: *Brushed steel* (default), *Gilded*, *Prism* and *Neon*, chosen next to your avatar on the welcome screen. They are cosmetic, the server only accepts those four names (anything else becomes steel, bots always wear steel), and everyone in the room sees them in the lobby, the arena, chat and the results.
+- **Table lights.** A comet of light runs around the table rim in the direction of play (it reverses with Reverse and takes the active colour), and a green comet travels around the seat whose turn it is.
+- **4K and big screens.** The whole interface scales with the window: a single factor (`--s`, 1 at 1920×1080 and below, up to 2 at 3840×2160) multiplies every length, and the card, flight and particle code reads the same factor, so a 4K screen shows the same layout at twice the size rather than a small UI in a big empty window. Below 1920×1080 nothing changes. Geometry at 3840×2160 was checked against 1920×1080 and is an exact 2×.
 - **Opening deal.** The deck is riffled, cards are dealt around the table and the starter is flipped, instead of the hand simply appearing.
 - **Card moments.** Draw Two / Draw Four, Skip, Reverse, a colour change and UNO each get a short full-table flourish, and a clear **turn cue** (a glow on the table, a chime, vibration on phones that support it, and `● Your turn` in the browser tab title while the tab is in the background).
 - **Table themes** (Midnight, Emerald, Crimson, Aurora) and **card backs** (Classic, Gilded, Neon grid, Mono). Themes only recolour the room; the four UNO colours never change, so cards stay readable everywhere.
@@ -119,9 +137,20 @@ Settings lock once the match starts. Changing them is host-only and validated on
 ### Controls and play aids
 
 - Fan-shaped hand with hover lift, tap/click to select and play, **drag-and-drop** onto the table, and sort by **colour** or **number**.
-- **Keyboard:** arrow keys + Enter to play, `D` draw, `P` pass, `U` UNO, `E` open reactions, `R B Y G` in the colour picker.
+- **Keyboard:** arrow keys + Enter to play, `D` draw, `P` pass, `U` UNO, `E` open reactions, `C` open or close chat, `R B Y G` in the colour picker.
 - **Move hints** (Settings, off by default): marks a good card with a star and suggests a colour after a wild. It only ranks cards the server already allows, and prefers shedding high-value cards and saving wilds.
-- **Reactions:** eight preset emotes (GG, Nice!, Wow, Haha, Thanks, Hmm…, On fire, Great play) shown as a bubble beside the sender. The list is fixed, nobody can type free text, the server rate-limits them, and bots occasionally answer or say "gg" after a round. They are available in the arena only.
+- **Reactions:** eight preset emotes (GG, Nice!, Wow, Haha, Thanks, Hmm…, On fire, Great play) shown as a bubble beside the sender. The list is fixed (no free text), the server rate-limits them, and bots occasionally answer or say "gg" after a round. They are available in the arena only; typed messages are the separate **Table chat** below.
+
+### Table chat
+
+Players can talk while they play, in the lobby, during a match and on the results screen. One chat belongs to the room and follows you between screens, so nothing is lost when the lobby redraws or a round ends.
+
+- **Open it** with the chat button in the top bar or the `C` key (`Esc` closes it). On desktop it is a floating panel (bottom-right in the arena, bottom-left in the lobby so it never covers the Start button). On phones it is a **bottom sheet** that rides above the on-screen keyboard and closes when a match starts, so the table is visible.
+- **New messages while it is closed** show an unread badge, a short preview bubble and a soft chime (when sound is on). **Settings → Chat alerts** turns the bubble and chime off; the badge stays.
+- **It never makes you miss your move.** When it is your turn and the chat is open, a yellow strip says so, with a *Back to table* button.
+- **Everyone's messages are plain text.** Links aren't clickable and markup is shown as typed. Names and avatars come from the server session, so a message can't claim to be from someone else.
+- **Limits:** 200 characters per message, at most 5 messages per 10 seconds per player and never closer than half a second, enforced on the server. Late joiners and reconnecting players get the last 60 messages.
+- **Control:** any player can **mute** another for themselves (kept for the tab session). The **host can switch chat off** for the room (Chat button → people icon → *Allow chat in this room*); the input is disabled for everyone and the server refuses messages until it is switched back on.
 
 ### Inviting and installing
 
@@ -133,13 +162,13 @@ Settings lock once the match starts. Changing them is host-only and validated on
 ```
 server/
   engine.js   Pure, deterministic rules engine (injectable RNG and clock). No I/O.
-  rooms.js    RoomManager: rooms, lobby, presence, bots, timers, reactions, per-player views, results.
+  rooms.js    RoomManager: rooms, lobby, presence, bots, timers, reactions, table chat, per-player views, results.
   index.js    HTTP server: static files, JSON actions, SSE streams, security headers, rate limits.
 public/
   index.html, favicon.svg, manifest.webmanifest, sw.js, icons/
-  css/        base · cards · themes · metal · extras · screens · arena
-  js/         main, store, net, audio, sound/kit, fx, anim, moments, hero-table, hints, emotes,
-              themes, settings, guide, haptics, pwa, qr, qr-view, ui, cards, avatars, icons, dom
+  css/        base · cards · themes · metal · extras · screens · arena · motion · dashboard · chat
+  js/         main, scale, store, net, audio, sound/kit, fx, anim, moments, hero-table, hints, emotes,
+              chat, themes, settings, guide, haptics, pwa, qr, qr-view, ui, cards, avatars, icons, dom
   js/screens/ welcome · room · arena · results
 tests/        engine · rooms · hints · qr · sound (node:test) · simulate.js · check-syntax.js
 design-reference/  the original master prompt and four Stitch HTML screens
@@ -154,31 +183,33 @@ docs/screenshots/  captures of the finished game (desktop and phone)
 
 | Method & path | Purpose |
 |---|---|
-| `POST /api/rooms` | Create a room → `{code, playerId, token}` |
-| `POST /api/rooms/join` | Join by code |
+| `POST /api/rooms` | Create a room → `{code, playerId, token}`. Body: `name`, `avatar`, optional `frame` (`steel` `gilded` `prism` `neon`) |
+| `POST /api/rooms/join` | Join by code (same body plus `code`) |
 | `POST /api/rooms/resume` | Restore a session after refresh |
-| `POST /api/action` | `settings` `add_bot` `remove_bot` `kick` `start` `leave` `play` `draw` `pass` `uno` `catch` `rematch` `to_lobby` `emote` |
-| `GET /api/events?code&pid&token` | SSE stream: `sync`, `update`, `closed`, `kicked` |
+| `POST /api/action` | `settings` `add_bot` `remove_bot` `kick` `start` `leave` `play` `draw` `pass` `uno` `catch` `rematch` `to_lobby` `emote` `chat` `chat_mode` |
+| `GET /api/events?code&pid&token` | SSE stream (when a match ends, the state carries `results`: `standings` with `seat`, `rank`, score and per-player stats, plus `timeline`, the cumulative score after each round): `sync` (full state, plus chat history), `update` (state + events, including `chat` and `chat_mode`), `closed`, `kicked` |
 | `GET /api/stats` · `GET /healthz` | Counters / liveness |
 
 ### Security notes
 
-Session tokens are random and compared in constant time; mutating requests must be JSON with a matching `Origin`; bodies over 10 KB get `413`; per-IP token-bucket rate limits and an SSE connection cap (12 per IP); strict CSP, `nosniff`, `no-referrer` and frame-denial headers; static serving is path-traversal safe; nicknames are validated and rendered as text only. Rooms live in memory – there is no database and no accounts.
+Session tokens are random and compared in constant time; mutating requests must be JSON with a matching `Origin`; bodies over 10 KB get `413`; per-IP token-bucket rate limits and an SSE connection cap (12 per IP); strict CSP, `nosniff`, `no-referrer` and frame-denial headers; static serving is path-traversal safe; nicknames and chat messages are validated, length- and rate-limited, and rendered as text only (`textContent`, never HTML). Rooms live in memory – there is no database and no accounts.
 
 ## Testing
 
 ```bash
-npm test             # 67 node:test tests: 42 rules, 7 room/reaction, 9 move-hint, 6 QR, 3 sound
+npm test             # 80 node:test tests: 42 rules, 20 room/reaction/chat/frame, 9 move-hint, 6 QR, 3 sound
 npm run simulate     # boots a real server and plays full matches over HTTP/SSE:
                      #   lobby errors, kick, late join, reconnection, hidden-hand leak check,
                      #   card conservation on every update, rematch, host transfer, rate limiting,
-                     #   reactions (allowlist, rate limit, bots answering)
+                     #   reactions (allowlist, rate limit, bots answering),
+                     #   chat (identity from session, length and rate limits, host-only switch, history on reconnect),
+                     #   results dashboard data (seat order, cumulative score timeline agrees with the final scores)
 npm run check        # parses every server and client file; verifies client imports resolve
 ```
 
 - The QR encoder is pinned by golden hashes. During development every generated code was also decoded with OpenCV's QR detector to confirm that real scanners read it.
 - The sound test runs the whole kit against a recording stand-in for the Web Audio graph (Node has none): every effect must schedule without errors, and the metal effects and the metal-voice swaps must exist. Loudness and clipping were measured separately in Chromium with an `OfflineAudioContext`: the clank and clang sit at the level of the existing card sound (about -18 and -15 dB RMS) with peaks under 0.9, so they can't clip.
-- The browser flow (welcome practice table → create room → add bots → settings → deal → drag-and-drop and tap plays → special cards → UNO → round over → results, on a 1366×768 desktop and an iPhone 13 profile) was driven end to end in headless Chromium: it played whole matches to the results screen with no console errors and no horizontal overflow. Those scripts aren't shipped because they need Playwright, which this project deliberately doesn't depend on.
+- The browser flow (welcome practice table → create room → add bots → settings → deal → drag-and-drop and tap plays → special cards → UNO → round over → results, on a 1366×768 desktop and an iPhone 13 profile) was driven end to end in headless Chromium: it played whole matches to the results screen with no console errors and no horizontal overflow. Chat was checked the same way with two real browser clients (a desktop host and an iPhone 13 guest): sending and receiving in the lobby and the arena, unread badge and preview bubble, `C` and `Esc`, no game shortcuts while typing, mute, host switch off and on, history after a page reload, the rate-limit error, a message containing `<img onerror>` (shown as text, nothing executed), the turn strip, and no horizontal overflow on the phone. The look-and-feel work was checked the same way: the welcome hero, the frame picker, the arena rim and active-seat lights and the results dashboard were screenshotted at 1440×900, 1100 wide, 3840×2160 and an iPhone 13 profile, from a real played match, with no console errors and no horizontal overflow. A 1766-element geometry comparison confirmed that the scale system leaves layouts at or below 1920×1080 pixel-identical to before. Those scripts aren't shipped because they need Playwright, which this project deliberately doesn't depend on.
 
 ## Deployment
 
@@ -196,10 +227,15 @@ To move to the originally suggested Supabase/Vercel stack later, `server/engine.
 ## Known limits
 
 - In-memory rooms: a server restart ends all games.
-- Names and rooms are anonymous; there are no accounts, free-text chat or persistent leaderboards. Reactions are a fixed set and only work inside the arena.
+- Names and rooms are anonymous; there are no accounts or persistent leaderboards. Reactions are a fixed set and only work inside the arena.
 - Touch devices can't drag-and-drop cards (tap to select, then tap again to play).
 - All sound and music is synthesised, not recorded. The metal clank is a physical model, so it is a clean steel "tink" rather than a studio sample. It has only been tuned by measurement and by ear in a browser, not on a wide range of speakers.
 - Vibration works only where the browser provides the Vibration API (not iOS Safari).
 - Installing UNO ARENA as an app doesn't make it playable offline: the game needs the server. Only the shell is cached.
 - A QR invite only helps other devices if you opened the game by a network address (such as `http://192.168.x.x:3000`), not `localhost`. The lobby warns about this.
 - The desktop table is sized with CSS container-query units (Chrome and Edge 105+, Safari 16+, Firefox 110+). Older browsers fall back to a window-based size.
+- 4K was verified in headless Chromium at 3840×2160 only, not on a physical 4K display, and the phone layouts only in an emulated iPhone. The motion graphics (travelling lights, rotating frame rings) use CSS `@property` (Chrome and Edge 85+, Safari 16.4+, Firefox 128+); older browsers show the same rings and lights static. All of it is decoration and is switched off by reduced motion.
+- Frames are cosmetic only and are not saved on the server: they live in your browser profile and are sent when you create or join a room.
+- The dashboard's yellow and green sit outside the lightness band of the colour-blind palette checker we ran, because the four UNO colours are fixed by the brief. Players are therefore never told apart by colour alone: every bar and line also has the player's avatar or a legend entry, the exact values are printed, and the scoreboard below repeats everything as text.
+- Chat is plain text only: no links, images or formatting. There is no word filter; the safeguards are the host's on/off switch, per-player mute and the server rate limit. Muting is local to your browser tab. The last 60 messages are kept in memory with the room and disappear when the room closes. Bots don't chat.
+- On phones the chat sheet moves above the keyboard using the browser's VisualViewport API. That was checked in an emulated iPhone, not on real devices, so keyboard placement may differ on some browsers.

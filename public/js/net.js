@@ -33,14 +33,14 @@ export function action(type, args = {}) {
   return api('/api/action', { code: s.code, pid: s.pid, token: s.token, type, ...args });
 }
 
-export async function createRoom(name, avatar) {
-  const res = await api('/api/rooms', { name, avatar });
+export async function createRoom(name, avatar, frame) {
+  const res = await api('/api/rooms', { name, avatar, frame });
   if (res.ok) setSession({ code: res.code, pid: res.pid, token: res.token });
   return res;
 }
 
-export async function joinRoom(code, name, avatar) {
-  const res = await api('/api/rooms/join', { code, name, avatar });
+export async function joinRoom(code, name, avatar, frame) {
+  const res = await api('/api/rooms/join', { code, name, avatar, frame });
   if (res.ok) setSession({ code: res.code, pid: res.pid, token: res.token });
   return res;
 }

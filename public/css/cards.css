@@ -2,21 +2,21 @@
    Card faces. Every size derives from --cw (card width) through --u.
    ===================================================================== */
 .uno-card {
-  --cw: 92px;
+  --cw: calc(92px * var(--s));
   --u: calc(var(--cw) / 100);
   --cc: var(--red); --cd: #c21f2c; --c1: #ff6670; --c2: #e0303c; --glyph: #d7222f;
   position: relative; width: var(--cw); height: calc(var(--cw) * 1.5); flex: none;
   border-radius: calc(var(--u) * 11); user-select: none; -webkit-user-select: none;
   background: #fff; padding: calc(var(--u) * 4.5);
-  box-shadow: 0 calc(var(--u) * 6) calc(var(--u) * 16) rgba(2, 5, 14, .55), 0 1px 0 rgba(255, 255, 255, .5) inset;
+  box-shadow: 0 calc(var(--u) * 6) calc(var(--u) * 16) rgba(2, 5, 14, .55), 0 calc(1px * var(--s)) 0 rgba(255, 255, 255, .5) inset;
   font-family: var(--font-display);
 }
-.uno-card.sz-hand { --cw: var(--hand-cw, 92px); }
-.uno-card.sz-pile { --cw: var(--pile-cw, 104px); }
-.uno-card.sz-mini { --cw: 46px; }
-.uno-card.sz-xs { --cw: 30px; }
-.uno-card.sz-hero { --cw: 150px; }
-.uno-card.sz-big { --cw: 120px; }
+.uno-card.sz-hand { --cw: var(--hand-cw, calc(92px * var(--s))); }
+.uno-card.sz-pile { --cw: var(--pile-cw, calc(104px * var(--s))); }
+.uno-card.sz-mini { --cw: calc(46px * var(--s)); }
+.uno-card.sz-xs { --cw: calc(30px * var(--s)); }
+.uno-card.sz-hero { --cw: calc(150px * var(--s)); }
+.uno-card.sz-big { --cw: calc(120px * var(--s)); }
 .uno-card.c-blue { --cc: var(--blue); --cd: #1457c9; --c1: #4b92ff; --c2: #1d65e0; --glyph: #1a5fd8; }
 .uno-card.c-yellow { --cc: var(--yellow); --cd: #b98e00; --c1: #ffe56a; --c2: #f3c91f; --glyph: #a67c00; }
 .uno-card.c-green { --cc: var(--green); --cd: #129657; --c1: #41dd90; --c2: #1eb06a; --glyph: #0f8a4f; }
@@ -74,15 +74,15 @@
 .uno-card.sz-xs .idx, .uno-card.sz-xs .glyph > *:not(.num) { }
 
 /* ----- colour chips / pickers ----- */
-.color-dot { display: inline-block; width: 14px; height: 14px; border-radius: 50%; background: var(--dot, #888); box-shadow: 0 0 0 2px rgba(255, 255, 255, .85), 0 0 14px var(--dot, #888); }
+.color-dot { display: inline-block; width: calc(14px * var(--s)); height: calc(14px * var(--s)); border-radius: 50%; background: var(--dot, #888); box-shadow: 0 0 0 calc(2px * var(--s)) rgba(255, 255, 255, .85), 0 0 calc(14px * var(--s)) var(--dot, #888); }
 .color-dot.red { --dot: var(--red); } .color-dot.blue { --dot: var(--blue); } .color-dot.yellow { --dot: var(--yellow); } .color-dot.green { --dot: var(--green); }
 
-.color-pick { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 22px; }
-.color-pick button { position: relative; aspect-ratio: 1.35; border-radius: 50%/60%; border-radius: 24px; display: grid; place-items: center; font-family: var(--font-head); font-weight: 700; letter-spacing: .08em; font-size: 14px; color: #fff; text-transform: uppercase;
-  background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, .4), transparent 45%), var(--cc); box-shadow: 0 14px 30px -8px var(--cc), inset 0 0 0 3px rgba(255, 255, 255, .25); transition: transform .2s var(--ease-spring), box-shadow .2s; }
-.color-pick button:hover, .color-pick button:focus-visible { transform: scale(1.06); box-shadow: 0 18px 40px -6px var(--cc), inset 0 0 0 4px #fff; }
-.color-pick .kb { position: absolute; top: 8px; right: 12px; font-size: 11px; opacity: .8; }
+.color-pick { display: grid; grid-template-columns: repeat(2, 1fr); gap: calc(16px * var(--s)); margin-top: calc(22px * var(--s)); }
+.color-pick button { position: relative; aspect-ratio: 1.35; border-radius: 50%/60%; border-radius: calc(24px * var(--s)); display: grid; place-items: center; font-family: var(--font-head); font-weight: 700; letter-spacing: .08em; font-size: calc(14px * var(--s)); color: #fff; text-transform: uppercase;
+  background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, .4), transparent 45%), var(--cc); box-shadow: 0 calc(14px * var(--s)) calc(30px * var(--s)) calc(-8px * var(--s)) var(--cc), inset 0 0 0 calc(3px * var(--s)) rgba(255, 255, 255, .25); transition: transform .2s var(--ease-spring), box-shadow .2s; }
+.color-pick button:hover, .color-pick button:focus-visible { transform: scale(1.06); box-shadow: 0 calc(18px * var(--s)) calc(40px * var(--s)) calc(-6px * var(--s)) var(--cc), inset 0 0 0 calc(4px * var(--s)) #fff; }
+.color-pick .kb { position: absolute; top: calc(8px * var(--s)); right: calc(12px * var(--s)); font-size: calc(11px * var(--s)); opacity: .8; }
 .color-pick .r { --cc: var(--red); } .color-pick .b { --cc: var(--blue); } .color-pick .y { --cc: var(--yellow); color: #2a2200; } .color-pick .g { --cc: var(--green); color: #052414; }
 .color-pick.round { grid-template-columns: repeat(4, 1fr); }
-.color-pick.round button { aspect-ratio: 1; border-radius: 50%; font-size: 12px; }
-@media (max-width: 420px) { .color-pick.round { gap: 10px; } .color-pick.round button { font-size: 10px; } }
+.color-pick.round button { aspect-ratio: 1; border-radius: 50%; font-size: calc(12px * var(--s)); }
+@media (max-width: 420px) { .color-pick.round { gap: calc(10px * var(--s)); } .color-pick.round button { font-size: calc(10px * var(--s)); } }

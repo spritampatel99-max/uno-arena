@@ -16,6 +16,8 @@ const E = require('./engine');
 const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 const CODE_LENGTH = 6;
 const AVATARS = ['fox', 'bunny', 'panda', 'cat', 'penguin', 'dragon'];
+// Cosmetic avatar rings. Chosen on the welcome screen, validated here, and shown to everyone at the table.
+const FRAMES = ['steel', 'gilded', 'prism', 'neon'];
 const NAME_RE = /^[\p{L}\p{N}][\p{L}\p{N} _.\-]{1,15}$/u;
 const MAX_ROOMS = 500;
 // Quick reactions. A fixed allowlist, so nobody can type free text at another player.
@@ -24,6 +26,11 @@ const EMOTE_REPLY = { gg: 'gg', nice: 'thanks', wow: 'think', haha: 'haha', than
 const EMOTE_BURST = 3;        // at most 3 reactions...
 const EMOTE_WINDOW_MS = 6000; // ...per 6 seconds per player
 const EMOTE_GAP_MS = 700;     // and never closer together than this
+const CHAT_MAX_CHARS = 200;   // longest chat message, in characters
+const CHAT_HISTORY = 60;      // messages kept per room for people who join or reconnect
+const CHAT_BURST = 5;         // at most 5 messages...
+const CHAT_WINDOW_MS = 10000; // ...per 10 seconds per player
+const CHAT_GAP_MS = 500;      // and never closer together than this
 
 const MESSAGES = {
   EMPTY_CODE: 'PLEASE ENTER A ROOM CODE.',
@@ -59,6 +66,8 @@ const MESSAGES = {
   NOT_PLAYING: 'THE GAME IS NOT IN PROGRESS.',
   NOT_IN_GAME: 'YOU ARE NOT IN THIS GAME.',
   BOT_NOT_FOUND: 'THAT BOT IS NOT IN THE ROOM.',
+  CHAT_OFF: 'CHAT IS TURNED OFF IN THIS ROOM.',
+  CHAT_TOO_LONG: 'THAT MESSAGE IS TOO LONG (200 CHARACTERS AT MOST).',
 };
 const msg = (code) => MESSAGES[code] || 'SOMETHING WENT WRONG.';
 const fail = (error) => ({ ok: false, error, message: msg(error) });
@@ -94,6 +103,21 @@ function normalizeCode(raw) {
 function cleanName(raw) {
   const s = String(raw == null ? '' : raw).normalize('NFC').replace(/\s+/g, ' ').trim();
   return NAME_RE.test(s) ? s : null;
+}
+
+/**
+ * Chat text is plain text. Control characters, zero-width characters and the bidirectional overrides (which can make
+ * text read backwards or hide it) are dropped, long runs of stacked combining marks are cut, and whitespace is
+ * collapsed. Nothing is HTML-escaped here: the client only ever renders it with textContent, so "<3" stays "<3".
+ */
+function cleanChat(raw) {
+  if (typeof raw !== 'string' || raw.length > CHAT_MAX_CHARS * 10) return null;
+  const s = raw.normalize('NFC')
+    .replace(/[\u0000-\u001F\u007F-\u009F\u200B-\u200F\u202A-\u202E\u2060-\u2064\u2066-\u2069\uFEFF]/g, ' ')
+    .replace(/(\p{M}{2})\p{M}+/gu, '$1')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return s || null;
 }
 
 class RoomManager {
@@ -134,13 +158,14 @@ class RoomManager {
   active(room) { return [...room.players.values()].filter((p) => !p.left); }
   humans(room) { return this.active(room).filter((p) => !p.isBot); }
 
-  makePlayer(room, { name, avatar, isBot = false }) {
+  makePlayer(room, { name, avatar, frame, isBot = false }) {
     const now = this.now();
     const p = {
       id: this.newId(),
       token: isBot ? null : this.newToken(),
       name: this.uniqueName(room, name),
       avatar: isBot ? 'bot' : (AVATARS.includes(avatar) ? avatar : AVATARS[Math.floor(this.rng() * AVATARS.length)]),
+      frame: !isBot && FRAMES.includes(frame) ? frame : 'steel',
       isBot,
       connected: true, // humans get a short grace period to open their event stream
       conns: new Set(),
@@ -170,7 +195,7 @@ class RoomManager {
 
   // ------------------------------------------------------------ lobby API
 
-  createRoom({ name, avatar }) {
+  createRoom({ name, avatar, frame }) {
     const clean = cleanName(name);
     if (!clean) return fail('NAME_REQUIRED');
     if (this.rooms.size >= MAX_ROOMS) return fail('SERVER_BUSY');
@@ -193,8 +218,11 @@ class RoomManager {
       botDue: null,
       catchDue: new Map(),
       recent: [],
+      chatOn: true,
+      chat: [],
+      chatSeq: 0,
     };
-    const host = this.makePlayer(room, { name: clean, avatar });
+    const host = this.makePlayer(room, { name: clean, avatar, frame });
     room.hostId = host.id;
     this.rooms.set(code, room);
     return { ok: true, code, pid: host.id, token: host.token };
@@ -209,7 +237,7 @@ class RoomManager {
     return { room, code };
   }
 
-  joinRoom({ code, name, avatar }) {
+  joinRoom({ code, name, avatar, frame }) {
     const chk = this.checkCode(code);
     if (chk.error) return fail(chk.error);
     const room = chk.room;
@@ -219,7 +247,7 @@ class RoomManager {
     if (this.active(room).length >= room.settings.maxPlayers) return fail('ROOM_FULL');
     const clean = cleanName(name);
     if (!clean) return fail('NAME_REQUIRED');
-    const p = this.makePlayer(room, { name: clean, avatar });
+    const p = this.makePlayer(room, { name: clean, avatar, frame });
     room.lastActivity = this.now();
     this.emit(room, [{ type: 'player_joined', pid: p.id, name: p.name }]);
     return { ok: true, code: room.code, pid: p.id, token: p.token };
@@ -242,7 +270,7 @@ class RoomManager {
     const wasDisconnected = !player.connected;
     player.connected = true;
     player.disconnectedAt = 0;
-    conn.send({ type: 'sync', seq: room.seq, serverTime: this.now(), state: this.viewFor(room, pid) });
+    conn.send({ type: 'sync', seq: room.seq, serverTime: this.now(), state: this.viewFor(room, pid), chat: room.chat.slice() });
     if (wasDisconnected) this.emit(room, [{ type: 'player_reconnected', pid, name: player.name }]);
     return {
       ok: true,
@@ -279,6 +307,7 @@ class RoomManager {
         id: p.id,
         name: p.name,
         avatar: p.avatar,
+        frame: p.frame,
         isBot: p.isBot,
         isHost: p.id === room.hostId,
         connected: p.connected,
@@ -296,6 +325,7 @@ class RoomManager {
       seq: room.seq,
       serverTime: now,
       settings: room.settings,
+      chatOn: room.chatOn,
       players,
       countdownEndsAt: room.status === 'STARTING' ? room.countdownEndsAt : 0,
       recent: room.recent,
@@ -337,13 +367,15 @@ class RoomManager {
 
   buildResults(room) {
     const m = room.match;
-    const rows = m.seats.map((pid) => {
+    const rows = m.seats.map((pid, seat) => {
       const p = room.players.get(pid);
       const st = m.stats[pid];
       return {
         id: pid,
+        seat,
         name: p ? p.name : 'Player',
         avatar: p ? p.avatar : 'bot',
+        frame: p ? p.frame : 'steel',
         isBot: p ? p.isBot : false,
         left: !m.order.includes(pid),
         score: m.scores[pid] || 0,
@@ -365,6 +397,8 @@ class RoomManager {
       winningScore: m.settings.winningScore,
       durationMs: (m.endedAt || this.now()) - m.startedAt,
       standings: rows,
+      // cumulative score after every finished round, for the results dashboard's score-race chart
+      timeline: m.history.map((r) => ({ round: r.round, winnerId: r.winnerId, points: r.points, scores: { ...r.scores } })),
     };
   }
 
@@ -761,6 +795,37 @@ const ACTIONS = {
     return { ok: true };
   },
 
+  // Chat: plain text, rate limited per player, kept (the last 60) for people who join or reconnect. Like a reaction it
+  // never counts as activity for the AFK check, so chatting cannot keep a player who has stopped playing on the table.
+  chat(room, player, args, now) {
+    if (room.status === 'CLOSED') return fail('WRONG_STATE');
+    if (!room.chatOn) return fail('CHAT_OFF');
+    if (typeof args.text !== 'string') return fail('BAD_REQUEST');
+    if (args.text.length > CHAT_MAX_CHARS * 10) return fail('CHAT_TOO_LONG');
+    const text = cleanChat(args.text);
+    if (!text) return fail('BAD_REQUEST');
+    if (Array.from(text).length > CHAT_MAX_CHARS) return fail('CHAT_TOO_LONG');
+    const recent = (player.chatAt || []).filter((t) => now - t < CHAT_WINDOW_MS);
+    if (recent.length >= CHAT_BURST || (recent.length && now - recent[recent.length - 1] < CHAT_GAP_MS)) return fail('RATE_LIMITED');
+    recent.push(now);
+    player.chatAt = recent;
+    const msg = { id: ++room.chatSeq, pid: player.id, name: player.name, text, at: now };
+    room.chat.push(msg);
+    if (room.chat.length > CHAT_HISTORY) room.chat.shift();
+    this.emit(room, [{ type: 'chat', msg }]);
+    return { ok: true };
+  },
+
+  chat_mode(room, player, args, now) {
+    if (!this.isHost(room, player)) return fail('FORBIDDEN');
+    if (room.status === 'CLOSED') return fail('WRONG_STATE');
+    if (typeof args.on !== 'boolean') return fail('BAD_REQUEST');
+    if (room.chatOn === args.on) return { ok: true };
+    room.chatOn = args.on;
+    this.emit(room, [{ type: 'chat_mode', on: room.chatOn, pid: player.id, name: player.name }]);
+    return { ok: true };
+  },
+
   leave(room, player, args, now) {
     this.removeFromRoom(room, player, 'left', now);
     return { ok: true };
@@ -836,4 +901,4 @@ RoomManager.prototype.purge = function purge(room) {
   }
 };
 
-module.exports = { RoomManager, MESSAGES, CODE_ALPHABET, CODE_LENGTH, AVATARS, EMOTES, configFromEnv, normalizeCode, cleanName };
+module.exports = { RoomManager, MESSAGES, CODE_ALPHABET, CODE_LENGTH, AVATARS, FRAMES, EMOTES, CHAT_MAX_CHARS, CHAT_HISTORY, configFromEnv, normalizeCode, cleanName, cleanChat };

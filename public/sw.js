@@ -3,7 +3,7 @@
 // It does NOT make the game playable offline: rooms live on the server and every move goes through it.
 // Strategy: network first for the app's own files (so a new version is picked up straight away), falling back to the
 // last copy we saw. The API and the live event stream are never cached or touched.
-const CACHE = 'uno-arena-shell-v2';
+const CACHE = 'uno-arena-shell-v4';
 const PRECACHE = ['/', '/manifest.webmanifest', '/favicon.svg', '/icons/icon-192.png', '/icons/icon-512.png'];
 
 self.addEventListener('install', (event) => {

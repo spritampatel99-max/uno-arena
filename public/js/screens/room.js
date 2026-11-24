@@ -1,6 +1,7 @@
 // Screen 2 — Room setup: create / join tabs, then the room lobby (players, settings, start).
 import { h, clear, Disposer } from '../dom.js';
 import { icon } from '../icons.js';
+import { chatButton } from '../chat.js';
 import { avatar, logoMark } from '../avatars.js';
 import { store, subscribe, serverNow } from '../store.js';
 import { createRoom as apiCreate, joinRoom as apiJoin, action } from '../net.js';
@@ -92,7 +93,7 @@ export function createRoomScreen(ctx, props = {}) {
       if (busy) return;
       createErr.textContent = '';
       setBusy(true, createBtn);
-      const res = await apiCreate(profile().name, profile().avatar);
+      const res = await apiCreate(profile().name, profile().avatar, profile().frame);
       if (!res.ok) { setBusy(false, createBtn, 'Create room', 'plus'); createErr.textContent = res.message; audio.play('error'); shake(createErr); return; }
       audio.play('join');
       ctx.attach();
@@ -106,7 +107,7 @@ export function createRoomScreen(ctx, props = {}) {
       if (code.length < CODE_LEN) { setErr('INVALID ROOM CODE.'); boxes.forEach((b) => b.classList.add('err')); shake(boxes[0].parentElement); audio.play('error'); return; }
       setErr('');
       setBusy(true, joinBtn);
-      const res = await apiJoin(code, profile().name, profile().avatar);
+      const res = await apiJoin(code, profile().name, profile().avatar, profile().frame);
       if (!res.ok) {
         setBusy(false, joinBtn, 'Join room', 'arrowRight');
         setErr(res.message);
@@ -125,13 +126,13 @@ export function createRoomScreen(ctx, props = {}) {
     const createPanel = h('div', { class: 'tab-panel', role: 'tabpanel', id: 'panel-create', 'aria-labelledby': 'tab-create', hidden: tab !== 'create' },
       h('h2', { class: 'h1' }, 'Host a new room'),
       h('p', { class: 'muted' }, 'You become the host: you pick the rules, invite friends with a 6-character code and start the match.'),
-      h('div', { class: 'playing-as' }, avatar(profile().avatar, 52), h('div', {}, h('div', { class: 'label' }, 'Playing as'), h('div', { class: 'h2' }, profile().name || 'Player'))),
+      h('div', { class: 'playing-as' }, avatar(profile().avatar, 52, '', profile().frame), h('div', {}, h('div', { class: 'label' }, 'Playing as'), h('div', { class: 'h2' }, profile().name || 'Player'))),
       h('div', { class: 'default-rules' },
         h('span', { class: 'chip' }, icon('users'), 'Up to 4 players'),
         h('span', { class: 'chip' }, icon('layers'), '7 cards'),
         h('span', { class: 'chip' }, icon('trophy'), '500 points'),
         h('span', { class: 'chip' }, icon('timer'), '30 s turns')),
-      h('p', { class: 'dim', style: { fontSize: '13px' } }, 'You can change every rule in the lobby before starting.'),
+      h('p', { class: 'dim', style: { fontSize: 'calc(13px * var(--s))' } }, 'You can change every rule in the lobby before starting.'),
       createErr,
       createBtn);
 
@@ -166,7 +167,7 @@ export function createRoomScreen(ctx, props = {}) {
           } }, icon(p.isBot ? 'x' : 'userX'))
       : null;
     return h('li', { class: 'slot filled' + (me ? ' me' : '') + (p.connected ? '' : ' offline') },
-      avatar(p.avatar, 58),
+      avatar(p.avatar, 58, '', p.frame),
       h('div', { class: 'slot-info grow' },
         h('div', { class: 'slot-name ellipsis' }, p.name),
         h('div', { class: 'slot-tags' },
@@ -180,7 +181,7 @@ export function createRoomScreen(ctx, props = {}) {
   function emptySlot(isHost, canAdd) {
     return h('li', { class: 'slot empty' },
       h('span', { class: 'empty-ic' }, icon('userPlus')),
-      h('div', { class: 'grow' }, h('div', { class: 'slot-name dim' }, 'Waiting for player…'), h('div', { class: 'dim', style: { fontSize: '12px' } }, 'Share the code to invite')),
+      h('div', { class: 'grow' }, h('div', { class: 'slot-name dim' }, 'Waiting for player…'), h('div', { class: 'dim', style: { fontSize: 'calc(12px * var(--s))' } }, 'Share the code to invite')),
       isHost && canAdd ? h('button', { class: 'btn sm ghost', onclick: async () => { audio.play('click'); const r = await action('add_bot'); if (!r.ok) toast(r.message, 'error'); } }, icon('bot'), 'Add bot') : null);
   }
 
@@ -223,7 +224,7 @@ export function createRoomScreen(ctx, props = {}) {
     return h('div', { class: 'lobby' },
       h('header', { class: 'topbar' },
         h('div', { class: 'brand' }, logoMark(), h('span', {}, 'UNO ARENA')),
-        h('div', { class: 'tools' }, soundControl(),
+        h('div', { class: 'tools' }, soundControl(), chatButton(),
           h('button', { class: 'btn ghost sm', onclick: async () => {
             const ok = await confirmModal({ title: 'Leave this room?', body: isHost && count > 1 ? 'The host role will pass to another player.' : 'You can rejoin later with the room code while it is open.', confirmLabel: 'Leave room', danger: true });
             if (ok) ctx.leave();
@@ -251,7 +252,7 @@ export function createRoomScreen(ctx, props = {}) {
             settingRow('Draw until playable', 'Keep drawing until a card can be played (house rule)', flag('drawUntilPlayable'))),
           h('div', { class: 'start-area' },
             startBtn,
-            isHost && !canStart && st.status === 'WAITING' ? h('p', { class: 'dim center', style: { fontSize: '13px' } }, 'You need at least 2 players — share the code or add a bot.') : null))));
+            isHost && !canStart && st.status === 'WAITING' ? h('p', { class: 'dim center', style: { fontSize: 'calc(13px * var(--s))' } }, 'You need at least 2 players — share the code or add a bot.') : null))));
   }
 
   function shareModal(code) {
@@ -264,7 +265,7 @@ export function createRoomScreen(ctx, props = {}) {
       h('div', { class: 'qr-tile' }, qrElement(link, { label: `Scan to join room ${code}` })),
       isLocalOnly() ? h('p', { class: 'qr-warn', role: 'note' }, icon('info'), 'This link only works on this computer. To let phones join, open the game by its network address (for example http://192.168.1.20:3000) and share from there.') : null,
       h('div', { class: 'share-code' }, [...code].map((c) => h('span', { class: 'code-char sm' }, c))),
-      h('div', { class: 'field', style: { marginTop: '16px' } }, h('label', { class: 'label' }, 'Invitation link'), input),
+      h('div', { class: 'field', style: { marginTop: 'calc(16px * var(--s))' } }, h('label', { class: 'label' }, 'Invitation link'), input),
       h('div', { class: 'actions' },
         h('button', { class: 'btn ghost', onclick: async () => { const ok = await copyText(link); toast(ok ? 'LINK COPIED' : 'COULD NOT COPY THE LINK', ok ? 'good' : 'error'); } }, icon('link'), 'Copy link'),
         h('button', { class: 'btn ghost', onclick: () => { downloadQr(link, `uno-arena-${code}.svg`); toast('QR CODE SAVED', 'good'); } }, icon('download'), 'Save QR'),

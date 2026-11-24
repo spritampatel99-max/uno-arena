@@ -1,5 +1,6 @@
 // Canvas particle effects (confetti, bursts). Fully skipped when reduced motion is on.
 import { reducedMotion } from './store.js';
+import { uiScale } from './scale.js';
 
 let canvas = null;
 let g = null;
@@ -58,10 +59,11 @@ export function confetti({ x = window.innerWidth / 2, y = window.innerHeight * 0
   if (!g || reducedMotion()) return;
   for (let i = 0; i < count; i++) {
     const a = angle + (Math.random() - 0.5) * spread;
-    const v = power * (0.35 + Math.random() * 0.65);
+    const k = uiScale();
+    const v = power * k * (0.35 + Math.random() * 0.65);
     parts.push({
-      x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, gravity, drag: 1.3,
-      size: 6 + Math.random() * 7, rot: Math.random() * 6, spin: (Math.random() - 0.5) * 14,
+      x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, gravity: gravity * k, drag: 1.3,
+      size: (6 + Math.random() * 7) * k, rot: Math.random() * 6, spin: (Math.random() - 0.5) * 14,
       color: colors[(Math.random() * colors.length) | 0], shape: Math.random() < 0.3 ? 'circle' : 'rect',
       life: 2.4 + Math.random() * 1.4, fade: 0.6,
     });
@@ -73,10 +75,11 @@ export function burst(x, y, color, count = 26) {
   if (!g || reducedMotion()) return;
   for (let i = 0; i < count; i++) {
     const a = Math.random() * Math.PI * 2;
-    const v = 120 + Math.random() * 260;
+    const k = uiScale();
+    const v = (120 + Math.random() * 260) * k;
     parts.push({
-      x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, gravity: 260, drag: 2.6,
-      size: 4 + Math.random() * 5, rot: 0, spin: 0, color: color || '#fff', shape: 'circle', life: 0.7 + Math.random() * 0.4, fade: 0.4,
+      x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, gravity: 260 * k, drag: 2.6,
+      size: (4 + Math.random() * 5) * k, rot: 0, spin: 0, color: color || '#fff', shape: 'circle', life: 0.7 + Math.random() * 0.4, fade: 0.4,
     });
   }
   kick();
@@ -87,10 +90,11 @@ export function sparks(x, y, count = 12) {
   if (!g || reducedMotion()) return;
   for (let i = 0; i < count; i++) {
     const a = Math.random() * Math.PI * 2;
-    const v = 220 + Math.random() * 340;
+    const k = uiScale();
+    const v = (220 + Math.random() * 340) * k;
     parts.push({
-      x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 60, gravity: 520, drag: 3.2,
-      size: 1.6 + Math.random() * 2, rot: 0, spin: 0, color: Math.random() < 0.5 ? '#fff6d6' : '#ffd98a', shape: 'circle', life: 0.28 + Math.random() * 0.3, fade: 0.5,
+      x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 60 * k, gravity: 520 * k, drag: 3.2,
+      size: (1.6 + Math.random() * 2) * k, rot: 0, spin: 0, color: Math.random() < 0.5 ? '#fff6d6' : '#ffd98a', shape: 'circle', life: 0.28 + Math.random() * 0.3, fade: 0.5,
     });
   }
   kick();

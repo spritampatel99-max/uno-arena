@@ -1,6 +1,7 @@
 // The practice table on the welcome screen: a tiny, local-only game of "match the top card".
 // Nothing here touches the server. It exists so a first-time visitor learns the one rule that matters
 // (match colour, number or symbol) by doing it, and so the first screen has something worth touching.
+import { uiScale } from './scale.js';
 import { h, Disposer } from './dom.js';
 import { cardEl, backEl, sortHand, cardName, COLOR_NAME, COLOR_HEX } from './cards.js';
 import { fly, rectOf, shake } from './anim.js';
@@ -48,10 +49,11 @@ export function createHeroTable() {
   const drawPile = h('div', { class: 'ht-draw', 'aria-hidden': 'true' }, backEl({ size: 'hero', cls: 'p3' }), backEl({ size: 'hero', cls: 'p2' }), backEl({ size: 'hero', cls: 'p1' }));
   const piles = h('div', { class: 'ht-piles' }, drawPile, h('div', { class: 'ht-top' }, glow, discardSlot));
   const felt = h('div', { class: 'ht-felt', 'aria-hidden': 'true' }, h('i', { class: 'ht-ring' }));
+  const rim = h('i', { class: 'ht-rim', 'aria-hidden': 'true' });
   const handEl = h('div', { class: 'ht-hand', role: 'group', 'aria-label': 'Your practice hand' });
   const live = h('div', { class: 'sr-only', 'aria-live': 'polite' });
   const caption = h('p', { class: 'ht-cap' }, 'Tap a glowing card to play it.');
-  const scene = h('div', { class: 'ht-scene' }, felt, colorChip, piles, handEl);
+  const scene = h('div', { class: 'ht-scene' }, felt, rim, colorChip, piles, handEl);
   const el = h('div', { class: 'ht', 'data-color': color }, scene, caption, live);
 
   // ---- rendering
@@ -61,7 +63,7 @@ export function createHeroTable() {
       const e = cardEl(c, { size: 'hero' });
       const rot = ((c.id * 37) % 21) - 10;
       const ox = ((c.id * 13) % 11) - 5;
-      e.style.transform = `translate(${ox}px, ${((c.id * 29) % 9) - 4}px) rotate(${rot}deg)`;
+      e.style.transform = `translate(${ox * uiScale()}px, ${(((c.id * 29) % 9) - 4) * uiScale()}px) rotate(${rot}deg)`;
       discardSlot.append(e);
     });
     el.dataset.color = color;
@@ -139,6 +141,7 @@ export function createHeroTable() {
     paintDiscard();
     const r = rectOf(discardSlot);
     burst(r.cx, r.cy, COLOR_HEX[color], card.kind === 'num' ? 14 : 28);
+    rim.classList.remove('flash'); void rim.offsetWidth; rim.classList.add('flash');
     if (store.prefs.cardStyle === 'metal') {
       sparks(r.cx, r.cy, card.kind === 'num' ? 10 : 18);
       const topEl = discardSlot.lastElementChild;
@@ -183,8 +186,16 @@ export function createHeroTable() {
   return {
     el,
     mount() {
-      // deal the opening hand in from the draw pile
-      requestAnimationFrame(() => hand.forEach((c, i) => arrive(nodes.get(c.id), { delay: 260 + i * 85 })));
+      // one orchestrated moment: the table lights up, the pile drops in, the hand is dealt, the top card lands with a spark
+      if (!reducedMotion()) {
+        el.classList.add('intro');
+        d.timeout(() => el.classList.remove('intro'), 2400);
+        d.timeout(() => {
+          const r = rectOf(discardSlot);
+          if (store.prefs.cardStyle === 'metal') { sparks(r.cx, r.cy, 14); const t = discardSlot.lastElementChild; if (t) t.classList.add('glint'); }
+        }, 900);
+      }
+      requestAnimationFrame(() => hand.forEach((c, i) => arrive(nodes.get(c.id), { delay: 620 + i * 85 })));
     },
     unmount() { d.dispose(); },
   };
