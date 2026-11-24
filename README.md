@@ -1,241 +1,488 @@
-# UNO ARENA
+# \# 🎮 UNO ARENA
 
-**PLAY TOGETHER. OUTSMART EVERYONE.**
+# 
 
-A real-time multiplayer UNO-style card game for up to 4 players, built from the Google Stitch design and master prompt in `design-reference/`. Create a room, share a six-character code, add friends (or bots), and play first-to-500 matches in the browser.
+# \### PLAY TOGETHER. OUTSMART EVERYONE.
 
-> **Important: this is not the stack the master prompt recommended.**
-> The prompt suggested React + Vite + Tailwind + Framer Motion + Lucide + Supabase + Vercel. The build environment had no package installs available, so UNO ARENA is built with **zero dependencies**: a plain Node.js server (`http` + Server-Sent Events) and a vanilla ES-module browser client with no build step. Animations are CSS/Web Animations, icons are inline SVG, and the realtime layer is SSE + JSON `POST`s instead of Supabase Realtime. Everything the prompt asks for in behaviour is implemented; only the technology differs. See [Deployment](#deployment) for what that means in practice.
+# 
 
----
+# UNO ARENA is a real-time multiplayer UNO-style card game where you can create private rooms, invite friends, play against bots and compete in exciting matches.
 
-## Run it
+# 
 
-Requires **Node 20 or newer**. Nothing to install.
+# Enjoy a premium metallic card design, smooth animations, live chat, custom themes and a responsive experience across desktop and mobile.
 
-```bash
-cd uno-arena
-npm start            # or: node server/index.js
-# open http://localhost:3000
-```
+# 
 
-Open the same address in two or more browser windows (or on other devices on your network) to play together. A room link looks like `http://localhost:3000/?room=ABC123`.
+# <p align="center">
 
-### Configuration (environment variables)
+# 
 
-| Variable | Default | Meaning |
-|---|---|---|
-| `PORT` | `3000` | HTTP port |
-| `HOST` | `0.0.0.0` | Bind address |
-| `TRUST_PROXY` | off | Set to `1` behind a reverse proxy so per-IP limits use `X-Forwarded-For` |
-| `UNO_COUNTDOWN_MS` | `3000` | Pre-match countdown |
-| `UNO_INTERMISSION_MS` | `7000` | Pause between rounds |
-| `UNO_BOT_MIN_MS` / `UNO_BOT_MAX_MS` | `900` / `1900` | Bot "thinking" delay range |
-| `UNO_RECONNECT_MS` | `45000` | How long a lobby player may be offline before being removed |
-| `UNO_ABANDON_MS` | `120000` | How long an in-game player may be offline before forfeiting |
-| `UNO_DISCONNECT_GRACE_MS` | `2000` | Debounce before a dropped connection counts as offline |
-| `UNO_ROOM_IDLE_MS` | `600000` | Idle rooms are cleaned up after this long |
-| `UNO_TICK_MS` | `250` | Server clock tick |
+# &#x20; \*\*🌐 \[PLAY UNO ARENA ONLINE](https://uno-arena-g0gj.onrender.com/)\*\*
 
-Other endpoints: `GET /healthz` (liveness) and `GET /api/stats` (live room/player counts).
+# 
 
----
+# &#x20; \*Play anytime. Invite your friends. Enjoy the game.\*
 
-<p align="center">
-  <img src="docs/screenshots/welcome.png" alt="Welcome screen with the practice table" width="49%">
-  <img src="docs/screenshots/arena-desktop.png" alt="Game arena with metal cards" width="49%">
-</p>
-<p align="center">
-  <img src="docs/screenshots/lobby.png" alt="Room lobby" width="32%">
-  <img src="docs/screenshots/settings.png" alt="Settings: card material, themes and card backs" width="32%">
-  <img src="docs/screenshots/victory.png" alt="Victory screen" width="32%">
-</p>
+# 
 
-<p align="center">
-  <img src="docs/screenshots/dashboard-4k.jpg" alt="The victory screen as a match dashboard, captured at 3840×2160" width="100%">
-</p>
-<p align="center">
-  <img src="docs/screenshots/frames.png" alt="Avatar and frame picker" width="49%">
-  <img src="docs/screenshots/victory-phone.png" alt="The match dashboard on a phone" width="22%">
-</p>
+# </p>
 
-<p align="center">
-  <img src="docs/screenshots/chat-lobby.png" alt="Lobby with a chat preview bubble and unread badge" width="32%">
-  <img src="docs/screenshots/chat-arena.png" alt="Table chat open beside the arena" width="32%">
-  <img src="docs/screenshots/chat-phone.png" alt="Chat as a bottom sheet on a phone" width="32%">
-</p>
+# 
 
-More captures (phone layouts, the invite QR, the How to play guide) are in `docs/screenshots/`.
+# \---
 
-## The four screens
+# 
 
-1. **Welcome** – nickname, avatar, Create Room / Join Room, a playable practice table, How to play, Settings and sound toggles, and an Install button when the browser offers one.
-2. **Room setup & lobby** – Create/Join tabs with six code boxes; once inside, the code card, four player slots, host settings, bot controls and the Start button with a countdown.
-3. **Game arena** – opponent seats, draw and discard piles, active-colour indicator, turn timer rings, fan-shaped hand, UNO button, live log.
-4. **Victory** – a match dashboard: an animated podium, match summary figures, a score-race chart (cumulative score after every round, with hover), per-stat bars (points, cards played, cards drawn, special cards), the full scoreboard (rank, player, score, rounds won, played, drawn, special), highlights, and Play Again / Return to Lobby / Exit Room. Every number comes from the server's match record; nothing is invented.
+# \## 📸 Game Preview
 
-Everything else (wild colour picker, round summary, settings, errors) is a modal or overlay, as the brief required.
+# 
 
-## Rules
+# <p align="center">
 
-- Standard 108-card deck, 7 cards each by default. Match colour, number or symbol; Wild cards can always be played.
-- **Wild Draw Four** may only be played when your hand has no card of the active colour (enforced by the server; there is no challenge mechanic).
-- **Skip, Reverse, Draw Two, Wild, Wild Draw Four** work as normal. With two players, Reverse acts as Skip.
-- If you can't play, draw one card. If it is playable you may play **only that card**; otherwise (or by choice) you can pass.
-- A wild card flipped as the first discard is reshuffled away; a skip/reverse/draw-two start applies to the first player.
-- **UNO:** when you are down to 2 cards the UNO button arms; call it as you play down to 1. If a player reaches 1 card without calling, a **4-second window** opens in which any opponent can press **Catch UNO!**; a successful catch makes the offender draw 2.
-- **Scoring:** the round winner scores the cards left in everyone else's hands: number cards face value, Skip/Reverse/Draw Two 20, Wild and Wild Draw Four 50. Rounds repeat until someone reaches the winning score.
-- **Turn timer:** if it runs out, the server draws a card (or passes) for you. Two consecutive timeouts put you on autopilot until you make a move.
+# &#x20; <img src="docs/screenshots/welcome.png" alt="UNO ARENA welcome screen" width="49%">
 
-### Room settings (host only; every one has real server behaviour)
+# &#x20; <img src="docs/screenshots/arena-desktop.png" alt="UNO ARENA game arena" width="49%">
 
-| Setting | Options | Default |
-|---|---|---|
-| Max players | 2, 3, 4 | **4** |
-| Starting cards | 5, 7, 10 | **7** |
-| Winning score | 100, 200, 300, 500, 1000 | **500** |
-| Turn timer | 15, 20, 30, 45, 60, 90 s | **30 s** |
-| Stacking | on/off – +2 on +2, +4 on +4 only | **off** |
-| Jump-in | on/off – play an identical coloured card out of turn | **off** |
-| Draw until playable | on/off – keep drawing until you can play | **off** |
+# </p>
 
-Settings lock once the match starts. Changing them is host-only and validated on the server.
+# 
 
-### Rooms and players
+# <p align="center">
 
-- Room codes are six characters from `ABCDEFGHJKMNPQRSTUVWXYZ23456789` (no look-alikes). Codes are accepted with spaces and in lower case.
-- Exact lobby messages: `PLEASE ENTER A ROOM CODE.` · `INVALID ROOM CODE.` · `ROOM NOT FOUND.` · `THIS ROOM IS FULL.` · `THIS MATCH HAS ALREADY STARTED. YOU CAN JOIN WHEN THE HOST OPENS A NEW ROOM.` (the brief only said "show appropriate late-join restriction", so that wording is mine).
-- Host can change settings, add/remove bots, kick players and start the match (needs 2+ players). The host crown moves to a connected human automatically if the host leaves.
-- **Bots** are added by the host in the lobby. The same bot brain plays for a disconnected player ("autopilot") so a dropped connection never stalls the table.
-- **Reconnection:** your session is kept in the browser tab; refreshing or losing connection restores your seat and hand. Opponent hands are never sent to your browser.
-- When the match ends the host can **Play Again** (new match, same room) or **Return to Lobby**; anyone can **Exit Room**.
+# &#x20; <img src="docs/screenshots/lobby.png" alt="Multiplayer lobby" width="32%">
 
-## Client features
+# &#x20; <img src="docs/screenshots/settings.png" alt="Game settings" width="32%">
 
-### Look and feel
+# &#x20; <img src="docs/screenshots/victory.png" alt="Victory dashboard" width="32%">
 
-- **Metal cards (the default).** Every card is a bevelled steel plate: a chrome frame, an anodised brushed-metal face and a polished chrome oval with the number engraved in colour. Wilds are gunmetal with an enamelled colour wheel, and the backs are metal too. A card that lands on the table throws a few sparks and a glint runs across the plate. **Settings → Card material** switches to the printed **Classic** look at any time, even mid-game.
-- **Animated hero.** The welcome headline writes itself in, a brushed-steel glint crosses the first line now and then, a slow drift of out-of-focus metal cards gives the page depth (and shifts a little with the pointer), and the practice table opens with a short choreography: the rim light ignites, cards fan out and each valid play makes the rim flash. Hidden on phones where it would only add haze.
-- **Avatar frames.** Four rings: *Brushed steel* (default), *Gilded*, *Prism* and *Neon*, chosen next to your avatar on the welcome screen. They are cosmetic, the server only accepts those four names (anything else becomes steel, bots always wear steel), and everyone in the room sees them in the lobby, the arena, chat and the results.
-- **Table lights.** A comet of light runs around the table rim in the direction of play (it reverses with Reverse and takes the active colour), and a green comet travels around the seat whose turn it is.
-- **4K and big screens.** The whole interface scales with the window: a single factor (`--s`, 1 at 1920×1080 and below, up to 2 at 3840×2160) multiplies every length, and the card, flight and particle code reads the same factor, so a 4K screen shows the same layout at twice the size rather than a small UI in a big empty window. Below 1920×1080 nothing changes. Geometry at 3840×2160 was checked against 1920×1080 and is an exact 2×.
-- **Opening deal.** The deck is riffled, cards are dealt around the table and the starter is flipped, instead of the hand simply appearing.
-- **Card moments.** Draw Two / Draw Four, Skip, Reverse, a colour change and UNO each get a short full-table flourish, and a clear **turn cue** (a glow on the table, a chime, vibration on phones that support it, and `● Your turn` in the browser tab title while the tab is in the background).
-- **Table themes** (Midnight, Emerald, Crimson, Aurora) and **card backs** (Classic, Gilded, Neon grid, Mono). Themes only recolour the room; the four UNO colours never change, so cards stay readable everywhere.
-- **Colour-blind symbols:** every colour also carries its own shape (triangle, circle, square, diamond) on cards, in the colour picker and on the active-colour chip.
-- **Practice table** on the welcome screen: tap a glowing card to learn "match the colour, number or symbol" before joining a room. It is local and never touches the server.
-- Responsive layouts for desktop, tablet and phone (touch uses tap-to-select, then tap-to-play). **Reduced motion** is respected from the OS setting and can be forced in Settings; it skips dealing, flights, moments and sparks.
-- Palette, fonts (Space Grotesk, Sora, Inter) and radii follow the master prompt. Fonts load from Google Fonts with system fallbacks, so the game still works offline.
+# </p>
 
-### Sound and vibration
+# 
 
-- Sound and music both start **off**, never autoplay, and have separate volume sliders.
-- **Metal cards sound like metal.** A card leaving your hand makes a quick slide through the air, and a clank when it lands on the table (a heavier, longer clang for action and wild cards). Drawing, dealing and shuffling use matching metal slides, ticks and rattles. Classic cards use the paper sounds instead, and switching material switches the sounds with it.
-- Everything you hear is **synthesised live in the browser** (oscillators and filtered noise, no audio files), so nothing is downloaded or licensed. The clank is a small physical model of a struck steel plate (a ringing set of inharmonic partials, a hard contact click and a table thump), not a studio recording.
-- Vibration on your turn and on big plays, where the browser has the Vibration API (Android Chrome yes, iOS Safari no). It can be switched off in Settings.
+# <p align="center">
 
-### Controls and play aids
+# &#x20; <img src="docs/screenshots/dashboard-4k.jpg" alt="UNO ARENA 4K dashboard" width="100%">
 
-- Fan-shaped hand with hover lift, tap/click to select and play, **drag-and-drop** onto the table, and sort by **colour** or **number**.
-- **Keyboard:** arrow keys + Enter to play, `D` draw, `P` pass, `U` UNO, `E` open reactions, `C` open or close chat, `R B Y G` in the colour picker.
-- **Move hints** (Settings, off by default): marks a good card with a star and suggests a colour after a wild. It only ranks cards the server already allows, and prefers shedding high-value cards and saving wilds.
-- **Reactions:** eight preset emotes (GG, Nice!, Wow, Haha, Thanks, Hmm…, On fire, Great play) shown as a bubble beside the sender. The list is fixed (no free text), the server rate-limits them, and bots occasionally answer or say "gg" after a round. They are available in the arena only; typed messages are the separate **Table chat** below.
+# </p>
 
-### Table chat
+# 
 
-Players can talk while they play, in the lobby, during a match and on the results screen. One chat belongs to the room and follows you between screens, so nothing is lost when the lobby redraws or a round ends.
+# More desktop, mobile and chat screenshots are available in \[`docs/screenshots/`](docs/screenshots/).
 
-- **Open it** with the chat button in the top bar or the `C` key (`Esc` closes it). On desktop it is a floating panel (bottom-right in the arena, bottom-left in the lobby so it never covers the Start button). On phones it is a **bottom sheet** that rides above the on-screen keyboard and closes when a match starts, so the table is visible.
-- **New messages while it is closed** show an unread badge, a short preview bubble and a soft chime (when sound is on). **Settings → Chat alerts** turns the bubble and chime off; the badge stays.
-- **It never makes you miss your move.** When it is your turn and the chat is open, a yellow strip says so, with a *Back to table* button.
-- **Everyone's messages are plain text.** Links aren't clickable and markup is shown as typed. Names and avatars come from the server session, so a message can't claim to be from someone else.
-- **Limits:** 200 characters per message, at most 5 messages per 10 seconds per player and never closer than half a second, enforced on the server. Late joiners and reconnecting players get the last 60 messages.
-- **Control:** any player can **mute** another for themselves (kept for the tab session). The **host can switch chat off** for the room (Chat button → people icon → *Allow chat in this room*); the input is disabled for everyone and the server refuses messages until it is switched back on.
+# 
 
-### Inviting and installing
+# \---
 
-- **Invite by link or QR code** from the lobby: copy the link, share it from the phone share sheet, or show a scannable QR (**Save QR** downloads it as an image). The QR encoder is written in the project (`public/js/qr.js`), so there is no library or external service. The lobby warns when the address is `localhost`, because other devices can't open that.
-- **Installable (PWA):** a manifest, icons and a small service worker let supporting browsers add UNO ARENA to the home screen. Live game traffic (`/api/…`) is never cached, so rooms always reflect the server.
+# 
 
-## Architecture
+# \## ✨ Features
 
-```
-server/
-  engine.js   Pure, deterministic rules engine (injectable RNG and clock). No I/O.
-  rooms.js    RoomManager: rooms, lobby, presence, bots, timers, reactions, table chat, per-player views, results.
-  index.js    HTTP server: static files, JSON actions, SSE streams, security headers, rate limits.
-public/
-  index.html, favicon.svg, manifest.webmanifest, sw.js, icons/
-  css/        base · cards · themes · metal · extras · screens · arena · motion · dashboard · chat
-  js/         main, scale, store, net, audio, sound/kit, fx, anim, moments, hero-table, hints, emotes,
-              chat, themes, settings, guide, haptics, pwa, qr, qr-view, ui, cards, avatars, icons, dom
-  js/screens/ welcome · room · arena · results
-tests/        engine · rooms · hints · qr · sound (node:test) · simulate.js · check-syntax.js
-design-reference/  the original master prompt and four Stitch HTML screens
-docs/screenshots/  captures of the finished game (desktop and phone)
-```
+# 
 
-**Server-authoritative.** The browser only sends intents (`play`, `draw`, `uno`…). The server validates every one, advances the game and pushes each player a *filtered* view over SSE: your own hand in full, opponents as card counts only. Private events (such as the cards you drew) go only to the player they concern.
+# \### 🎯 Multiplayer Gameplay
 
-**One clock.** A single 250 ms server tick drives the pre-match countdown, round intermissions, turn timeouts, bot moves, bot UNO catches, presence and room clean-up.
+# \- Create private rooms with unique six-character codes.
 
-### HTTP API
+# \- Invite friends using room links or QR codes.
 
-| Method & path | Purpose |
-|---|---|
-| `POST /api/rooms` | Create a room → `{code, playerId, token}`. Body: `name`, `avatar`, optional `frame` (`steel` `gilded` `prism` `neon`) |
-| `POST /api/rooms/join` | Join by code (same body plus `code`) |
-| `POST /api/rooms/resume` | Restore a session after refresh |
-| `POST /api/action` | `settings` `add_bot` `remove_bot` `kick` `start` `leave` `play` `draw` `pass` `uno` `catch` `rematch` `to_lobby` `emote` `chat` `chat_mode` |
-| `GET /api/events?code&pid&token` | SSE stream (when a match ends, the state carries `results`: `standings` with `seat`, `rank`, score and per-player stats, plus `timeline`, the cumulative score after each round): `sync` (full state, plus chat history), `update` (state + events, including `chat` and `chat_mode`), `closed`, `kicked` |
-| `GET /api/stats` · `GET /healthz` | Counters / liveness |
+# \- Support for up to 4 players.
 
-### Security notes
+# \- Add bots and play against AI opponents.
 
-Session tokens are random and compared in constant time; mutating requests must be JSON with a matching `Origin`; bodies over 10 KB get `413`; per-IP token-bucket rate limits and an SSE connection cap (12 per IP); strict CSP, `nosniff`, `no-referrer` and frame-denial headers; static serving is path-traversal safe; nicknames and chat messages are validated, length- and rate-limited, and rendered as text only (`textContent`, never HTML). Rooms live in memory – there is no database and no accounts.
+# \- Real-time gameplay and automatic turn management.
 
-## Testing
+# \- Reconnection support if a player disconnects.
 
-```bash
-npm test             # 80 node:test tests: 42 rules, 20 room/reaction/chat/frame, 9 move-hint, 6 QR, 3 sound
-npm run simulate     # boots a real server and plays full matches over HTTP/SSE:
-                     #   lobby errors, kick, late join, reconnection, hidden-hand leak check,
-                     #   card conservation on every update, rematch, host transfer, rate limiting,
-                     #   reactions (allowlist, rate limit, bots answering),
-                     #   chat (identity from session, length and rate limits, host-only switch, history on reconnect),
-                     #   results dashboard data (seat order, cumulative score timeline agrees with the final scores)
-npm run check        # parses every server and client file; verifies client imports resolve
-```
+# \- Rematches and automatic host transfer.
 
-- The QR encoder is pinned by golden hashes. During development every generated code was also decoded with OpenCV's QR detector to confirm that real scanners read it.
-- The sound test runs the whole kit against a recording stand-in for the Web Audio graph (Node has none): every effect must schedule without errors, and the metal effects and the metal-voice swaps must exist. Loudness and clipping were measured separately in Chromium with an `OfflineAudioContext`: the clank and clang sit at the level of the existing card sound (about -18 and -15 dB RMS) with peaks under 0.9, so they can't clip.
-- The browser flow (welcome practice table → create room → add bots → settings → deal → drag-and-drop and tap plays → special cards → UNO → round over → results, on a 1366×768 desktop and an iPhone 13 profile) was driven end to end in headless Chromium: it played whole matches to the results screen with no console errors and no horizontal overflow. Chat was checked the same way with two real browser clients (a desktop host and an iPhone 13 guest): sending and receiving in the lobby and the arena, unread badge and preview bubble, `C` and `Esc`, no game shortcuts while typing, mute, host switch off and on, history after a page reload, the rate-limit error, a message containing `<img onerror>` (shown as text, nothing executed), the turn strip, and no horizontal overflow on the phone. The look-and-feel work was checked the same way: the welcome hero, the frame picker, the arena rim and active-seat lights and the results dashboard were screenshotted at 1440×900, 1100 wide, 3840×2160 and an iPhone 13 profile, from a real played match, with no console errors and no horizontal overflow. A 1766-element geometry comparison confirmed that the scale system leaves layouts at or below 1920×1080 pixel-identical to before. Those scripts aren't shipped because they need Playwright, which this project deliberately doesn't depend on.
+# 
 
-## Deployment
+# \### 🎨 Premium Visual Experience
 
-Because rooms and live SSE connections are held in the server's memory, UNO ARENA needs a **long-running Node process** – Render, Railway, Fly.io, a VPS, or anything that can run `node server/index.js`. It will **not** work on Vercel-style serverless functions, which can't hold connections or shared state between requests. Run **one instance** (rooms aren't shared between instances); set `TRUST_PROXY=1` if a proxy sits in front, and make sure the proxy doesn't buffer `text/event-stream` responses.
+# \- Metallic card design with polished effects.
 
-To move to the originally suggested Supabase/Vercel stack later, `server/engine.js` is pure and I/O-free, so it can be reused unchanged inside Edge Functions with Realtime replacing the SSE layer and the room store moved to Postgres.
+# \- Classic and metallic card styles.
 
-## Where this differs from the Stitch mockups
+# \- Animated cards, table lighting and visual effects.
 
-- **Real data only.** No invented MMR, ranks, friends lists or fake "players online" counts. The online badge appears only when the server reports a real count.
-- **4 players maximum**, stacking **off** by default, and only settings that actually do something are displayed.
-- Avatars and the logo are local SVG instead of remote images, so nothing breaks offline.
-- Late-join wording and the Wild Draw Four rule (hand must lack the active colour, no challenge) were my decisions where the brief was silent.
+# \- Custom themes: Midnight, Emerald, Crimson and Aurora.
 
-## Known limits
+# \- Custom card backs and avatar frames.
 
-- In-memory rooms: a server restart ends all games.
-- Names and rooms are anonymous; there are no accounts or persistent leaderboards. Reactions are a fixed set and only work inside the arena.
-- Touch devices can't drag-and-drop cards (tap to select, then tap again to play).
-- All sound and music is synthesised, not recorded. The metal clank is a physical model, so it is a clean steel "tink" rather than a studio sample. It has only been tuned by measurement and by ear in a browser, not on a wide range of speakers.
-- Vibration works only where the browser provides the Vibration API (not iOS Safari).
-- Installing UNO ARENA as an app doesn't make it playable offline: the game needs the server. Only the shell is cached.
-- A QR invite only helps other devices if you opened the game by a network address (such as `http://192.168.x.x:3000`), not `localhost`. The lobby warns about this.
-- The desktop table is sized with CSS container-query units (Chrome and Edge 105+, Safari 16+, Firefox 110+). Older browsers fall back to a window-based size.
-- 4K was verified in headless Chromium at 3840×2160 only, not on a physical 4K display, and the phone layouts only in an emulated iPhone. The motion graphics (travelling lights, rotating frame rings) use CSS `@property` (Chrome and Edge 85+, Safari 16.4+, Firefox 128+); older browsers show the same rings and lights static. All of it is decoration and is switched off by reduced motion.
-- Frames are cosmetic only and are not saved on the server: they live in your browser profile and are sent when you create or join a room.
-- The dashboard's yellow and green sit outside the lightness band of the colour-blind palette checker we ran, because the four UNO colours are fixed by the brief. Players are therefore never told apart by colour alone: every bar and line also has the player's avatar or a legend entry, the exact values are printed, and the scoreboard below repeats everything as text.
-- Chat is plain text only: no links, images or formatting. There is no word filter; the safeguards are the host's on/off switch, per-player mute and the server rate limit. Muting is local to your browser tab. The last 60 messages are kept in memory with the room and disappear when the room closes. Bots don't chat.
-- On phones the chat sheet moves above the keyboard using the browser's VisualViewport API. That was checked in an emulated iPhone, not on real devices, so keyboard placement may differ on some browsers.
+# \- Responsive desktop, tablet and mobile layouts.
+
+# \- 4K display scaling.
+
+# 
+
+# \### 💬 Social Features
+
+# \- Live room and game chat.
+
+# \- Preset player reactions and emotes.
+
+# \- Chat notifications and unread indicators.
+
+# \- Player muting and host-controlled chat settings.
+
+# 
+
+# \### 📱 Mobile \& Personalisation
+
+# \- Installable Progressive Web App (PWA).
+
+# \- QR code invitations.
+
+# \- Sound effects and volume controls.
+
+# \- Mobile vibration support where available.
+
+# \- Reduced-motion accessibility option.
+
+# \- Colour-blind-friendly card symbols.
+
+# 
+
+# \---
+
+# 
+
+# \## 🃏 How to Play
+
+# 
+
+# The objective is to get rid of all your cards and score points by winning rounds.
+
+# 
+
+# 1\. Create a room or join one using a room code.
+
+# 2\. Wait for players or add bots.
+
+# 3\. Start the match when at least two players are ready.
+
+# 4\. Match the top card by colour, number or symbol.
+
+# 5\. Use special cards strategically to challenge opponents.
+
+# 6\. Call UNO when you are down to your final card.
+
+# 7\. Win rounds and reach the target score to win the match.
+
+# 
+
+# \*\*Special cards:\*\* Skip, Reverse, Draw Two, Wild and Wild Draw Four.
+
+# 
+
+# \*\*Game options:\*\* Choose the number of players, starting cards, winning score, turn timer, stacking and jump-in rules.
+
+# 
+
+# The Wild Draw Four card is restricted when you hold a card matching the active colour. With two players, Reverse acts as Skip.
+
+# 
+
+# \---
+
+# 
+
+# \## 🛠️ Technology Stack
+
+# 
+
+# UNO ARENA is built using a lightweight, zero-dependency architecture.
+
+# 
+
+# | Component | Technology |
+
+# |---|---|
+
+# | Frontend | HTML, CSS, JavaScript |
+
+# | Backend | Node.js |
+
+# | Server | Native Node.js HTTP |
+
+# | Real-time communication | Server-Sent Events (SSE) |
+
+# | Game logic | Custom JavaScript engine |
+
+# | Testing | Node.js Test Runner |
+
+# | App installation | Progressive Web App (PWA) |
+
+# 
+
+# The game uses a server-authoritative architecture: the server validates player actions, manages game state and sends each player their permitted game data.
+
+# 
+
+# No external database or account system is currently required.
+
+# 
+
+# \---
+
+# 
+
+# \## 💻 Run Locally
+
+# 
+
+# \### Requirements
+
+# \- Node.js 20 or newer
+
+# \- Git (optional)
+
+# 
+
+# \### Installation
+
+# 
+
+# Clone the repository:
+
+# 
+
+# ```bash
+
+# git clone https://github.com/spritampatel99-max/uno-arena.git
+
+# ```
+
+# 
+
+# Open the project directory:
+
+# 
+
+# ```bash
+
+# cd uno-arena
+
+# ```
+
+# 
+
+# Start the server:
+
+# 
+
+# ```bash
+
+# npm start
+
+# ```
+
+# 
+
+# Open the game in your browser:
+
+# 
+
+# ```text
+
+# http://localhost:3000
+
+# ```
+
+# 
+
+# Open the same local address in multiple browser windows to test multiplayer gameplay.
+
+# 
+
+# \---
+
+# 
+
+# \## 🧪 Testing
+
+# 
+
+# The project includes automated tests for gameplay, rooms, reactions, QR codes, sounds and server behaviour.
+
+# 
+
+# Run the test suite:
+
+# 
+
+# ```bash
+
+# npm test
+
+# ```
+
+# 
+
+# Check JavaScript syntax and imports:
+
+# 
+
+# ```bash
+
+# npm run check
+
+# ```
+
+# 
+
+# Run the multiplayer server simulation:
+
+# 
+
+# ```bash
+
+# npm run simulate
+
+# ```
+
+# 
+
+# \---
+
+# 
+
+# \## 🚀 Deployment
+
+# 
+
+# UNO ARENA is deployed on \*\*Render\*\*.
+
+# 
+
+# \*\*Live Website:\*\* https://uno-arena-g0gj.onrender.com/
+
+# 
+
+# The application requires a continuously running Node.js server because multiplayer rooms and real-time connections are maintained in server memory.
+
+# 
+
+# Supported hosting options include Render, Railway, Fly.io and VPS hosting.
+
+# 
+
+# For the current architecture:
+
+# \- Run only one server instance.
+
+# \- Configure `TRUST\_PROXY=1` when running behind a trusted reverse proxy.
+
+# \- The hosting provider supplies the `PORT` environment variable.
+
+# \- Server restarts close active rooms because room data is stored in memory.
+
+# 
+
+# \---
+
+# 
+
+# \## 📁 Project Structure
+
+# 
+
+# ```text
+
+# uno-arena/
+
+# │
+
+# ├── design-reference/    Original design references
+
+# ├── docs/
+
+# │   └── screenshots/     Game screenshots
+
+# │
+
+# ├── public/
+
+# │   ├── css/             Stylesheets and themes
+
+# │   ├── js/              Frontend JavaScript
+
+# │   ├── icons/           App icons
+
+# │   ├── index.html
+
+# │   ├── manifest.webmanifest
+
+# │   └── sw.js
+
+# │
+
+# ├── server/
+
+# │   ├── engine.js        Game rules and logic
+
+# │   ├── rooms.js         Multiplayer room management
+
+# │   └── index.js         HTTP server and API
+
+# │
+
+# ├── tests/               Automated tests
+
+# ├── package.json
+
+# └── README.md
+
+# ```
+
+# 
+
+# \---
+
+# 
+
+# \## ⚠️ Current Limitations
+
+# 
+
+# \- Rooms and player sessions are stored in memory.
+
+# \- Restarting the server ends active games.
+
+# \- No user accounts or persistent leaderboards.
+
+# \- Only one server instance is supported by the current architecture.
+
+# \- Online gameplay requires an active internet connection.
+
+# 
+
+# \---
+
+# 
+
+# \## 🎮 Start Playing!
+
+# 
+
+# Gather your friends, create a room and see who can outsmart everyone.
+
+# 
+
+# <p align="center">
+
+# 
+
+# &#x20; \*\*\[▶ PLAY UNO ARENA](https://uno-arena-g0gj.onrender.com/)\*\*
+
+# 
+
+# &#x20; Built with creativity, JavaScript and a love for multiplayer games.
+
+# 
+
+# </p>
+
+
+
